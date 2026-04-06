@@ -1,9 +1,10 @@
 import React from 'react';
 import { signIn } from '@/lib/auth';
 
-export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const resolvedSearchParams = await searchParams;
   // next-auth adds error=CredentialsSignin in the URL when login fails
-  const isError = searchParams?.error === 'CredentialsSignin';
+  const isError = resolvedSearchParams?.error === 'CredentialsSignin';
 
   return (
     <div className="min-h-screen w-full bg-midnight text-silver font-sans flex items-center justify-center p-4">
