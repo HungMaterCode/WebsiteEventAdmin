@@ -44,6 +44,7 @@ export default function Navbar({ onOpenBooking, onOpenStatus }: { onOpenBooking?
           
           {session ? (
             <div className="flex items-center gap-4 ml-4 pl-4 border-l border-white/10">
+              <Link href="/my-tickets" className="text-sm font-bold uppercase tracking-wider text-cyan hover:text-white transition-colors">Vé của tôi</Link>
               <span className="text-sm font-bold text-silver">{session.user?.name || session.user?.email}</span>
               <button onClick={() => signOut()} className="text-xs font-bold uppercase tracking-wider text-red-400 hover:text-red-300 transition-colors">Đăng xuất</button>
             </div>

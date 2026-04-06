@@ -34,10 +34,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+  const { data: session, status } = useSession();
 
-  // Mock roles for now until auth is fully implemented on client side
-  const roles = ['ADMIN']; 
-  const allowedMenuItems = MENU_ITEMS.filter(m => roles.some(r => m.role.includes(r as any)));
+  const user = session?.user as { name?: string, email?: string, role?: string, image?: string, id?: string } | undefined;
+  const userRole = user?.role || 'USER';
+  
+  const allowedMenuItems = MENU_ITEMS.filter(m => m.role.includes(userRole));
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' });
@@ -45,6 +47,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
+  }
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#060010] flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-[#00FFFF]/20 border-t-[#00FFFF] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Final check if middleware fails (client-side safety)
+  if (!session || userRole === 'USER') {
+    if (typeof window !== 'undefined') {
+      router.push('/admin/login');
+    }
+    return null;
   }
 
   return (
@@ -97,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="px-4 py-3 bg-[#4F1F76]/10 rounded-xl border border-[#4F1F76]/30 mb-4 flex items-center justify-between">
               <div>
                 <div className="text-xs text-[#8A8F98]">Quyền hạn</div>
-                <div className="text-sm font-bold text-[#E6C753]">ADMIN</div>
+                <div className="text-sm font-bold text-[#E6C753]">{userRole}</div>
               </div>
               <CheckCircle2 className="w-5 h-5 text-[#00FFFF]" />
             </div>
@@ -134,13 +152,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="flex items-center gap-3 hover:bg-[#4F1F76]/20 py-2 px-3 rounded-xl transition-colors"
               >
                 <div className="w-10 h-10 rounded-full border-2 border-[#E6C753] p-0.5 glow-gold shadow-[0_0_10px_rgba(230,199,83,0.3)] shrink-0">
-                  <div className="w-full h-full rounded-full bg-[#4F1F76]/50 flex items-center justify-center">
-                    <span className="text-[#FFFFFF] font-bold text-sm">TVH</span>
+                  <div className="w-full h-full rounded-full bg-[#4F1F76]/50 flex items-center justify-center overflow-hidden">
+                    {user?.image ? (
+                        <img src={user.image} alt="User" className="w-full h-full object-cover" />
+                    ) : (
+                        <span className="text-[#FFFFFF] font-bold text-sm">{(user?.name || 'A')[0].toUpperCase()}</span>
+                    )}
                   </div>
                 </div>
                 <div className="hidden md:block text-left">
-                  <div className="text-sm font-bold text-[#FFFFFF]">Trần Vũ Hùng</div>
-                  <div className="text-[10px] uppercase tracking-widest text-[#8A8F98]">admin@eventadmin.vn</div>
+                  <div className="text-sm font-bold text-[#FFFFFF]">{user?.name || 'Tài khoản Admin'}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-[#8A8F98]">{user?.email}</div>
                 </div>
                 <ChevronDown className={`w-4 h-4 text-[#8A8F98] transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
               </button>

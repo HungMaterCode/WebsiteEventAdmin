@@ -3,8 +3,16 @@ import { signIn } from '@/lib/auth';
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const resolvedSearchParams = await searchParams;
-  // next-auth adds error=CredentialsSignin in the URL when login fails
-  const isError = resolvedSearchParams?.error === 'CredentialsSignin';
+  const error = resolvedSearchParams?.error;
+  
+  const errorMessages: Record<string, string> = {
+    'CredentialsSignin': 'Email hoặc mật khẩu không chính xác!',
+    'AccessDenied': 'Bạn không có quyền truy cập vào khu vực quản trị.',
+    'OAuthAccountNotLinked': 'Email này đã được sử dụng với phương thức đăng nhập khác.',
+    'default': 'Đã có lỗi xảy ra. Vui lòng thử lại sau.'
+  };
+
+  const errorMessage = error ? (errorMessages[error] || errorMessages.default) : null;
 
   return (
     <div className="min-h-screen w-full bg-midnight text-silver font-sans flex items-center justify-center p-4">
@@ -16,9 +24,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <h1 className="text-3xl font-display font-black uppercase tracking-widest mb-2"><span className="text-magenta">Cyber</span><span className="text-cyan">Admin</span></h1>
           <p className="text-gray-400 text-sm mb-8">Hệ thống quản trị Neon Heritage Festival</p>
           
-          {isError && (
-            <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
-              Thông tin đăng nhập không chính xác!
+          {errorMessage && (
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-bold animate-pulse">
+              {errorMessage}
             </div>
           )}
           
