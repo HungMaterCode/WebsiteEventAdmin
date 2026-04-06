@@ -1,65 +1,116 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React from 'react';
+import { AnimatePresence } from 'framer-motion';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import HeroSection from '@/components/sections/HeroSection';
+import ArtistSection from '@/components/sections/ArtistSection';
+import CinematicExperience from '@/components/sections/CinematicExperience';
+import HeritageArtSection from '@/components/sections/HeritageArtSection';
+import GallerySection from '@/components/sections/GallerySection';
+import TimelineSection from '@/components/sections/TimelineSection';
+import SocialFeed from '@/components/sections/SocialFeed';
+import ProductSection from '@/components/sections/ProductSection';
+import TicketSection from '@/components/sections/TicketSection';
+import FAQSection from '@/components/sections/FAQSection';
+import TravelStaySection from '@/components/sections/TravelStaySection';
+import MapSection from '@/components/sections/MapSection';
+import ContactSection from '@/components/sections/ContactSection';
+import NewsletterSection from '@/components/sections/NewsletterSection';
+import PartnersSection from '@/components/sections/PartnersSection';
+import NewsSection from '@/components/sections/NewsSection';
+import ScrollProgress, { BackToTop, FloatingDecorations, Preloader } from '@/components/ui/ScrollEffects';
+import { VideoModal, ArtistDetailModal, ProductDetailModal } from '@/components/modals/Modals';
+import BookingStatusModal from '@/components/modals/BookingStatusModal';
+import BookingModal from '@/components/modals/BookingModal';
+
+const defaultArtists = [
+  { id: 1, name: "Hồ Ngọc Hà", genre: "Pop / Dance", image: "https://picsum.photos/seed/hongocha/600/800", performanceTime: "22:30 - 23:15" },
+  { id: 2, name: "Tùng Dương", genre: "Contemporary Folk", image: "https://picsum.photos/seed/tungduong/600/800", performanceTime: "21:00 - 21:45" },
+  { id: 3, name: "Hoàng Thùy Linh", genre: "Folktronica", image: "https://picsum.photos/seed/hoangthuylinh/600/800", performanceTime: "20:15 - 21:00" },
+  { id: 4, name: "Double2T", genre: "Rap / Hip Hop", image: "https://picsum.photos/seed/double2t/600/800", performanceTime: "23:15 - 00:00" },
+];
+
+const defaultProducts = [
+  { id: 1, name: "Heritage Neon Hoodie", description: "Áo hoodie phiên bản giới hạn với họa tiết Đàn Tính phản quang.", image: "https://picsum.photos/seed/hoodie/600/600", category: "Apparel", price: 750000 },
+  { id: 2, name: "Cyber Lotus Tote Bag", description: "Túi tote canvas cao cấp kết hợp họa tiết hoa sen Cyberpunk.", image: "https://picsum.photos/seed/tote/600/600", category: "Accessories", price: 250000 },
+  { id: 3, name: "Neon Heritage Lightstick", description: "Gậy cổ vũ đổi màu theo nhịp điệu âm nhạc tại concert.", image: "https://picsum.photos/seed/lightstick/600/600", category: "Accessories", price: 150000 },
+  { id: 4, name: "Traditional Art Poster", description: "Poster nghệ thuật in lụa với chữ ký của dàn nghệ sĩ.", image: "https://picsum.photos/seed/poster/600/600", category: "Art", price: 100000 },
+];
+
+const defaultFaqs = [
+  { id: 1, question: "Sự kiện diễn ra ở đâu và khi nào?", answer: "Sự kiện diễn ra tại Thung Nham, Ninh Bình vào đêm 31/12/2024, từ 20:00 đến 00:30 sáng hôm sau." },
+  { id: 2, question: "Làm thế nào để nhận vé sau khi thanh toán?", answer: "Sau khi thanh toán thành công, vé điện tử (E-ticket) sẽ được gửi trực tiếp đến email của bạn." },
+  { id: 3, question: "Vé VIP có những quyền lợi gì đặc biệt?", answer: "Vé VIP bao gồm vị trí sát sân khấu, lối đi riêng, set quà tặng độc quyền và quyền truy cập khu vực F&B cao cấp." },
+  { id: 4, question: "Tôi có thể hoàn vé hoặc đổi vé không?", answer: "Theo quy định, vé đã mua không được hoàn trả. Tuy nhiên, bạn có thể chuyển nhượng vé cho người khác thông qua mã QR." },
+  { id: 5, question: "Trẻ em có được tham gia sự kiện không?", answer: "Sự kiện dành cho khán giả từ 12 tuổi trở lên. Trẻ em dưới 12 tuổi cần có người giám hộ đi cùng." },
+];
+
+export default function HomePage() {
+  const [bookingState, setBookingState] = React.useState<{ isOpen: boolean; type: 'GA' | 'VIP' | null }>({ isOpen: false, type: null });
+  const [isVideoModalOpen, setIsVideoModalOpen] = React.useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
+  const [selectedArtist, setSelectedArtist] = React.useState<any>(null);
+
+  const [artists, setArtists] = React.useState<any[]>(defaultArtists);
+  const [products, setProducts] = React.useState<any[]>(defaultProducts);
+  const [faqs, setFaqs] = React.useState<any[]>(defaultFaqs);
+  const [posts, setPosts] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    // Fetch from API (with fallback to defaults)
+    fetch('/api/artists').then(r => r.ok ? r.json() : []).then(data => { if (data.length > 0) setArtists(data); }).catch(() => {});
+    fetch('/api/products').then(r => r.ok ? r.json() : []).then(data => { if (data.length > 0) setProducts(data); }).catch(() => {});
+    fetch('/api/faqs').then(r => r.ok ? r.json() : []).then(data => { if (data.length > 0) setFaqs(data); }).catch(() => {});
+    fetch('/api/posts').then(r => r.ok ? r.json() : []).then(data => { 
+      if (Array.isArray(data)) {
+        const published = data.filter((p: any) => p.published).slice(0, 3);
+        setPosts(published);
+      }
+    }).catch(() => {});
+  }, []);
+
+  const openBooking = (type: 'GA' | 'VIP') => setBookingState({ isOpen: true, type });
+  const closeBooking = () => setBookingState({ ...bookingState, isOpen: false });
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen bg-midnight text-silver font-sans selection:bg-magenta selection:text-white">
+      <Preloader />
+      <ScrollProgress />
+      <BackToTop />
+      <FloatingDecorations />
+      <Navbar onOpenBooking={openBooking} onOpenStatus={() => setIsStatusModalOpen(true)} />
+
+      <main className="relative z-10">
+        <HeroSection onOpenBooking={openBooking} />
+        <ArtistSection artists={artists} onOpenArtist={(a) => setSelectedArtist(a)} />
+        <CinematicExperience onOpenVideo={() => setIsVideoModalOpen(true)} />
+        <HeritageArtSection />
+        <GallerySection />
+        <TimelineSection />
+        <SocialFeed />
+        <NewsSection posts={posts} />
+        <ProductSection products={products} onOpenProduct={(p) => setSelectedProduct(p)} />
+        <TicketSection onOpenBooking={openBooking} />
+        <FAQSection faqs={faqs} />
+        <TravelStaySection />
+        <MapSection />
+        <ContactSection />
+        <NewsletterSection />
+        <PartnersSection />
       </main>
+
+      <Footer />
+
+      <AnimatePresence>
+        <BookingModal key="booking-modal" isOpen={bookingState.isOpen} onClose={closeBooking} selectedType={bookingState.type} />
+        <BookingStatusModal key="status-modal" isOpen={isStatusModalOpen} onClose={() => setIsStatusModalOpen(false)} />
+        <VideoModal key="video-modal" isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
+        <ProductDetailModal key="product-modal" isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} product={selectedProduct} />
+        <ArtistDetailModal key="artist-modal" isOpen={!!selectedArtist} onClose={() => setSelectedArtist(null)} artist={selectedArtist} />
+      </AnimatePresence>
     </div>
   );
 }
