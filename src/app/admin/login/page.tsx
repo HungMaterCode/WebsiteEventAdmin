@@ -4,7 +4,9 @@ import { signIn } from '@/lib/auth';
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const resolvedSearchParams = await searchParams;
   // next-auth adds error=CredentialsSignin in the URL when login fails
-  const isError = resolvedSearchParams?.error === 'CredentialsSignin';
+  const error = resolvedSearchParams?.error;
+  const isError = error === 'CredentialsSignin';
+  const isUnauthorized = error === 'unauthorized';
 
   return (
     <div className="min-h-screen w-full bg-midnight text-silver font-sans flex items-center justify-center p-4">
@@ -19,6 +21,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           {isError && (
             <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
               Thông tin đăng nhập không chính xác!
+            </div>
+          )}
+
+          {isUnauthorized && (
+            <div className="mb-6 p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-sm font-medium">
+              Bạn không có quyền truy cập khu vực Admin!
             </div>
           )}
           

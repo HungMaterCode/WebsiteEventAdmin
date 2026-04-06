@@ -3,6 +3,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import NextImage from 'next/image';
 import { 
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
   CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, Star, 
@@ -32,12 +33,13 @@ const MENU_ITEMS = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
 
-  // Mock roles for now until auth is fully implemented on client side
-  const roles = ['ADMIN']; 
-  const allowedMenuItems = MENU_ITEMS.filter(m => roles.some(r => m.role.includes(r as any)));
+  // Use real session roles
+  const userRole = (session?.user as any)?.role || 'USER'; 
+  const allowedMenuItems = MENU_ITEMS.filter(m => m.role.includes(userRole));
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' });
@@ -134,13 +136,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="flex items-center gap-3 hover:bg-[#4F1F76]/20 py-2 px-3 rounded-xl transition-colors"
               >
                 <div className="w-10 h-10 rounded-full border-2 border-[#E6C753] p-0.5 glow-gold shadow-[0_0_10px_rgba(230,199,83,0.3)] shrink-0">
-                  <div className="w-full h-full rounded-full bg-[#4F1F76]/50 flex items-center justify-center">
-                    <span className="text-[#FFFFFF] font-bold text-sm">TVH</span>
-                  </div>
+                  {session?.user?.image ? (
+                    <NextImage 
+                      src={session.user.image} 
+                      alt="Profile" 
+                      width={40} 
+                      height={40} 
+                      className="w-full h-full rounded-full object-cover" 
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-[#4F1F76]/50 flex items-center justify-center">
+                      <span className="text-[#FFFFFF] font-bold text-sm">
+                        {session?.user?.name?.charAt(0) || session?.user?.email?.charAt(0) || 'A'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="hidden md:block text-left">
-                  <div className="text-sm font-bold text-[#FFFFFF]">Trần Vũ Hùng</div>
-                  <div className="text-[10px] uppercase tracking-widest text-[#8A8F98]">admin@eventadmin.vn</div>
+                  <div className="text-sm font-bold text-[#FFFFFF]">{session?.user?.name || 'Administrator'}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-[#8A8F98]">{session?.user?.email}</div>
                 </div>
                 <ChevronDown className={`w-4 h-4 text-[#8A8F98] transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
               </button>
