@@ -13,11 +13,16 @@ export default auth((req) => {
 
   if (isAdminRoute && !isLoginPage) {
     if (!req.auth) {
-      return NextResponse.redirect(new URL('/admin/login', req.url));
+      const url = req.nextUrl.clone();
+      url.pathname = '/admin/login';
+      return NextResponse.redirect(url);
     }
     const role = (req.auth.user as any)?.role;
     if (role === 'USER') {
-      return NextResponse.redirect(new URL('/admin/login?error=unauthorized', req.url));
+      const url = req.nextUrl.clone();
+      url.pathname = '/admin/login';
+      url.searchParams.set('error', 'unauthorized');
+      return NextResponse.redirect(url);
     }
   }
 
