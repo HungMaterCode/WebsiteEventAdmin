@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 
 function generateBookingCode() {
   const prefix = 'NH';
@@ -10,9 +11,26 @@ function generateBookingCode() {
 
 export async function GET() {
   try {
-    const bookings = await prisma.booking.findMany({ orderBy: { createdAt: 'desc' }, take: 100 });
+    const session = await auth();
+    const user = session?.user as { role?: string, email?: string } | undefined;
+    const userRole = user?.role;
+    const userEmail = user?.email;
+
+    if (!userEmail) {
+      return NextResponse.json([], { status: 200 });
+    }
+
+    // Admins see everything, users see only their own
+    const whereClause = userRole === 'ADMIN' ? {} : { email: userEmail };
+
+    const bookings = await prisma.booking.findMany({ 
+      where: whereClause,
+      orderBy: { createdAt: 'desc' }, 
+      take: 100 
+    });
     return NextResponse.json(bookings);
-  } catch {
+  } catch (error) {
+    console.error('Failed to fetch bookings:', error);
     return NextResponse.json([], { status: 200 });
   }
 }

@@ -17,7 +17,8 @@ export default auth((req) => {
       url.pathname = '/admin/login';
       return NextResponse.redirect(url);
     }
-    const role = (req.auth.user as any)?.role;
+    const user = req.auth.user as { role?: string } | undefined;
+    const role = user?.role;
     if (role === 'USER') {
       const url = req.nextUrl.clone();
       url.pathname = '/admin/login';
@@ -30,5 +31,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin', '/admin/:path*'],
 };

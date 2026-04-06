@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/Providers";
 
 const inter = Inter({
   subsets: ["latin", "vietnamese"],
@@ -50,8 +51,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={`${inter.variable} ${montserrat.variable}`}>
-      <body className="antialiased">{children}</body>
+    <html lang="vi" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
+      <body className="antialiased" suppressHydrationWarning>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
