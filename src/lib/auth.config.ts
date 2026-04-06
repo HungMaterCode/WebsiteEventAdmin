@@ -1,7 +1,13 @@
 import type { NextAuthConfig } from 'next-auth';
+import Google from 'next-auth/providers/google';
 
 export const authConfig = {
-  providers: [], // Cấu hình nhà cung cấp sẽ được đưa vào auth.ts
+  providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
+  ], // Cấu hình nhà cung cấp sẽ được đưa vào auth.ts
   pages: {
     signIn: '/admin/login',
   },
@@ -13,8 +19,9 @@ export const authConfig = {
       
       if (isAdminRoute && !isLoginPage) {
         if (!isLoggedIn) return false;
-        const role = (auth.user as any)?.role;
-        return role !== 'USER'; // Allow ADMIN, etc.
+        // Check for specific role, allowing only ADMIN, etc.
+        const user = auth.user as { role?: string } | undefined;
+        return user?.role !== 'USER';
       }
       return true;
     },

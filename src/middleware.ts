@@ -4,6 +4,13 @@ import { NextResponse } from 'next/server';
 
 const { auth } = NextAuth(authConfig);
 
+interface SessionUser {
+  id: string;
+  role?: string;
+  name?: string | null;
+  email?: string | null;
+}
+
 export default auth((req) => {
   const isAdminRoute = req.nextUrl.pathname.startsWith('/admin');
   const isLoginPage = req.nextUrl.pathname === '/admin/login';
@@ -17,8 +24,8 @@ export default auth((req) => {
       url.pathname = '/admin/login';
       return NextResponse.redirect(url);
     }
-    const role = (req.auth.user as any)?.role;
-    if (role === 'USER') {
+    const user = req.auth.user as SessionUser | undefined;
+    if (user?.role === 'USER') {
       const url = req.nextUrl.clone();
       url.pathname = '/admin/login';
       url.searchParams.set('error', 'unauthorized');
@@ -30,5 +37,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin', '/admin/:path*'],
 };

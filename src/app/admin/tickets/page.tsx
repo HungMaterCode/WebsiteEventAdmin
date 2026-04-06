@@ -3,22 +3,47 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Filter, Plus, Edit2, Trash2, 
+  Search, Plus, Edit2, 
   Ticket, CheckCircle2, XCircle, Clock, Save, X, QrCode
 } from 'lucide-react';
 
-const mockTickets = [
-  { id: 'TKT-827391', guestName: 'Nguyễn Văn A', email: 'nguyenvana@gmail.com', type: 'VIP', price: '3,500,000 VNĐ', status: 'Chưa sử dụng', purchasedAt: '2026-04-01', qrCode: 'VIP-A12' },
-  { id: 'TKT-827392', guestName: 'Trần Thị B', email: 'tranthib@gmail.com', type: 'STANDARD', price: '1,500,000 VNĐ', status: 'Đã check-in', purchasedAt: '2026-04-02', qrCode: 'STD-B05' },
-  { id: 'TKT-827393', guestName: 'Lê Văn C', email: 'levanc@gmail.com', type: 'EARLY BIRD', price: '1,200,000 VNĐ', status: 'Chưa sử dụng', purchasedAt: '2026-03-25', qrCode: 'EB-C88' },
-  { id: 'TKT-827394', guestName: 'Hoàng Minh D', email: 'hoangminhd@gmail.com', type: 'VIP', price: '3,500,000 VNĐ', status: 'Đã hủy', purchasedAt: '2026-04-03', qrCode: 'VIP-D42' },
-  { id: 'TKT-827395', guestName: 'Phạm Thị E', email: 'phamthie@gmail.com', type: 'STANDARD', price: '1,500,000 VNĐ', status: 'Đã check-in', purchasedAt: '2026-04-04', qrCode: 'STD-E19' },
-];
+interface Booking {
+  id: string;
+  bookingCode: string;
+  name: string;
+  email: string;
+  ticketType: string;
+  totalPrice: number;
+  status: string;
+  ticketStatus: string;
+  createdAt: string;
+}
 
 export default function AdminTicketsPage() {
+  const [tickets, setTickets] = React.useState<Booking[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
+
+  const fetchTickets = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/bookings');
+      if (res.ok) {
+        const data = await res.json();
+        setTickets(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch tickets:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
 
   const handleOpenModal = (isEdit = false) => {
     setEditMode(isEdit);
@@ -27,9 +52,10 @@ export default function AdminTicketsPage() {
 
   const getStatusStyle = (status: string) => {
     switch(status) {
-      case 'Chưa sử dụng': return 'bg-[#00FFFF]/10 text-[#00FFFF] border-[#00FFFF]/30';
-      case 'Đã check-in': return 'bg-[#00C099]/10 text-[#00C099] border-[#00C099]/30';
-      case 'Đã hủy': return 'bg-red-500/10 text-red-500 border-red-500/30';
+      case 'PAID':
+      case 'CONFIRMED': return 'bg-[#00C099]/10 text-[#00C099] border-[#00C099]/30';
+      case 'PENDING': return 'bg-[#E6C753]/10 text-[#E6C753] border-[#E6C753]/30';
+      case 'CANCELLED': return 'bg-red-500/10 text-red-500 border-red-500/30';
       default: return 'bg-[#8A8F98]/10 text-[#8A8F98] border-[#8A8F98]/30';
     }
   };
@@ -38,12 +64,20 @@ export default function AdminTicketsPage() {
     switch(type) {
       case 'VIP': return 'text-[#FF0088] font-black glow-magenta';
       case 'EARLY BIRD': return 'text-[#E6C753] font-bold glow-gold';
-      default: return 'text-[#FFFFFF] font-bold';
+      case 'GA': return 'text-[#FFFFFF] font-bold';
+      default: return 'text-[#FFFFFF]';
     }
   };
 
+  // Filter tickets based on search query
+  const filteredTickets = tickets.filter(t => 
+    t.bookingCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="space-y-8 animate-in fade-in zoom-in duration-500">
+    <div className="space-y-8 animate-in fade-in zoom-in duration-500 pb-20">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Quản Lý Vé Sự Kiện</h2>
@@ -63,82 +97,83 @@ export default function AdminTicketsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A8F98]" />
             <input 
               type="text" 
-              placeholder="Tìm kiếm theo mã vé, tên khách hàng hoặc email..." 
+              placeholder="Tìm kiếm mã vé, tên, email..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all"
             />
           </div>
-          <div className="flex gap-2 w-full md:w-auto">
-            <button className="flex-1 md:flex-none items-center justify-center gap-2 px-4 py-3 rounded-xl border border-[#4F1F76]/50 text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20 transition-all">
-              <Filter className="w-5 h-5" /> <span className="hidden sm:inline">Lọc Hạng Vé</span>
-            </button>
-            <button className="flex-1 md:flex-none items-center justify-center gap-2 px-4 py-3 rounded-xl border border-[#4F1F76]/50 text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20 transition-all">
-              <Filter className="w-5 h-5" /> <span className="hidden sm:inline">Trạng Thái</span>
-            </button>
-          </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#4F1F76]/10 text-[#8A8F98] text-xs uppercase tracking-wider">
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 whitespace-nowrap">Mã Định Danh</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 min-w-[200px]">Khách Hàng</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30">Loại Vé</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-center">Trạng Thái</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 hidden sm:table-cell">Ngày Mua</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-right">Thao Tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockTickets.map((ticket, i) => (
-                <motion.tr 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  key={ticket.id} 
-                  className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors group"
-                >
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <QrCode className="w-4 h-4 text-[#4F1F76] group-hover:text-[#00FFFF] transition-colors" />
-                      <span className="font-mono text-sm font-bold text-[#FFFFFF]">{ticket.id}</span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="font-bold text-[#FFFFFF]">{ticket.guestName}</div>
-                    <div className="text-xs text-[#8A8F98] mt-1">{ticket.email}</div>
-                  </td>
-                  <td className="p-4">
-                    <div className={`text-sm ${getTypeStyle(ticket.type)}`}>{ticket.type}</div>
-                    <div className="text-xs text-[#8A8F98] mt-1">{ticket.price}</div>
-                  </td>
-                  <td className="p-4 text-center">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusStyle(ticket.status)}`}>
-                      {ticket.status === 'Đã check-in' && <CheckCircle2 className="w-3 h-3 mr-1" />}
-                      {ticket.status === 'Chưa sử dụng' && <Clock className="w-3 h-3 mr-1" />}
-                      {ticket.status === 'Đã hủy' && <XCircle className="w-3 h-3 mr-1" />}
-                      {ticket.status}
-                    </span>
-                  </td>
-                  <td className="p-4 hidden sm:table-cell text-sm text-[#8A8F98]">
-                    {ticket.purchasedAt}
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleOpenModal(true)} className="p-2 rounded-lg bg-[#4F1F76]/20 text-[#00FFFF] border border-[#00FFFF]/0 hover:border-[#00FFFF]/50 hover:bg-[#00FFFF]/10 transition-all" title="Chỉnh sửa">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 rounded-lg bg-[#4F1F76]/20 text-red-500 border border-red-500/0 hover:border-red-500/50 hover:bg-red-500/10 transition-all" title="Hủy vé">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="overflow-x-auto min-h-[300px]">
+          {loading ? (
+            <div className="flex items-center justify-center p-20">
+              <div className="w-10 h-10 border-4 border-cyan/20 border-t-cyan rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#4F1F76]/10 text-[#8A8F98] text-xs uppercase tracking-wider">
+                  <th className="p-4 font-bold border-b border-[#4F1F76]/30 whitespace-nowrap">Mã Định Danh</th>
+                  <th className="p-4 font-bold border-b border-[#4F1F76]/30 min-w-[200px]">Khách Hàng</th>
+                  <th className="p-4 font-bold border-b border-[#4F1F76]/30">Loại Vé</th>
+                  <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-center">Trạng Thái</th>
+                  <th className="p-4 font-bold border-b border-[#4F1F76]/30 hidden sm:table-cell">Ngày Mua</th>
+                  <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-right">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTickets.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-20 text-center text-gray-500 font-bold uppercase tracking-widest text-sm">Không tìm thấy dữ liệu vé</td>
+                  </tr>
+                ) : (
+                  filteredTickets.map((ticket, i) => (
+                    <motion.tr 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      key={ticket.id} 
+                      className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors group"
+                    >
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <QrCode className="w-4 h-4 text-[#4F1F76] group-hover:text-[#00FFFF] transition-colors" />
+                          <span className="font-mono text-sm font-bold text-[#FFFFFF]">{ticket.bookingCode}</span>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="font-bold text-[#FFFFFF] group-hover:text-[#00FFFF] transition-colors uppercase">{ticket.name}</div>
+                        <div className="text-xs text-[#8A8F98] mt-1">{ticket.email}</div>
+                      </td>
+                      <td className="p-4">
+                        <div className={`text-sm ${getTypeStyle(ticket.ticketType)}`}>{ticket.ticketType}</div>
+                        <div className="text-xs text-[#8A8F98] mt-1">{ticket.totalPrice.toLocaleString()} VNĐ</div>
+                      </td>
+                      <td className="p-4 text-center">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusStyle(ticket.status)}`}>
+                          {(ticket.status === 'PAID' || ticket.status === 'CONFIRMED') && <CheckCircle2 className="w-3 h-3 mr-1" />}
+                          {ticket.status === 'CANCELLED' && <XCircle className="w-3 h-3 mr-1" />}
+                          {ticket.status === 'PENDING' && <Clock className="w-3 h-3 mr-1" />}
+                          {ticket.status}
+                        </span>
+                      </td>
+                      <td className="p-4 hidden sm:table-cell text-sm text-[#8A8F98]">
+                        {new Date(ticket.createdAt).toLocaleDateString('vi-VN')}
+                      </td>
+                      <td className="p-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => handleOpenModal(true)} className="p-2 rounded-lg bg-[#4F1F76]/20 text-[#00FFFF] border border-[#00FFFF]/0 hover:border-[#00FFFF]/50 hover:bg-[#00FFFF]/10 transition-all" title="Chỉnh sửa">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
