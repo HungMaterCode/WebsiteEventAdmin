@@ -32,17 +32,10 @@ const defaultArtists = [
   { id: 4, name: "Double2T", genre: "Rap / Hip Hop", image: "https://picsum.photos/seed/double2t/600/800", performanceTime: "23:15 - 00:00" },
 ];
 
-const defaultProducts = [
-  { id: 1, name: "Heritage Neon Hoodie", description: "Áo hoodie phiên bản giới hạn với họa tiết Đàn Tính phản quang.", image: "https://picsum.photos/seed/hoodie/600/600", category: "Apparel", price: 750000 },
-  { id: 2, name: "Cyber Lotus Tote Bag", description: "Túi tote canvas cao cấp kết hợp họa tiết hoa sen Cyberpunk.", image: "https://picsum.photos/seed/tote/600/600", category: "Accessories", price: 250000 },
-  { id: 3, name: "Neon Heritage Lightstick", description: "Gậy cổ vũ đổi màu theo nhịp điệu âm nhạc tại concert.", image: "https://picsum.photos/seed/lightstick/600/600", category: "Accessories", price: 150000 },
-  { id: 4, name: "Traditional Art Poster", description: "Poster nghệ thuật in lụa với chữ ký của dàn nghệ sĩ.", image: "https://picsum.photos/seed/poster/600/600", category: "Art", price: 100000 },
-];
-
 const defaultFaqs = [
   { id: 1, question: "Sự kiện diễn ra ở đâu và khi nào?", answer: "Sự kiện diễn ra tại Thung Nham, Ninh Bình vào đêm 31/12/2024, từ 20:00 đến 00:30 sáng hôm sau." },
   { id: 2, question: "Làm thế nào để nhận vé sau khi thanh toán?", answer: "Sau khi thanh toán thành công, vé điện tử (E-ticket) sẽ được gửi trực tiếp đến email của bạn." },
-  { id: 3, question: "Vé VIP có những quyền lợi gì đặc biệt?", answer: "Vé VIP bao gồm vị trí sát sân khấu, lối đi riêng, set quà tặng độc quyền và quyền truy cập khu vực F&B cao cấp." },
+  { id: 3, question: "Vé VIP có những quyền lợi gì đặc biệt?", answer: "Vé VIP bao gồm vị trí sát sân khấu, lối đi riêng, set sản phẩm độc quyền và quyền truy cập khu vực F&B cao cấp." },
   { id: 4, question: "Tôi có thể hoàn vé hoặc đổi vé không?", answer: "Theo quy định, vé đã mua không được hoàn trả. Tuy nhiên, bạn có thể chuyển nhượng vé cho người khác thông qua mã QR." },
   { id: 5, question: "Trẻ em có được tham gia sự kiện không?", answer: "Sự kiện dành cho khán giả từ 12 tuổi trở lên. Trẻ em dưới 12 tuổi cần có người giám hộ đi cùng." },
 ];
@@ -55,7 +48,7 @@ export default function HomePage() {
   const [selectedArtist, setSelectedArtist] = React.useState<any>(null);
 
   const [artists, setArtists] = React.useState<any[]>(defaultArtists);
-  const [products, setProducts] = React.useState<any[]>(defaultProducts);
+  const [products, setProducts] = React.useState<any[]>([]);
   const [faqs, setFaqs] = React.useState<any[]>(defaultFaqs);
   const [posts, setPosts] = React.useState<any[]>([]);
 

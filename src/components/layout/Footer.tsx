@@ -30,7 +30,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li><a href="#lineup" className="text-gray-400 hover:text-cyan transition-colors">Dàn Nghệ Sĩ</a></li>
               <li><a href="#timeline" className="text-gray-400 hover:text-cyan transition-colors">Lộ Trình</a></li>
-              <li><a href="#merch" className="text-gray-400 hover:text-cyan transition-colors">Quà Tặng</a></li>
+              <li><a href="#merch" className="text-gray-400 hover:text-cyan transition-colors">Sản Phẩm</a></li>
               <li><a href="#faq" className="text-gray-400 hover:text-cyan transition-colors">Câu Hỏi</a></li>
               <li><a href="#contact" className="text-gray-400 hover:text-cyan transition-colors">Liên Hệ</a></li>
               <li><Link href="/blog" className="text-gray-400 hover:text-cyan transition-colors">Tin Tức</Link></li>

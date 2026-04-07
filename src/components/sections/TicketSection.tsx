@@ -31,7 +31,7 @@ export default function TicketSection({ onOpenBooking }: { onOpenBooking: (type:
             <p className="text-gray-400 mb-6">Trải nghiệm không gian âm nhạc tuyệt vời</p>
             <div className="text-4xl font-bold text-silver mb-8">500.000<span className="text-xl text-gray-500 font-normal"> VNĐ</span></div>
             <ul className="space-y-4 mb-10">
-              {['Khu vực đứng chung (GA)', 'Thưởng thức trọn vẹn các màn trình diễn', 'Truy cập khu vực F&B cơ bản', 'Quà tặng vòng tay dạ quang'].map((feature, i) => (
+              {['Khu vực đứng chung (GA)', 'Thưởng thức trọn vẹn các màn trình diễn', 'Truy cập khu vực F&B cơ bản', 'Sản phẩm vòng tay dạ quang'].map((feature, i) => (
                 <li key={i} className="flex items-start gap-3 text-gray-300"><CheckCircle2 className="w-5 h-5 text-cyan shrink-0 mt-0.5" /><span>{feature}</span></li>
               ))}
             </ul>
@@ -51,7 +51,7 @@ export default function TicketSection({ onOpenBooking }: { onOpenBooking: (type:
             <p className="text-gray-300 mb-6">Khu vực gần sân khấu nhất</p>
             <div className="text-4xl font-bold text-silver mb-8">1.500.000<span className="text-xl text-gray-500 font-normal"> VNĐ</span></div>
             <ul className="space-y-4 mb-10">
-              {['Khu vực Fanzone sát sân khấu', 'Lối đi riêng biệt (Fast-track)', 'Set quà tặng Heritage độc quyền', 'Truy cập khu vực F&B cao cấp', 'Giao lưu nghệ sĩ (Tùy chọn)'].map((feature, i) => (
+              {['Khu vực Fanzone sát sân khấu', 'Lối đi riêng biệt (Fast-track)', 'Set sản phẩm Heritage độc quyền', 'Truy cập khu vực F&B cao cấp', 'Giao lưu nghệ sĩ (Tùy chọn)'].map((feature, i) => (
                 <li key={i} className="flex items-start gap-3 text-gray-200"><Star className="w-5 h-5 text-gold shrink-0 mt-0.5" /><span>{feature}</span></li>
               ))}
             </ul>
