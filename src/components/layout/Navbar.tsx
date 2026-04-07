@@ -20,7 +20,7 @@ export default function Navbar({ onOpenBooking, onOpenStatus }: { onOpenBooking?
   const navLinks = [
     { name: "Nghệ Sĩ", href: "#lineup" },
     { name: "Lộ Trình", href: "#timeline" },
-    { name: "Quà Tặng", href: "#merch" },
+    { name: "Sản Phẩm", href: "#merch" },
     { name: "Địa Điểm", href: "#location" },
   ];
 

@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import { X, Clock, Music, Camera, Tv } from 'lucide-react';
+import { X, Clock, Music, Camera, Tv, ShoppingCart, Tag } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils/currency';
 
 export function VideoModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   if (!isOpen) return null;
@@ -68,13 +69,32 @@ export function ProductDetailModal({ isOpen, onClose, product }: { isOpen: boole
           <img src={product.image} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           <div className="absolute top-4 left-4 md:top-6 md:left-6"><span className="px-4 py-1.5 bg-magenta text-white text-[10px] font-bold uppercase tracking-widest rounded-full glow-magenta">{product.category || product.tag}</span></div>
         </div>
-        <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col justify-center">
+        <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col justify-center relative">
           <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition-all z-20"><X className="w-6 h-6" /></button>
-          <h3 className="text-2xl md:text-3xl font-display font-black text-silver uppercase tracking-wider mb-4">{product.name}</h3>
-          <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-6">{product.description || product.desc} Sản phẩm độc quyền cho Neon Heritage Festival 2024.</p>
-          <button className="py-4 bg-gradient-primary rounded-xl font-bold uppercase tracking-widest text-white glow-magenta hover:scale-[1.02] transition-all flex items-center justify-center gap-3 text-xs md:text-sm">Đặt mua ngay</button>
+          
+          <div className="flex items-center gap-2 text-cyan mb-2">
+            <Tag className="w-4 h-4" />
+            <span className="text-xs font-bold uppercase tracking-widest">Sản phẩm chính hãng</span>
+          </div>
+          
+          <h3 className="text-3xl md:text-4xl font-display font-black text-silver uppercase tracking-wider mb-2">{product.name}</h3>
+          
+          <div className="text-2xl font-display font-black text-white glow-cyan mb-6">
+            {formatCurrency(product.price)}
+          </div>
+
+          <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-8">
+            {product.description || product.desc} Sản phẩm độc quyền cho Neon Heritage Festival 2024. 
+            Được thiết kế với chất liệu cao cấp và cảm hứng từ nghệ thuật di sản kết hợp phong cách Cyberpunk.
+          </p>
+
+          <div className="p-6 rounded-2xl bg-royal/10 border border-royal/30 text-center">
+            <p className="text-silver font-bold uppercase tracking-widest text-sm">Sản phẩm trưng bày</p>
+            <p className="text-gray-500 text-xs mt-1">Liên hệ quầy merchandise tại sự kiện để sở hữu vật phẩm này.</p>
+          </div>
         </div>
       </motion.div>
     </div>
   );
 }
+
