@@ -180,6 +180,19 @@ model Post {
   updatedAt   DateTime  @updatedAt
 }
 
+model LandingPageSettings {
+  id            Int      @id @default(1)
+  title         String   @default("Dòng Chảy Di Sản Bế Mạc Festival Ninh Bình")
+  subtitle      String?  @default("Neon Heritage Festival")
+  eventDate     DateTime @default(dbgenerated("'2024-12-31 20:00:00'::timestamp without time zone"))
+  location      String?  @default("Thung Nham, Ninh Bình")
+  timeRange     String?  @default("20:00 - 00:30")
+  updatedAt     DateTime
+  videoSubtitle String?  @default("CHẠM ĐỂ TRẢI NGHIỆM KHÔNG GIAN 3D MAPPING")
+  videoTitle    String?  @default("THE CINEMATIC TEASER")
+  videoUrl      String?  @default("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+}
+
 enum Role {
   USER
   ADMIN
