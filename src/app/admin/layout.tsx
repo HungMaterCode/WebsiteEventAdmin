@@ -23,7 +23,7 @@ const MENU_ITEMS = [
   { id: 'loto', label: 'Trò chơi (Loto)', icon: <Gamepad2 />, role: ['ADMIN', 'CHECKIN'], path: '/admin/loto' },
   { id: 'marketing', label: 'Marketing & Khuyến mãi', icon: <Megaphone />, role: ['ADMIN'], path: '/admin/marketing' },
   { id: 'reviews', label: 'Quản lý Đánh giá', icon: <Star />, role: ['ADMIN', 'ANALYST'], path: '/admin/reviews' },
-  { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/news' },
+  { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/blog' },
   { id: 'roles', label: 'Vai trò & Quyền hạn', icon: <Lock />, role: ['ADMIN'], path: '/admin/roles' },
   { id: 'analytics', label: 'Phân tích & Báo cáo', icon: <BarChart3 />, role: ['ADMIN', 'ANALYST'], path: '/admin/analytics' },
   { id: 'settings', label: 'Cài đặt (Nhật ký)', icon: <Settings />, role: ['ADMIN'], path: '/admin/settings' },

@@ -4,9 +4,11 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Plus, Edit2, Trash2, Search, Filter, 
-  CheckCircle2, XCircle, Clock, Save, Image as ImageIcon,
-  Tag, X, Newspaper, Eye
+  CheckCircle2, Clock, Save,
+  Tag, X, Newspaper, Eye, AlertTriangle
 } from 'lucide-react';
+import Toast from '@/components/ui/Toast';
+import SEOEditor from '@/components/ui/SEOEditor';
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = React.useState<any[]>([]);
@@ -20,7 +22,21 @@ export default function AdminBlogPage() {
     tags: '', seoTitle: '', seoDesc: '', seoKeywords: '', published: false
   });
 
-  const fetchPosts = async () => {
+  // Toast State
+  const [toast, setToast] = React.useState({
+    isVisible: false,
+    message: '',
+    type: 'success' as 'success' | 'error' | 'warning' | 'info'
+  });
+
+  // Delete Confirmation State
+  const [deleteConfirm, setDeleteConfirm] = React.useState({
+    isOpen: false,
+    postId: '',
+    postTitle: ''
+  });
+
+  const fetchPosts = React.useCallback(async () => {
     try {
       const res = await fetch('/api/posts');
       if (res.ok) {
@@ -29,9 +45,14 @@ export default function AdminBlogPage() {
       }
     } catch (e) {
       console.error(e);
+      showToast('Không thể tải danh sách bài viết', 'error');
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
+    setToast({ isVisible: true, message, type });
   };
 
   React.useEffect(() => {
@@ -83,20 +104,40 @@ export default function AdminBlogPage() {
       
       if (res.ok) {
         setIsModalOpen(false);
+        showToast(editMode ? 'Cập nhật bài viết thành công' : 'Đã tạo bài viết mới', 'success');
         fetchPosts();
+      } else {
+        showToast('Có lỗi xảy ra khi lưu bài viết', 'error');
       }
     } catch (error) {
       console.error('Save failed:', error);
+      showToast('Lỗi kết nối máy chủ', 'error');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa bài viết này không?')) return;
+  const requestDelete = (post: any) => {
+    setDeleteConfirm({
+      isOpen: true,
+      postId: post.id,
+      postTitle: post.title
+    });
+  };
+
+  const confirmDelete = async () => {
+    const { postId } = deleteConfirm;
+    setDeleteConfirm({ ...deleteConfirm, isOpen: false });
+    
     try {
-      await fetch(`/api/posts/${id}`, { method: 'DELETE' });
-      fetchPosts();
+      const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast('Đã xóa bài viết thành công', 'success');
+        fetchPosts();
+      } else {
+        showToast('Không thể xóa bài viết', 'error');
+      }
     } catch (e) {
       console.error(e);
+      showToast('Lỗi kết nối khi xóa', 'error');
     }
   };
 
@@ -179,7 +220,7 @@ export default function AdminBlogPage() {
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button onClick={() => handleOpenModal(post)} className="p-2 rounded-lg bg-[#00FFFF]/10 text-[#00FFFF] border border-[#00FFFF]/20 hover:bg-[#00FFFF] hover:text-[#060010] transition-colors"><Edit2 className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(post.id)} className="p-2 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-colors"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => requestDelete(post)} className="p-2 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-colors"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>
@@ -218,8 +259,12 @@ export default function AdminBlogPage() {
                       <input type="text" value={formData.coverImage} onChange={e => setFormData({...formData, coverImage: e.target.value})} placeholder="https://..." className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF]" />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block mb-2">Nội dung chi tiết (HTML/MD hỗ trợ bởi DB) *</label>
-                      <textarea required rows={8} value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] font-mono text-sm" />
+                      <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block mb-2">Nội dung chi tiết (Trình soạn thảo chuẩn SEO) *</label>
+                      <SEOEditor 
+                        content={formData.content} 
+                        onChange={(html) => setFormData({ ...formData, content: html })} 
+                        placeholder="Hãy kể câu chuyện về sự kiện của bạn tại đây..."
+                      />
                     </div>
                     <div>
                       <label className="flex items-center gap-3 cursor-pointer p-4 border border-[#4F1F76]/50 rounded-xl bg-[#060010]">
@@ -278,6 +323,47 @@ export default function AdminBlogPage() {
           </div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {deleteConfirm.isOpen && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-[#060010]/95 backdrop-blur-md" />
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full max-w-sm bg-[#0D0716] border border-red-500/30 rounded-[2rem] shadow-2xl p-8 text-center overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-transparent"></div>
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                  <AlertTriangle className="w-8 h-8" />
+                </div>
+              </div>
+              <h3 className="text-xl font-display font-black text-white uppercase mb-4 tracking-wider">Xác Nhận Xóa</h3>
+              <p className="text-[#8A8F98] text-sm mb-8 leading-relaxed">
+                Bạn có chắc chắn muốn xóa bài viết <span className="text-white font-bold italic">&quot;{deleteConfirm.postTitle}&quot;</span>? Thao tác này không thể hoàn tác.
+              </p>
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={confirmDelete}
+                  className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-red-500/20"
+                >
+                  Xác nhận xóa ngay
+                </button>
+                <button 
+                  onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
+                  className="w-full py-3 bg-transparent border border-[#4F1F76] text-[#8A8F98] hover:text-white hover:bg-[#4F1F76]/20 font-bold rounded-xl transition-all"
+                >
+                  Hủy thao tác
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <Toast 
+        isVisible={toast.isVisible} 
+        message={toast.message} 
+        type={toast.type} 
+        onClose={() => setToast({ ...toast, isVisible: false })} 
+      />
     </div>
   );
 }
