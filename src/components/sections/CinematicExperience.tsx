@@ -2,7 +2,10 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
-export default function CinematicExperience({ onOpenVideo }: { onOpenVideo: () => void }) {
+export default function CinematicExperience({ onOpenVideo, settings }: { onOpenVideo: () => void, settings?: any }) {
+  const title = settings?.videoTitle || "The Cinematic Teaser";
+  const subtitle = settings?.videoSubtitle || "Chạm để trải nghiệm không gian 3D Mapping";
+
   return (
     <section className="py-24 relative bg-midnight overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
@@ -16,8 +19,8 @@ export default function CinematicExperience({ onOpenVideo }: { onOpenVideo: () =
             </motion.div>
           </div>
           <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 text-left">
-            <h3 className="text-2xl md:text-4xl font-display font-black uppercase tracking-widest text-silver mb-2 text-glow-cyan">The Cinematic Teaser</h3>
-            <p className="text-cyan font-bold tracking-widest uppercase text-sm md:text-base">Chạm để trải nghiệm không gian 3D Mapping</p>
+            <h3 className="text-2xl md:text-4xl font-display font-black uppercase tracking-widest text-silver mb-2 text-glow-cyan italic leading-none">{title}</h3>
+            <p className="text-cyan font-bold tracking-widest uppercase text-sm md:text-base">{subtitle}</p>
           </div>
         </motion.div>
       </div>

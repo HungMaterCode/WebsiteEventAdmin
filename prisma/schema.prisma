@@ -180,7 +180,73 @@ model Post {
   updatedAt   DateTime  @updatedAt
 }
 
+model LandingPageSettings {
+  id            Int      @id @default(1)
+  title         String   @default("Dòng Chảy Di Sản Bế Mạc Festival Ninh Bình")
+  subtitle      String?  @default("Neon Heritage Festival")
+  eventDate     DateTime @default("2024-12-31T20:00:00Z")
+  location      String?  @default("Thung Nham, Ninh Bình")
+  timeRange     String?  @default("20:00 - 00:30")
+  videoUrl      String?  @default("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+  videoTitle    String?  @default("THE CINEMATIC TEASER")
+  videoSubtitle String?  @default("CHẠM ĐỂ TRẢI NGHIỆM KHÔNG GIAN 3D MAPPING")
+  artTitle      String?  @default("Nghệ Thuật")
+  artSubtitle   String?  @default("Di Sản Cyber")
+  artDescription String? @default("Tại Neon Heritage Festival, chúng tôi không chỉ trình diễn âm nhạc. Chúng tôi kể câu chuyện về sự giao thoa giữa quá khứ và tương lai.")
+  artImage      String?  @default("https://picsum.photos/seed/heritage-art/800/800")
+  artItems      Json?    @default("[{\"name\": \"Đàn Tính\", \"desc\": \"Nhạc cụ linh hồn của người Tày, Nùng, Thái. Tiếng đàn thanh cao hòa quyện cùng âm hưởng điện tử hiện đại.\", \"icon\": \"Music\"}, {\"name\": \"Trống Hội\", \"desc\": \"Âm vang hào hùng từ những chiếc trống truyền thống, tạo nên nhịp đập mạnh mẽ cho dòng chảy di sản.\", \"icon\": \"Sparkles\"}, {\"name\": \"Khèn Mông\", \"desc\": \"Giai điệu phóng khoáng của núi rừng Tây Bắc được tái hiện qua lăng kính âm nhạc đương đại.\", \"icon\": \"Music\"}]")
+  galleryTitle  String?  @default("Khoảnh Khắc")
+  gallerySubtitle String? @default("Di Sản")
+  timelineTitle  String?  @default("Lộ Trình")
+  timelineSubtitle String? @default("Sự Kiện")
+  communityHashtag  String? @default("#NeonHeritage2024")
+  communityFollowers String? @default("25K+")
+  communityMentions  String? @default("150K+")
+  travelTitle       String? @default("Di Chuyển & Lưu Trú")
+  travelSubtitle    String? @default("Hành Trình Di Sản")
+  travelDescription String? @default("Ninh Bình không chỉ là nơi diễn ra lễ hội, mà còn là một hành trình khám phá di sản.")
+  travelImage       String? @default("https://picsum.photos/seed/ninhbinh-travel/800/1000")
+  travelAdvice      String? @default("Bạn nên đến Ninh Bình từ sớm để tham quan các danh thắng trước khi hòa mình vào không gian âm nhạc.")
+  travelItems       Json?   @default("[{\"title\": \"Đường Bộ\", \"desc\": \"Chỉ mất 1.5 - 2 giờ di chuyển từ Hà Nội qua cao tốc Pháp Vân - Cầu Giẽ.\", \"icon\": \"Car\", \"color\": \"text-cyan\", \"bg\": \"bg-cyan/10\"}, {\"title\": \"Đường Hàng Không\", \"desc\": \"Bay đến sân bay Nội Bài, sau đó sử dụng dịch vụ xe Limousine đưa đón.\", \"icon\": \"Plane\", \"color\": \"text-magenta\", \"bg\": \"bg-magenta/10\"}, {\"title\": \"Lưu Trú\", \"desc\": \"Hệ thống Resort & Homestay cao cấp tại Thung Nham và khu vực lân cận.\", \"icon\": \"Hotel\", \"color\": \"text-gold\", \"bg\": \"bg-gold/10\"}]")
+  mapTitle          String? @default("Địa Điểm Tổ Chức")
+  mapSubtitle       String? @default("Trường Đại học Cần Thơ (CTU)")
+  mapAddress        String? @default("Khu II, đường 3/2, P. Xuân Khánh, Q. Ninh Kiều, TP. Cần Thơ")
+  mapDescription    String? @default("Hội trường lớn / Sân vận động Đại học Cần Thơ - Không gian năng động, hiện đại.")
+  mapGoogleUrl      String? @default("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.841518413207!2d105.76842607573646!3d10.02993307253303!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a0883d033783a5%3A0x62916b5104d49818!2sCan%20Tho%20University!5e0!3m2!1sen!2s!4v1712493000000!5m2!1sen!2s")
+  updatedAt     DateTime @updatedAt
+}
+
+model GalleryItem {
+  id        Int      @id @default(autoincrement())
+  url       String
+  title     String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TimelineItem {
+  id          Int      @id @default(autoincrement())
+  time        String
+  title       String
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CommunityPost {
+  id        Int      @id @default(autoincrement())
+  username  String
+  content   String
+  timestamp String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum Role {
+
   USER
   ADMIN
   SALES

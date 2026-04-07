@@ -58,6 +58,11 @@ export default function HomePage() {
   const [products, setProducts] = React.useState<any[]>(defaultProducts);
   const [faqs, setFaqs] = React.useState<any[]>(defaultFaqs);
   const [posts, setPosts] = React.useState<any[]>([]);
+  const [landingSettings, setLandingSettings] = React.useState<any>(null);
+  const [galleryItems, setGalleryItems] = React.useState<any[]>([]);
+  const [timelineItems, setTimelineItems] = React.useState<any[]>([]);
+  const [communityPosts, setCommunityPosts] = React.useState<any[]>([]);
+
 
   React.useEffect(() => {
     // Fetch from API (with fallback to defaults)
@@ -70,6 +75,11 @@ export default function HomePage() {
         setPosts(published);
       }
     }).catch(() => {});
+    fetch('/api/settings/landing-page').then(r => r.ok ? r.json() : null).then(setLandingSettings).catch(() => {});
+    fetch('/api/gallery').then(r => r.ok ? r.json() : []).then(setGalleryItems).catch(() => {});
+    fetch('/api/timeline').then(r => r.ok ? r.json() : []).then(setTimelineItems).catch(() => {});
+    fetch('/api/community').then(r => r.ok ? r.json() : []).then(setCommunityPosts).catch(() => {});
+
   }, []);
 
   const openBooking = (type: 'GA' | 'VIP') => setBookingState({ isOpen: true, type });
@@ -84,19 +94,20 @@ export default function HomePage() {
       <Navbar onOpenBooking={openBooking} onOpenStatus={() => setIsStatusModalOpen(true)} />
 
       <main className="relative z-10">
-        <HeroSection onOpenBooking={openBooking} />
+        <HeroSection onOpenBooking={openBooking} settings={landingSettings} />
         <ArtistSection artists={artists} onOpenArtist={(a) => setSelectedArtist(a)} />
-        <CinematicExperience onOpenVideo={() => setIsVideoModalOpen(true)} />
-        <HeritageArtSection />
-        <GallerySection />
-        <TimelineSection />
-        <SocialFeed />
+        <CinematicExperience onOpenVideo={() => setIsVideoModalOpen(true)} settings={landingSettings} />
+        <HeritageArtSection settings={landingSettings} />
+        <GallerySection items={galleryItems} settings={landingSettings} />
+        <TimelineSection items={timelineItems} settings={landingSettings} />
+        <SocialFeed items={communityPosts} settings={landingSettings} />
         <NewsSection posts={posts} />
+
         <ProductSection products={products} onOpenProduct={(p) => setSelectedProduct(p)} />
         <TicketSection onOpenBooking={openBooking} />
         <FAQSection faqs={faqs} />
-        <TravelStaySection />
-        <MapSection />
+        <TravelStaySection settings={landingSettings} />
+        <MapSection settings={landingSettings} />
         <ContactSection />
         <NewsletterSection />
         <PartnersSection />
@@ -107,7 +118,7 @@ export default function HomePage() {
       <AnimatePresence>
         <BookingModal key="booking-modal" isOpen={bookingState.isOpen} onClose={closeBooking} selectedType={bookingState.type} />
         <BookingStatusModal key="status-modal" isOpen={isStatusModalOpen} onClose={() => setIsStatusModalOpen(false)} />
-        <VideoModal key="video-modal" isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
+        <VideoModal key="video-modal" isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} videoUrl={landingSettings?.videoUrl} />
         <ProductDetailModal key="product-modal" isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} product={selectedProduct} />
         <ArtistDetailModal key="artist-modal" isOpen={!!selectedArtist} onClose={() => setSelectedArtist(null)} artist={selectedArtist} />
       </AnimatePresence>

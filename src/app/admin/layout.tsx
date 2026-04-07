@@ -13,6 +13,25 @@ import { signOut, useSession } from 'next-auth/react';
 
 const MENU_ITEMS = [
   { id: 'dashboard', label: 'Tổng quan Dashboard', icon: <LayoutDashboard />, role: ['ADMIN', 'SALES', 'ANALYST'], path: '/admin' },
+  { 
+    id: 'landing-page', 
+    label: 'LandingPage', 
+    icon: <Megaphone />, 
+    role: ['ADMIN'],
+    children: [
+      { id: 'banner', label: 'Banner', path: '/admin/landing-page/banner' },
+      { id: 'artists', label: 'Nghệ sĩ tham gia', path: '/admin/landing-page/artists' },
+      { id: 'video', label: 'Video', path: '/admin/landing-page/video' },
+      { id: 'art', label: 'Nghệ thuật', path: '/admin/landing-page/art' },
+      { id: 'gallery', label: 'Khoảnh khắc', path: '/admin/landing-page/gallery' },
+      { id: 'timeline', label: 'Lộ trình', path: '/admin/landing-page/timeline' },
+      { id: 'community', label: 'Cộng đồng', path: '/admin/landing-page/community' },
+      { id: 'faqs', label: 'Câu hỏi', path: '/admin/landing-page/faqs' },
+      { id: 'travel', label: 'Di chuyển', path: '/admin/landing-page/travel' },
+      { id: 'location', label: 'Địa điểm', path: '/admin/landing-page/location' },
+    ]
+
+  },
   { id: 'tickets', label: 'Quản lý Vé', icon: <Ticket />, role: ['ADMIN', 'SALES'], path: '/admin/tickets' },
   { id: 'zones', label: 'Quản lý Khu vực', icon: <Map />, role: ['ADMIN'], path: '/admin/zones' },
   { id: 'customers', label: 'Quản lý Khách hàng', icon: <Users />, role: ['ADMIN', 'SALES'], path: '/admin/customers' },
@@ -34,6 +53,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+  const [expandedMenus, setExpandedMenus] = React.useState<string[]>(['landing-page']);
+
+  const toggleMenu = (id: string) => {
+    setExpandedMenus(prev => 
+      prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
+    );
+  };
 
   // Mock roles for now until auth is fully implemented on client side
   const roles = ['ADMIN']; 
@@ -65,8 +91,62 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 overflow-y-auto px-4 space-y-2 pb-6 custom-scrollbar">
-          {allowedMenuItems.map((item) => {
-            const isActive = pathname === item.path || (pathname?.startsWith(item.path) && item.path !== '/admin');
+          {allowedMenuItems.map((item: any) => {
+            const hasChildren = item.children && item.children.length > 0;
+            const isExpanded = expandedMenus.includes(item.id);
+            const isActive = item.path ? (pathname === item.path || (pathname?.startsWith(item.path) && item.path !== '/admin')) : false;
+
+            if (hasChildren) {
+              return (
+                <div key={item.id} className="flex flex-col gap-1">
+                  <button
+                    onClick={() => toggleMenu(item.id)}
+                    className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group w-full
+                      ${isExpanded ? 'bg-[#4F1F76]/10 text-[#FFFFFF]' : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-[#FFFFFF]'}`}
+                  >
+                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isExpanded ? 'text-[#FF0088]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
+                      {item.icon}
+                    </div>
+                    {!isSidebarCollapsed && (
+                      <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
+                    )}
+                    {!isSidebarCollapsed && (
+                      <ChevronDown className={`ml-auto w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-[#00FFFF]' : 'text-[#8A8F98]'}`} />
+                    )}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {isExpanded && !isSidebarCollapsed && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden flex flex-col gap-1 ml-4 pl-4 border-l border-[#4F1F76]/30"
+                      >
+                        {item.children.map((child: any) => {
+                          const isChildActive = pathname === child.path;
+                          return (
+                            <Link
+                              key={child.id}
+                              href={child.path}
+                              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all duration-300
+                                ${isChildActive 
+                                  ? 'text-[#00FFFF] font-bold bg-[#00FFFF]/10' 
+                                  : 'text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20'}`}
+                            >
+                              <div className={`w-1.5 h-1.5 rounded-full ${isChildActive ? 'bg-[#00FFFF] glow-cyan' : 'bg-[#4F1F76]'}`}></div>
+                              {child.label}
+                            </Link>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.id}
