@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Send, CheckCircle2, Mail, Phone, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ContactSection() {
   const [submitted, setSubmitted] = React.useState(false);
@@ -20,19 +21,34 @@ export default function ContactSection() {
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     try {
-      await fetch('/api/messages', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.get('name'),
           email: formData.get('email'),
-          subject: formData.get('subject'),
-          message: formData.get('message'),
+          phone: formData.get('phone'),
+          content: formData.get('message'),
         }),
       });
+
+      const contentType = res.headers.get('content-type');
+      let data;
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        console.error('Non-JSON response received:', text);
+        throw new Error('Server returned an unexpected response format.');
+      }
+
+      if (!res.ok) throw new Error(data.error || 'Gửi tin nhắn thất bại');
+
+      toast.success('Gửi tin nhắn thành công!');
       setSubmitted(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send message:', error);
+      toast.error(error.message || 'Có lỗi xảy ra, vui lòng thử lại sau.');
     } finally {
       setIsSubmitting(false);
     }
@@ -50,15 +66,15 @@ export default function ContactSection() {
             <div className="space-y-6">
               <div className="flex items-center gap-6 group">
                 <div className="w-14 h-14 rounded-2xl bg-royal/20 flex items-center justify-center text-cyan border border-cyan/30 group-hover:bg-cyan group-hover:text-midnight transition-all"><Mail className="w-6 h-6" /></div>
-                <div><div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Email</div><div className="text-silver font-bold">support@neonheritage.vn</div></div>
+                <div><div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Email</div><div className="text-silver font-bold">{process.env.NEXT_PUBLIC_EMAIL || 'support@neonheritage.vn'}</div></div>
               </div>
               <div className="flex items-center gap-6 group">
                 <div className="w-14 h-14 rounded-2xl bg-royal/20 flex items-center justify-center text-magenta border border-magenta/30 group-hover:bg-magenta group-hover:text-white transition-all"><Phone className="w-6 h-6" /></div>
-                <div><div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Hotline</div><div className="text-silver font-bold">1900 8888 (8:00 - 22:00)</div></div>
+                <div><div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Hotline</div><div className="text-silver font-bold">{process.env.NEXT_PUBLIC_HOTLINE || '1900 8888 (8:00 - 22:00)'}</div></div>
               </div>
               <div className="flex items-center gap-6 group">
                 <div className="w-14 h-14 rounded-2xl bg-royal/20 flex items-center justify-center text-gold border border-gold/30 group-hover:bg-gold group-hover:text-midnight transition-all"><MapPin className="w-6 h-6" /></div>
-                <div><div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Văn phòng</div><div className="text-silver font-bold">Tầng 12, Tòa nhà Newday, Hà Nội</div></div>
+                <div><div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Văn phòng</div><div className="text-silver font-bold">{process.env.NEXT_PUBLIC_OFFICE || 'Tầng 12, Tòa nhà Newday, Hà Nội'}</div></div>
               </div>
             </div>
           </div>
@@ -98,10 +114,15 @@ export default function ContactSection() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Chủ đề</label>
-                    <select suppressHydrationWarning name="subject" className="w-full px-5 py-3 rounded-xl bg-midnight border border-royal/30 text-silver focus:border-cyan outline-none transition-all appearance-none">
-                      <option>Hỗ trợ đặt vé</option><option>Thông tin sự kiện</option><option>Hợp tác tài trợ</option><option>Khác</option>
-                    </select>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Số điện thoại</label>
+                    <input
+                      suppressHydrationWarning
+                      name="phone"
+                      required
+                      type="tel"
+                      className="w-full px-5 py-3 rounded-xl bg-midnight border border-royal/30 text-silver focus:border-cyan outline-none transition-all"
+                      placeholder="0123 456 789"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Lời nhắn</label>

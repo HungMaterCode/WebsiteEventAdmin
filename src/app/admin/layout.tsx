@@ -7,7 +7,7 @@ import {
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
   CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, Star, 
   Newspaper, Lock, BarChart3, Settings,
-  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu
+  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu, MessageSquare
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 
@@ -26,6 +26,7 @@ const MENU_ITEMS = [
   { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/news' },
   { id: 'roles', label: 'Vai trò & Quyền hạn', icon: <Lock />, role: ['ADMIN'], path: '/admin/roles' },
   { id: 'analytics', label: 'Phân tích & Báo cáo', icon: <BarChart3 />, role: ['ADMIN', 'ANALYST'], path: '/admin/analytics' },
+  { id: 'contact', label: 'Quản lý Liên hệ', icon: <MessageSquare />, role: ['ADMIN'], path: '/admin/contact' },
   { id: 'settings', label: 'Cài đặt (Nhật ký)', icon: <Settings />, role: ['ADMIN'], path: '/admin/settings' },
 ];
 

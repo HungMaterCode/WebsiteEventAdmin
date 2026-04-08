@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import { Toaster } from 'sonner';
 import "./globals.css";
 
 
@@ -54,7 +55,10 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${inter.variable} ${montserrat.variable}`}>
       <body className="antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Toaster richColors position="top-right" />
+        </Providers>
       </body>
 
     </html>
