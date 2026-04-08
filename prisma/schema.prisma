@@ -104,6 +104,7 @@ model Booking {
   lotoPrintTime   DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  status          String    @default("PENDING")
   user            User?     @relation(fields: [userId], references: [id])
 }
 
@@ -177,6 +178,12 @@ model Post {
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model SystemSetting {
+  id        String   @id @default("global")
+  data      Json     @default("{}")
+  updatedAt DateTime
 }
 
 enum Role {
