@@ -25,6 +25,12 @@ const revenueData = [
 ];
 
 export default function AdminAnalyticsPage() {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div>
@@ -64,15 +70,17 @@ export default function AdminAnalyticsPage() {
             </div>
           </div>
           <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                <XAxis dataKey="day" stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} axisLine={false} tickLine={false} dy={10} />
-                <YAxis stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} axisLine={false} tickLine={false} dx={-10} tickFormatter={v => `${v}M`} />
-                <Tooltip cursor={{ fill: '#ffffff05' }} contentStyle={{ backgroundColor: '#0a0510', border: '1px solid #ffffff10', borderRadius: '12px' }} />
-                <Bar dataKey="revenue" fill="#00FFFF" radius={[4, 4, 0, 0]} barSize={30} />
-              </BarChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={revenueData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                  <XAxis dataKey="day" stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} axisLine={false} tickLine={false} dy={10} />
+                  <YAxis stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} axisLine={false} tickLine={false} dx={-10} tickFormatter={v => `${v}M`} />
+                  <Tooltip cursor={{ fill: '#ffffff05' }} contentStyle={{ backgroundColor: '#0a0510', border: '1px solid #ffffff10', borderRadius: '12px' }} />
+                  <Bar dataKey="revenue" fill="#00FFFF" radius={[4, 4, 0, 0]} barSize={30} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -83,14 +91,16 @@ export default function AdminAnalyticsPage() {
             <h3 className="font-display font-black text-white uppercase tracking-wider text-sm">Cơ Cấu Loại Vé</h3>
           </div>
           <div className="h-[300px] flex items-center justify-center relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={ticketData} innerRadius={80} outerRadius={110} paddingAngle={8} dataKey="value">
-                  {ticketData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={ticketData} innerRadius={80} outerRadius={110} paddingAngle={8} dataKey="value">
+                    {ticketData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
             <div className="absolute flex flex-col items-center">
               <div className="text-3xl font-display font-black text-white">1,550</div>
               <div className="text-[10px] text-[#8A8F98] uppercase font-bold tracking-widest">Tổng vé</div>

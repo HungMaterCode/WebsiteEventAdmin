@@ -24,6 +24,12 @@ const chartData = [
 ];
 
 export default function AdminTransactionsPage() {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const getStatusStyle = (s: string) => {
     if (s === 'Thành công') return 'bg-[#00C099]/10 text-[#00C099] border-[#00C099]/30';
     if (s === 'Đã hoàn') return 'bg-[#FF0088]/10 text-[#FF0088] border-[#FF0088]/30';
@@ -72,21 +78,23 @@ export default function AdminTransactionsPage() {
           </div>
         </div>
         <div className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="txnGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00FFFF" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#00FFFF" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-              <XAxis dataKey="time" stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dy={10} />
-              <YAxis stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dx={-10} tickFormatter={v => `${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: '#0a0510', border: '1px solid #ffffff10', borderRadius: '16px', padding: '12px' }} itemStyle={{ color: '#00FFFF', fontSize: '12px', fontWeight: 'bold' }} />
-              <Area type="monotone" dataKey="value" stroke="#00FFFF" strokeWidth={3} fillOpacity={1} fill="url(#txnGrad)" animationDuration={1500} />
-            </AreaChart>
-          </ResponsiveContainer>
+          {mounted && (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="txnGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#00FFFF" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#00FFFF" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                <XAxis dataKey="time" stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dy={10} />
+                <YAxis stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dx={-10} tickFormatter={v => `${v}M`} />
+                <Tooltip contentStyle={{ backgroundColor: '#0a0510', border: '1px solid #ffffff10', borderRadius: '16px', padding: '12px' }} itemStyle={{ color: '#00FFFF', fontSize: '12px', fontWeight: 'bold' }} />
+                <Area type="monotone" dataKey="value" stroke="#00FFFF" strokeWidth={3} fillOpacity={1} fill="url(#txnGrad)" animationDuration={1500} />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 

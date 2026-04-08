@@ -28,6 +28,12 @@ const mockChartData = [
 ];
 
 export default function AdminDashboardPage() {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const stats = [
     { label: 'Tổng số vé', value: 1250, icon: Ticket, color: 'text-[#00FFFF]', glow: 'glow-cyan', bg: 'bg-[#00FFFF]/10 border-[#00FFFF]/20' },
     { label: 'Tổng doanh thu', value: `3.5B VNĐ`, icon: DollarSign, color: 'text-[#FF0088]', glow: 'glow-magenta', bg: 'bg-[#FF0088]/10 border-[#FF0088]/20' },
@@ -88,24 +94,26 @@ export default function AdminDashboardPage() {
           </div>
           
           <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={mockChartData}>
-                <defs>
-                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00FFFF" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#00FFFF" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                <XAxis dataKey="name" stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dx={-10} tickFormatter={(v) => `${v}k`} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#0a0510', border: '1px solid #ffffff10', borderRadius: '20px', padding: '15px' }}
-                  itemStyle={{ color: '#00FFFF', fontSize: '12px', fontWeight: 'bold' }}
-                />
-                <Area type="monotone" dataKey="value" stroke="#00FFFF" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" animationDuration={2000} />
-              </AreaChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={mockChartData}>
+                  <defs>
+                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00FFFF" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#00FFFF" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                  <XAxis dataKey="name" stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dy={10} />
+                  <YAxis stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dx={-10} tickFormatter={(v) => `${v}k`} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0a0510', border: '1px solid #ffffff10', borderRadius: '20px', padding: '15px' }}
+                    itemStyle={{ color: '#00FFFF', fontSize: '12px', fontWeight: 'bold' }}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="#00FFFF" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" animationDuration={2000} />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -122,26 +130,28 @@ export default function AdminDashboardPage() {
           </div>
           
           <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={mockChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                <XAxis dataKey="name" stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dx={-10} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#0a0510', border: '1px solid #ffffff10', borderRadius: '20px', padding: '15px' }}
-                  itemStyle={{ color: '#FF0088', fontSize: '12px', fontWeight: 'bold' }}
-                />
-                <Line 
-                  type="step" 
-                  dataKey="quantity" 
-                  stroke="#FF0088" 
-                  strokeWidth={4} 
-                  dot={{ r: 4, fill: '#FF0088', strokeWidth: 0 }}
-                  activeDot={{ r: 8, fill: '#FF0088', stroke: '#ffffff20', strokeWidth: 10 }}
-                  animationDuration={2000}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={mockChartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                  <XAxis dataKey="name" stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dy={10} />
+                  <YAxis stroke="#ffffff20" tick={{ fontSize: 10, fill: '#8A8F98' }} tickLine={false} axisLine={false} dx={-10} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0a0510', border: '1px solid #ffffff10', borderRadius: '20px', padding: '15px' }}
+                    itemStyle={{ color: '#FF0088', fontSize: '12px', fontWeight: 'bold' }}
+                  />
+                  <Line 
+                    type="step" 
+                    dataKey="quantity" 
+                    stroke="#FF0088" 
+                    strokeWidth={4} 
+                    dot={{ r: 4, fill: '#FF0088', strokeWidth: 0 }}
+                    activeDot={{ r: 8, fill: '#FF0088', stroke: '#ffffff20', strokeWidth: 10 }}
+                    animationDuration={2000}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>
