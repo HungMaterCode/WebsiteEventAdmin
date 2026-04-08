@@ -6,10 +6,10 @@ import { QrCode, CheckCircle2, XCircle, Clock, Search, Zap, Users, TrendingUp } 
 
 const mockCheckins = [
   { id: 'TKT-827391', guestName: 'Nguyễn Văn A', type: 'VIP', zone: 'Khu A - Sân khấu chính', checkedAt: '19:42:05', status: 'Thành công' },
-  { id: 'TKT-827392', guestName: 'Trần Thị B', type: 'STANDARD', zone: 'Khu B - Trải nghiệm', checkedAt: '19:41:33', status: 'Thành công' },
-  { id: 'TKT-827393', guestName: 'Lê Văn C', type: 'EARLY BIRD', zone: 'Khu B - Trải nghiệm', checkedAt: '19:40:58', status: 'Thành công' },
+  { id: 'TKT-827392', guestName: 'Trần Thị B', type: 'GA', zone: 'Khu B - Trải nghiệm', checkedAt: '19:41:33', status: 'Thành công' },
+  { id: 'TKT-827393', guestName: 'Lê Văn C', type: 'GA', zone: 'Khu B - Trải nghiệm', checkedAt: '19:40:58', status: 'Thành công' },
   { id: 'TKT-827394', guestName: 'Hoàng Minh D', type: 'VIP', zone: 'Khu A - Sân khấu chính', checkedAt: '19:40:12', status: 'Vé đã dùng' },
-  { id: 'TKT-827395', guestName: 'Phạm Thị E', type: 'STANDARD', zone: 'Cổng vào', checkedAt: '19:39:44', status: 'Vé không hợp lệ' },
+  { id: 'TKT-827395', guestName: 'Phạm Thị E', type: 'GA', zone: 'Cổng vào', checkedAt: '19:39:44', status: 'Vé không hợp lệ' },
 ];
 
 export default function AdminCheckinPage() {
@@ -134,7 +134,7 @@ export default function AdminCheckinPage() {
                         <div className="text-xs text-[#8A8F98] font-mono mt-0.5">{c.id}</div>
                       </td>
                       <td className="p-4 hidden sm:table-cell">
-                        <span className={`text-xs font-black ${c.type === 'VIP' ? 'text-[#FF0088]' : c.type === 'EARLY BIRD' ? 'text-[#E6C753]' : 'text-[#FFFFFF]'}`}>{c.type}</span>
+                        <span className={`text-xs font-black ${c.type === 'VIP' ? 'text-[#FF0088]' : 'text-[#FFFFFF]'}`}>{c.type}</span>
                       </td>
                       <td className="p-4 hidden md:table-cell text-xs text-[#8A8F98]">{c.zone}</td>
                       <td className="p-4 text-center">

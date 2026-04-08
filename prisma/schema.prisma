@@ -94,7 +94,6 @@ model Booking {
   ticketType      String
   quantity        Int
   totalPrice      Int
-  status          String    @default("PENDING")
   ticketStatus    String    @default("CREATED")
   accessories     Json?
   checkInTime     DateTime?
