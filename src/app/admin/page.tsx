@@ -76,13 +76,13 @@ export default function AdminDashboardPage() {
                 <TrendingUp className="w-6 h-6 text-[#00FFFF]" />
               </div>
               <div>
-                <h3 className="text-lg md:text-xl font-display font-black text-white uppercase tracking-wider">Phân tích doanh thu</h3>
+                <h3 className="text-lg md:text-xl font-display font-black text-admin-text uppercase tracking-wider">Phân tích doanh thu</h3>
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Dữ liệu thời gian thực</p>
               </div>
             </div>
             <div className="flex gap-2">
               {['Ngày', 'Tuần', 'Tháng'].map((period, i) => (
-                <button key={i} className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${i === 0 ? 'bg-[#00FFFF] text-[#060010]' : 'bg-white/5 text-gray-400 hover:text-white'}`}>{period}</button>
+                <button key={i} className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${i === 0 ? 'bg-[#00FFFF] text-[#060010]' : 'bg-white/5 text-gray-400 hover:text-admin-text'}`}>{period}</button>
               ))}
             </div>
           </div>
@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
               <Zap className="w-6 h-6 text-[#FF0088]" />
             </div>
             <div>
-              <h3 className="text-xl font-display font-black text-white uppercase tracking-wider">Lưu lượng</h3>
+              <h3 className="text-xl font-display font-black text-admin-text uppercase tracking-wider">Lưu lượng</h3>
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Người tham dự trực tiếp</p>
             </div>
           </div>
@@ -154,7 +154,7 @@ export default function AdminDashboardPage() {
               <History className="w-6 h-6 text-[#E6C753]" />
             </div>
             <div>
-              <h3 className="text-lg md:text-xl font-display font-black text-white uppercase tracking-wider">Hoạt động gần đây</h3>
+              <h3 className="text-lg md:text-xl font-display font-black text-admin-text uppercase tracking-wider">Hoạt động gần đây</h3>
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Các giao dịch mới nhất</p>
             </div>
           </div>
@@ -165,16 +165,16 @@ export default function AdminDashboardPage() {
           {mockTransactions.map((tx) => (
             <div key={tx.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all group gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-admin-text text-xs font-bold">
                   {tx.user[0].toUpperCase()}
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-white group-hover:text-[#00FFFF] transition-colors">{tx.user}</div>
+                  <div className="text-sm font-bold text-admin-text group-hover:text-[#00FFFF] transition-colors">{tx.user}</div>
                   <div className="text-xs text-gray-400 mt-1">{tx.date}</div>
                 </div>
               </div>
               <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-1/3">
-                <div className="text-sm font-bold text-white">{tx.amount}</div>
+                <div className="text-sm font-bold text-admin-text">{tx.amount}</div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-[#00FFFF] bg-[#00FFFF]/10 px-3 py-1.5 rounded-xl border border-[#00FFFF]/20">
                   {tx.status}
                 </div>

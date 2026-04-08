@@ -28,8 +28,8 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div>
-        <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Phân Tích & Báo Cáo</h2>
-        <p className="text-[#8A8F98] text-sm mt-1">Dữ liệu chi tiết về doanh thu, lượt khách và hiệu quả chiến dịch</p>
+        <h2 className="text-3xl font-display font-black uppercase text-admin-text">Phân Tích & Báo Cáo</h2>
+        <p className="text-admin-text-muted text-sm mt-1">Dữ liệu chi tiết về doanh thu, lượt khách và hiệu quả chiến dịch</p>
       </div>
 
       {/* Top Cards */}
@@ -48,19 +48,19 @@ export default function AdminAnalyticsPage() {
                 {s.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />} {s.trend}
               </div>
             </div>
-            <div className="text-[#8A8F98] text-[10px] font-bold uppercase tracking-widest mb-1">{s.label}</div>
-            <div className={`text-2xl font-display font-black text-white`}>{s.value}</div>
+            <div className="text-admin-text-muted text-[10px] font-bold uppercase tracking-widest mb-1">{s.label}</div>
+            <div className={`text-2xl font-display font-black text-admin-text`}>{s.value}</div>
           </motion.div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
-        <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-[#0D0716]/80 border border-[#4F1F76]/30">
+        <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-admin-panel/80 border border-admin-border">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-[#00FFFF]/10 border border-[#00FFFF]/20 rounded-xl"><BarChart3 className="w-5 h-5 text-[#00FFFF]" /></div>
-              <h3 className="font-display font-black text-white uppercase tracking-wider text-sm">Doanh Thu 7 Ngày Qua</h3>
+              <h3 className="font-display font-black text-admin-text uppercase tracking-wider text-sm">Doanh Thu 7 Ngày Qua</h3>
             </div>
           </div>
           <div className="h-[300px]">
@@ -77,10 +77,10 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Ticket Distribution */}
-        <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-[#0D0716]/80 border border-[#4F1F76]/30">
+        <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-admin-panel/80 border border-admin-border">
           <div className="flex items-center gap-3 mb-8">
             <div className="p-2 bg-[#FF0088]/10 border border-[#FF0088]/20 rounded-xl"><Ticket className="w-5 h-5 text-[#FF0088]" /></div>
-            <h3 className="font-display font-black text-white uppercase tracking-wider text-sm">Cơ Cấu Loại Vé</h3>
+            <h3 className="font-display font-black text-admin-text uppercase tracking-wider text-sm">Cơ Cấu Loại Vé</h3>
           </div>
           <div className="h-[300px] flex items-center justify-center relative">
             <ResponsiveContainer width="100%" height="100%">
@@ -92,15 +92,15 @@ export default function AdminAnalyticsPage() {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute flex flex-col items-center">
-              <div className="text-3xl font-display font-black text-white">1,550</div>
-              <div className="text-[10px] text-[#8A8F98] uppercase font-bold tracking-widest">Tổng vé</div>
+              <div className="text-3xl font-display font-black text-admin-text">1,550</div>
+              <div className="text-[10px] text-admin-text-muted uppercase font-bold tracking-widest">Tổng vé</div>
             </div>
           </div>
           <div className="flex justify-center gap-6 mt-4">
             {ticketData.map(t => (
               <div key={t.name} className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }}></div>
-                <span className="text-[10px] text-[#8A8F98] font-bold uppercase">{t.name}</span>
+                <span className="text-[10px] text-admin-text-muted font-bold uppercase">{t.name}</span>
               </div>
             ))}
           </div>

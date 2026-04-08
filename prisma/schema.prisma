@@ -180,6 +180,12 @@ model Post {
   updatedAt   DateTime  @updatedAt
 }
 
+model SystemSetting {
+  id        String   @id @default("global")
+  data      Json     @default("{}")
+  updatedAt DateTime @updatedAt
+}
+
 enum Role {
   USER
   ADMIN

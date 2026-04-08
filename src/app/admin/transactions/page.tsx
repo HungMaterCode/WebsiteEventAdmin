@@ -28,14 +28,14 @@ export default function AdminTransactionsPage() {
     if (s === 'Thành công') return 'bg-[#00C099]/10 text-[#00C099] border-[#00C099]/30';
     if (s === 'Đã hoàn') return 'bg-[#FF0088]/10 text-[#FF0088] border-[#FF0088]/30';
     if (s === 'Thất bại') return 'bg-red-500/10 text-red-500 border-red-500/30';
-    return 'bg-[#8A8F98]/10 text-[#8A8F98] border-[#8A8F98]/30';
+    return 'bg-[#8A8F98]/10 text-admin-text-muted border-[#8A8F98]/30';
   };
 
   return (
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div>
-        <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Quản Lý Giao Dịch</h2>
-        <p className="text-[#8A8F98] text-sm mt-1">Lịch sử thanh toán thời gian thực, hoàn tiền và xuất báo cáo tài chính</p>
+        <h2 className="text-3xl font-display font-black uppercase text-admin-text">Quản Lý Giao Dịch</h2>
+        <p className="text-admin-text-muted text-sm mt-1">Lịch sử thanh toán thời gian thực, hoàn tiền và xuất báo cáo tài chính</p>
       </div>
 
       {/* Summary Stats */}
@@ -51,7 +51,7 @@ export default function AdminTransactionsPage() {
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <s.icon className={`w-16 h-16 ${s.color}`} />
             </div>
-            <div className="text-[#8A8F98] text-[10px] font-bold uppercase tracking-widest mb-2">{s.label}</div>
+            <div className="text-admin-text-muted text-[10px] font-bold uppercase tracking-widest mb-2">{s.label}</div>
             <div className={`text-2xl font-display font-black ${s.color}`}>{s.value}</div>
             <div className={`flex items-center gap-1 mt-2 text-[10px] font-bold ${s.up ? 'text-[#00C099]' : 'text-red-400'}`}>
               {s.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />} {s.trend}
@@ -67,7 +67,7 @@ export default function AdminTransactionsPage() {
             <TrendingUp className="w-6 h-6 text-[#00FFFF]" />
           </div>
           <div>
-            <h3 className="text-lg font-display font-black text-white uppercase tracking-wider">Luồng Tiền Hôm Nay</h3>
+            <h3 className="text-lg font-display font-black text-admin-text uppercase tracking-wider">Luồng Tiền Hôm Nay</h3>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Giao dịch theo khung giờ (x1M VNĐ)</p>
           </div>
         </div>
@@ -91,43 +91,43 @@ export default function AdminTransactionsPage() {
       </div>
 
       {/* Transactions Table */}
-      <div className="glass-card rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 overflow-hidden shadow-2xl">
-        <div className="p-6 border-b border-[#4F1F76]/30 flex flex-col md:flex-row gap-4 justify-between items-center bg-[#4F1F76]/5">
+      <div className="glass-card rounded-[2rem] bg-admin-panel/80 backdrop-blur-md border border-admin-border overflow-hidden shadow-2xl">
+        <div className="p-6 border-b border-admin-border flex flex-col md:flex-row gap-4 justify-between items-center bg-[#4F1F76]/5">
           <div className="relative w-full md:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A8F98]" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-admin-text-muted" />
             <input type="text" placeholder="Tìm mã giao dịch, khách hàng..."
-              className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" />
+              className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-[#00FFFF] transition-all" />
           </div>
-          <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-[#4F1F76]/50 text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20 transition-all w-full md:w-auto justify-center">
+          <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-admin-border text-admin-text-muted hover:text-admin-text hover:bg-[#4F1F76]/20 transition-all w-full md:w-auto justify-center">
             <Filter className="w-5 h-5" /> Cổng Thanh Toán
           </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#4F1F76]/10 text-[#8A8F98] text-xs uppercase tracking-wider">
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 whitespace-nowrap">Mã GD</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30">Loại</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 min-w-[180px]">Khách Hàng</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30">Cổng TT</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-center">Trạng Thái</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-right">Số Tiền</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 hidden md:table-cell text-right whitespace-nowrap">Thời Gian</th>
+              <tr className="bg-[#4F1F76]/10 text-admin-text-muted text-xs uppercase tracking-wider">
+                <th className="p-4 font-bold border-b border-admin-border whitespace-nowrap">Mã GD</th>
+                <th className="p-4 font-bold border-b border-admin-border">Loại</th>
+                <th className="p-4 font-bold border-b border-admin-border min-w-[180px]">Khách Hàng</th>
+                <th className="p-4 font-bold border-b border-admin-border">Cổng TT</th>
+                <th className="p-4 font-bold border-b border-admin-border text-center">Trạng Thái</th>
+                <th className="p-4 font-bold border-b border-admin-border text-right">Số Tiền</th>
+                <th className="p-4 font-bold border-b border-admin-border hidden md:table-cell text-right whitespace-nowrap">Thời Gian</th>
               </tr>
             </thead>
             <tbody>
               {mockTransactions.map((tx, i) => (
                 <motion.tr key={tx.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                  className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors group">
+                  className="border-b border-admin-border hover:bg-[#4F1F76]/5 transition-colors group">
                   <td className="p-4"><span className="font-mono text-sm font-bold text-[#00FFFF]">{tx.id}</span></td>
-                  <td className="p-4 text-sm text-[#8A8F98]">
+                  <td className="p-4 text-sm text-admin-text-muted">
                     <div className="flex items-center gap-2">
                       {tx.type === 'Hoàn tiền' ? <TrendingDown className="w-4 h-4 text-[#FF0088]" /> : <TrendingUp className="w-4 h-4 text-[#00C099]" />}
                       {tx.type}
                     </div>
                   </td>
-                  <td className="p-4 text-sm font-bold text-[#FFFFFF]">{tx.customer}</td>
-                  <td className="p-4 text-sm text-[#8A8F98]">{tx.gateway}</td>
+                  <td className="p-4 text-sm font-bold text-admin-text">{tx.customer}</td>
+                  <td className="p-4 text-sm text-admin-text-muted">{tx.gateway}</td>
                   <td className="p-4 text-center">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusStyle(tx.status)}`}>
                       {tx.status}
@@ -136,7 +136,7 @@ export default function AdminTransactionsPage() {
                   <td className={`p-4 text-right font-bold ${tx.amount.startsWith('+') ? 'text-[#00C099]' : 'text-[#FF0088]'}`}>
                     {tx.amount}
                   </td>
-                  <td className="p-4 hidden md:table-cell text-right text-xs text-[#8A8F98] whitespace-nowrap">{tx.time}</td>
+                  <td className="p-4 hidden md:table-cell text-right text-xs text-admin-text-muted whitespace-nowrap">{tx.time}</td>
                 </motion.tr>
               ))}
             </tbody>

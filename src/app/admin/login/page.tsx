@@ -39,7 +39,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
                 type="email" 
                 placeholder="Email tài khoản" 
                 required
-                className="w-full bg-[#060010]/50 border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] font-mono focus:outline-none focus:border-[#00FFFF]/50 transition-colors"
+                className="w-full bg-admin-bg/50 border border-admin-border rounded-xl px-4 py-3 text-admin-text font-mono focus:outline-none focus:border-[#00FFFF]/50 transition-colors"
               />
             </div>
             
@@ -49,11 +49,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
                 type="password" 
                 placeholder="Mật khẩu" 
                 required
-                className="w-full bg-[#060010]/50 border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] font-mono focus:outline-none focus:border-[#00FFFF]/50 transition-colors"
+                className="w-full bg-admin-bg/50 border border-admin-border rounded-xl px-4 py-3 text-admin-text font-mono focus:outline-none focus:border-[#00FFFF]/50 transition-colors"
               />
             </div>
 
-            <button type="submit" className="w-full py-4 mt-2 bg-[#4F1F76] hover:bg-[#4F1F76]/80 border border-[#4F1F76] rounded-xl font-bold transition-all flex items-center justify-center gap-3">
+            <button type="submit" className="w-full py-4 mt-2 bg-[#4F1F76] hover:bg-[#4F1F76]/80 border border-admin-border rounded-xl font-bold transition-all flex items-center justify-center gap-3">
               <span>Đăng nhập hệ thống</span>
             </button>
           </form>

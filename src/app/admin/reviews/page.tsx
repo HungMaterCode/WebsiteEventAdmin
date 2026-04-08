@@ -28,14 +28,14 @@ export default function AdminReviewsPage() {
   const getStatusStyle = (s: string) => {
     if (s === 'Đã duyệt') return 'bg-[#00C099]/10 text-[#00C099] border-[#00C099]/30';
     if (s === 'Chờ duyệt') return 'bg-[#E6C753]/10 text-[#E6C753] border-[#E6C753]/30';
-    return 'bg-[#8A8F98]/10 text-[#8A8F98] border-[#8A8F98]/30';
+    return 'bg-[#8A8F98]/10 text-admin-text-muted border-[#8A8F98]/30';
   };
 
   return (
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div>
-        <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Quản Lý Đánh Giá</h2>
-        <p className="text-[#8A8F98] text-sm mt-1">Kiểm duyệt bình luận, lọc nội dung không phù hợp và theo dõi chỉ số hài lòng</p>
+        <h2 className="text-3xl font-display font-black uppercase text-admin-text">Quản Lý Đánh Giá</h2>
+        <p className="text-admin-text-muted text-sm mt-1">Kiểm duyệt bình luận, lọc nội dung không phù hợp và theo dõi chỉ số hài lòng</p>
       </div>
 
       {/* Stats */}
@@ -44,14 +44,14 @@ export default function AdminReviewsPage() {
           { label: 'Đánh Giá TB', value: `${avg}★`, icon: Star, color: 'text-[#E6C753]', bg: 'bg-[#E6C753]/10 border-[#E6C753]/20' },
           { label: 'Tổng Đánh Giá', value: '1,842', icon: MessageSquare, color: 'text-[#00FFFF]', bg: 'bg-[#00FFFF]/10 border-[#00FFFF]/20' },
           { label: 'Chờ Kiểm Duyệt', value: '23', icon: CheckCircle2, color: 'text-[#FF0088]', bg: 'bg-[#FF0088]/10 border-[#FF0088]/20' },
-          { label: 'Đã Ẩn', value: '8', icon: XCircle, color: 'text-[#8A8F98]', bg: 'bg-[#8A8F98]/10 border-[#8A8F98]/20' },
+          { label: 'Đã Ẩn', value: '8', icon: XCircle, color: 'text-admin-text-muted', bg: 'bg-[#8A8F98]/10 border-[#8A8F98]/20' },
         ].map((s, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className={`p-5 rounded-2xl border bg-white/5 backdrop-blur-md relative overflow-hidden group hover:scale-[1.02] transition-all ${s.bg}`}>
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <s.icon className={`w-16 h-16 ${s.color}`} />
             </div>
-            <div className="text-[#8A8F98] text-[10px] font-bold uppercase tracking-widest mb-2">{s.label}</div>
+            <div className="text-admin-text-muted text-[10px] font-bold uppercase tracking-widest mb-2">{s.label}</div>
             <div className={`text-2xl font-display font-black ${s.color}`}>{s.value}</div>
           </motion.div>
         ))}
@@ -61,27 +61,27 @@ export default function AdminReviewsPage() {
       <div className="space-y-4">
         {mockReviews.map((review, i) => (
           <motion.div key={review.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-            className="glass-card p-6 rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 shadow-xl hover:border-[#4F1F76]/50 transition-all">
+            className="glass-card p-6 rounded-[2rem] bg-admin-panel/80 backdrop-blur-md border border-admin-border shadow-xl hover:border-admin-border transition-all">
             <div className="flex flex-col sm:flex-row gap-4">
               {/* Avatar + Info */}
               <div className="flex items-start gap-4 flex-1">
-                <div className="w-12 h-12 rounded-full border-2 border-[#4F1F76]/50 flex items-center justify-center font-display font-black text-lg text-[#FFFFFF] bg-[#4F1F76]/30 shrink-0">
+                <div className="w-12 h-12 rounded-full border-2 border-admin-border flex items-center justify-center font-display font-black text-lg text-admin-text bg-[#4F1F76]/30 shrink-0">
                   {review.avatar}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-3 mb-1">
-                    <span className="font-bold text-[#FFFFFF]">{review.author}</span>
+                    <span className="font-bold text-admin-text">{review.author}</span>
                     <StarRating rating={review.rating} />
                     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusStyle(review.status)}`}>
                       {review.status}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 text-[10px] text-[#8A8F98] font-bold mb-3">
+                  <div className="flex items-center gap-3 text-[10px] text-admin-text-muted font-bold mb-3">
                     <span className="flex items-center gap-1"><User className="w-3 h-3" /> {review.id}</span>
                     <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {review.date}</span>
                   </div>
                   <p className="text-sm text-[#C0C5CC] leading-relaxed">{review.content}</p>
-                  <div className="flex items-center gap-1 mt-3 text-xs text-[#8A8F98]">
+                  <div className="flex items-center gap-1 mt-3 text-xs text-admin-text-muted">
                     <ThumbsUp className="w-3.5 h-3.5 text-[#00C099]" /> <span className="font-bold text-[#00C099]">{review.likes}</span> <span>người thấy hữu ích</span>
                   </div>
                 </div>
@@ -95,12 +95,12 @@ export default function AdminReviewsPage() {
                   </button>
                 )}
                 {review.status !== 'Đã ẩn' && (
-                  <button className="px-4 py-2 rounded-xl bg-[#8A8F98]/10 border border-[#8A8F98]/30 text-[#8A8F98] font-bold text-xs hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all flex items-center gap-1.5">
+                  <button className="px-4 py-2 rounded-xl bg-[#8A8F98]/10 border border-[#8A8F98]/30 text-admin-text-muted font-bold text-xs hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all flex items-center gap-1.5">
                     <XCircle className="w-3.5 h-3.5" /> Ẩn
                   </button>
                 )}
                 {review.status === 'Đã ẩn' && (
-                  <button className="px-4 py-2 rounded-xl bg-[#4F1F76]/20 border border-[#4F1F76]/30 text-[#8A8F98] font-bold text-xs hover:text-[#FFFFFF] transition-all flex items-center gap-1.5">
+                  <button className="px-4 py-2 rounded-xl bg-[#4F1F76]/20 border border-admin-border text-admin-text-muted font-bold text-xs hover:text-admin-text transition-all flex items-center gap-1.5">
                     <ThumbsDown className="w-3.5 h-3.5" /> Đã ẩn
                   </button>
                 )}

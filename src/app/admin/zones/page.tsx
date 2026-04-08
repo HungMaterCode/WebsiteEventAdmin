@@ -17,8 +17,8 @@ export default function AdminZonesPage() {
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Quản Lý Khu Vực</h2>
-          <p className="text-[#8A8F98] text-sm mt-1">Theo dõi sức chứa và luồng người tham dự theo từng khu vực trải nghiệm</p>
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text">Quản Lý Khu Vực</h2>
+          <p className="text-admin-text-muted text-sm mt-1">Theo dõi sức chứa và luồng người tham dự theo từng khu vực trải nghiệm</p>
         </div>
       </div>
 
@@ -35,7 +35,7 @@ export default function AdminZonesPage() {
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <s.icon className={`w-16 h-16 ${s.color}`} />
             </div>
-            <div className="text-[#8A8F98] text-[10px] font-bold uppercase tracking-widest mb-2">{s.label}</div>
+            <div className="text-admin-text-muted text-[10px] font-bold uppercase tracking-widest mb-2">{s.label}</div>
             <div className={`text-2xl font-display font-black ${s.color}`}>{s.value}</div>
           </motion.div>
         ))}
@@ -48,7 +48,7 @@ export default function AdminZonesPage() {
           const barColor = pct >= 90 ? '#FF0088' : pct >= 70 ? '#E6C753' : zone.color;
           return (
             <motion.div key={zone.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              className="glass-card p-6 rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 shadow-xl relative overflow-hidden group hover:border-white/20 transition-all">
+              className="glass-card p-6 rounded-[2rem] bg-admin-panel/80 backdrop-blur-md border border-admin-border shadow-xl relative overflow-hidden group hover:border-white/20 transition-all">
               {/* Background glow */}
               <div className="absolute top-0 right-0 w-40 h-40 rounded-full blur-[80px] -mr-20 -mt-20 opacity-10" style={{ background: zone.color }} />
 
@@ -57,9 +57,9 @@ export default function AdminZonesPage() {
                   <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border" style={{ color: zone.color, borderColor: zone.color + '40', background: zone.color + '15' }}>
                     {zone.type} · {zone.id}
                   </span>
-                  <h3 className="text-lg font-display font-black text-[#FFFFFF] mt-3 leading-tight">{zone.name}</h3>
+                  <h3 className="text-lg font-display font-black text-admin-text mt-3 leading-tight">{zone.name}</h3>
                 </div>
-                <button className="p-2 rounded-xl bg-white/5 text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-white/10 transition-all shrink-0 ml-2">
+                <button className="p-2 rounded-xl bg-white/5 text-admin-text-muted hover:text-admin-text hover:bg-white/10 transition-all shrink-0 ml-2">
                   <Edit2 className="w-4 h-4" />
                 </button>
               </div>
@@ -67,7 +67,7 @@ export default function AdminZonesPage() {
               {/* Capacity Bar */}
               <div className="space-y-2 relative z-10">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest">Lấp Đầy</span>
+                  <span className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest">Lấp Đầy</span>
                   <span className="font-display font-black text-lg" style={{ color: barColor }}>{pct}%</span>
                 </div>
                 <div className="h-3 rounded-full bg-white/5 border border-white/5 overflow-hidden">
@@ -77,9 +77,9 @@ export default function AdminZonesPage() {
                     style={{ background: `linear-gradient(90deg, ${barColor}80, ${barColor})`, boxShadow: `0 0 12px ${barColor}60` }}
                   />
                 </div>
-                <div className="flex justify-between text-[10px] text-[#8A8F98] font-bold">
-                  <span><span className="text-[#FFFFFF]">{zone.current.toLocaleString()}</span> người</span>
-                  <span>Tối đa <span className="text-[#FFFFFF]">{zone.capacity.toLocaleString()}</span></span>
+                <div className="flex justify-between text-[10px] text-admin-text-muted font-bold">
+                  <span><span className="text-admin-text">{zone.current.toLocaleString()}</span> người</span>
+                  <span>Tối đa <span className="text-admin-text">{zone.capacity.toLocaleString()}</span></span>
                 </div>
               </div>
 

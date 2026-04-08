@@ -48,14 +48,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#060010] text-[#FFFFFF] font-sans selection:bg-[#E6C753] selection:text-[#060010] flex overflow-hidden">
+    <div className="min-h-screen bg-admin-bg text-admin-text font-sans selection:bg-magenta selection:text-admin-text flex overflow-hidden">
       {/* Sidebar Overlay (Mobile) */}
-      <div className={`fixed inset-0 bg-[#060010]/80 backdrop-blur-sm z-40 lg:hidden ${false ? 'block' : 'hidden'}`} onClick={() => {}}></div>
+      <div className={`fixed inset-0 bg-admin-bg/80 backdrop-blur-sm z-40 lg:hidden ${false ? 'block' : 'hidden'}`} onClick={() => {}}></div>
 
       {/* Sidebar components */}
       <motion.aside 
         animate={{ width: isSidebarCollapsed ? 80 : 280 }}
-        className="fixed lg:relative z-50 h-screen bg-[#0D0716] border-r border-[#4F1F76]/30 flex flex-col pt-6 shrink-0"
+        className="fixed lg:relative z-50 h-screen bg-admin-panel border-r border-admin-border flex flex-col pt-6 shrink-0"
       >
         <div className="px-6 mb-8 flex items-center justify-between">
           <Link href="/" className={`font-display font-black uppercase tracking-widest ${isSidebarCollapsed ? 'hidden' : 'block'}`}>
@@ -74,11 +74,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
                   ${isActive 
                     ? 'bg-gradient-to-r from-[#00FFFF]/20 to-transparent border-l-4 border-[#00FFFF] text-[#00FFFF]' 
-                    : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-[#FFFFFF]'
+                    : 'text-admin-text-muted hover:bg-black/5 dark:hover:bg-[#4F1F76]/20 hover:text-admin-text'
                   }`}
                 title={item.label}
               >
-                <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
+                <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-admin-text-muted group-hover:text-[#FF0088]'}`}>
                   {item.icon}
                 </div>
                 {!isSidebarCollapsed && (
@@ -92,11 +92,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div className="p-4 border-t border-[#4F1F76]/30 mt-auto">
+        <div className="p-4 border-t border-admin-border mt-auto">
           {!isSidebarCollapsed && (
-            <div className="px-4 py-3 bg-[#4F1F76]/10 rounded-xl border border-[#4F1F76]/30 mb-4 flex items-center justify-between">
+            <div className="px-4 py-3 bg-[#4F1F76]/10 rounded-xl border border-admin-border mb-4 flex items-center justify-between">
               <div>
-                <div className="text-xs text-[#8A8F98]">Quyền hạn</div>
+                <div className="text-xs text-admin-text-muted">Quyền hạn</div>
                 <div className="text-sm font-bold text-[#E6C753]">ADMIN</div>
               </div>
               <CheckCircle2 className="w-5 h-5 text-[#00FFFF]" />
@@ -104,7 +104,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           )}
           <button 
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
-            className="w-full flex items-center justify-center p-2 rounded-lg text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-white transition-colors"
+            className="w-full flex items-center justify-center p-2 rounded-lg text-admin-text-muted hover:bg-black/5 dark:hover:bg-white/10 hover:text-admin-text transition-colors"
           >
             {isSidebarCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
           </button>
@@ -112,12 +112,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#4F1F76]/10 via-[#060010] to-[#060010]">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-transparent via-admin-bg to-admin-bg">
         
         {/* Top Header */}
-        <header className="h-20 bg-[#0D0716]/80 backdrop-blur-md border-b border-[#4F1F76]/30 flex items-center justify-between px-6 shrink-0 relative z-30">
+        <header className="h-20 bg-admin-panel/80 backdrop-blur-md border-b border-admin-border flex items-center justify-between px-6 shrink-0 relative z-30">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl md:text-2xl font-display font-bold uppercase tracking-widest text-[#FFFFFF]">Quản Trị Hệ Thống</h1>
+            <h1 className="text-xl md:text-2xl font-display font-bold uppercase tracking-widest text-admin-text">Quản Trị Hệ Thống</h1>
           </div>
 
           <div className="flex items-center gap-6 relative">
@@ -131,29 +131,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="relative">
               <button 
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-3 hover:bg-[#4F1F76]/20 py-2 px-3 rounded-xl transition-colors"
+                className="flex items-center gap-3 hover:bg-black/5 dark:hover:bg-white/10 py-2 px-3 rounded-xl transition-colors"
               >
                 <div className="w-10 h-10 rounded-full border-2 border-[#E6C753] p-0.5 glow-gold shadow-[0_0_10px_rgba(230,199,83,0.3)] shrink-0">
                   <div className="w-full h-full rounded-full bg-[#4F1F76]/50 flex items-center justify-center">
-                    <span className="text-[#FFFFFF] font-bold text-sm">TVH</span>
+                    <span className="text-admin-text font-bold text-sm">TVH</span>
                   </div>
                 </div>
                 <div className="hidden md:block text-left">
-                  <div className="text-sm font-bold text-[#FFFFFF]">Trần Vũ Hùng</div>
-                  <div className="text-[10px] uppercase tracking-widest text-[#8A8F98]">admin@eventadmin.vn</div>
+                  <div className="text-sm font-bold text-admin-text">Trần Vũ Hùng</div>
+                  <div className="text-[10px] uppercase tracking-widest text-admin-text-muted">admin@eventadmin.vn</div>
                 </div>
-                <ChevronDown className={`w-4 h-4 text-[#8A8F98] transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-admin-text-muted transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
               </button>
 
               <AnimatePresence>
                 {showProfileMenu && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-56 bg-[#0D0716] border border-[#4F1F76]/50 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden z-50"
+                    className="absolute right-0 mt-2 w-56 bg-admin-panel border border-admin-border rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden z-50"
                   >
-                    <div className="p-4 border-b border-[#4F1F76]/30 bg-gradient-to-br from-[#4F1F76]/20 to-transparent">
+                    <div className="p-4 border-b border-admin-border bg-gradient-to-br from-black/5 dark:from-[#4F1F76]/20 to-transparent">
                       <div className="font-bold text-[#E6C753] mb-1">Phiên bản: 1.0.0</div>
-                      <div className="text-xs text-[#8A8F98]">Bản quyền thuộc Neon Heritage</div>
+                      <div className="text-xs text-admin-text-muted">Bản quyền thuộc Neon Heritage</div>
                     </div>
                     <button 
                       onClick={handleSignOut}
