@@ -1,17 +1,49 @@
 'use client';
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Menu, User, LogOut, ChevronDown } from 'lucide-react';
+import { X, Menu, User, LogOut, ChevronDown, Ticket, ChevronRight, ShieldOff } from 'lucide-react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import GoogleLoginButton from '../auth/GoogleLoginButton';
 
-export default function Navbar({ onOpenBooking, onOpenStatus }: { onOpenBooking?: (type: 'GA' | 'VIP') => void, onOpenStatus?: () => void }) {
+export default function Navbar({ 
+  onOpenBooking, 
+  onOpenStatus,
+  onOpenMyTickets,
+  isLoginModalOpen: propIsLoginModalOpen, 
+  setIsLoginModalOpen: propSetIsLoginModalOpen 
+}: { 
+  onOpenBooking?: (type: 'GA' | 'VIP' | null) => void, 
+  onOpenStatus?: () => void,
+  onOpenMyTickets?: () => void,
+  isLoginModalOpen?: boolean,
+  setIsLoginModalOpen?: (open: boolean) => void
+}) {
   const { data: session } = useSession();
+  const [internalLoginModalOpen, setInternalLoginModalOpen] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
+  const [isMobileSubMenuOpen, setIsMobileSubMenuOpen] = React.useState(false);
+  const [imageError, setImageError] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+
+  const isLoginModalOpen = propIsLoginModalOpen ?? internalLoginModalOpen;
+  const setIsLoginModalOpen = propSetIsLoginModalOpen ?? setInternalLoginModalOpen;
+
+  const isLoggedIn = !!session?.user;
+  const isUserAccount = session?.user && (session.user as any).role === 'USER';
+  const isAdmin = session?.user && (session.user as any).role === 'ADMIN';
+
+  // Cơ chế "Ra khỏi Admin là hủy phiên": 
+  // Nếu phát hiện là Admin ở trang công khai, tự động đăng xuất
+  React.useEffect(() => {
+    if (isAdmin && typeof window !== 'undefined') {
+      const isPublicPath = !window.location.pathname.startsWith('/admin');
+      if (isPublicPath) {
+        signOut({ callbackUrl: '/', redirect: true });
+      }
+    }
+  }, [isAdmin]);
 
   React.useEffect(() => {
     setMounted(true);
@@ -44,18 +76,28 @@ export default function Navbar({ onOpenBooking, onOpenStatus }: { onOpenBooking?
               <a key={link.name} href={link.href} className="text-sm font-bold uppercase tracking-wider text-gray-300 hover:text-cyan transition-colors">{link.name}</a>
             ))}
             
-            {session?.user ? (
+            {isUserAccount ? (
               <div className="relative">
                 <button 
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
                 >
-                  {session.user.image ? (
-                    <img src={session.user.image} alt={session.user.name || ''} className="w-6 h-6 rounded-full border border-cyan/30" />
+                   {session?.user?.image && !imageError ? (
+                    <img 
+                      src={session.user.image!} 
+                      alt={session.user.name ?? ''} 
+                      className="w-6 h-6 rounded-full border border-cyan/30" 
+                      referrerPolicy="no-referrer"
+                      onError={() => setImageError(true)}
+                    />
                   ) : (
                     <User className="w-5 h-5 text-cyan" />
                   )}
-                  <span className="text-sm font-bold text-silver truncate max-w-[100px]">{session.user.name?.split(' ').pop()}</span>
+                  <span className="text-sm font-bold text-silver truncate max-w-[100px]">
+                    {session?.user?.name?.split(' ').length === 1 
+                      ? session?.user?.name 
+                      : session?.user?.name?.split(' ').pop()}
+                  </span>
                   <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -69,13 +111,17 @@ export default function Navbar({ onOpenBooking, onOpenStatus }: { onOpenBooking?
                     >
                       <div className="p-4 border-b border-royal/10">
                         <p className="text-xs text-gray-500 mb-1">Đã đăng nhập</p>
-                        <p className="text-sm font-bold text-silver truncate">{session.user.email}</p>
+                        <p className="text-sm font-bold text-silver truncate">{session?.user?.email}</p>
                       </div>
                       <button 
-                        onClick={() => onOpenStatus?.()}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-cyan transition-all"
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          onOpenMyTickets?.();
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-cyan transition-all border-b border-royal/10"
                       >
-                        Trạng thái vé của tôi
+                        <Ticket className="w-4 h-4" />
+                        Lịch sử mua vé
                       </button>
                       <button 
                         onClick={() => signOut()}
@@ -88,6 +134,23 @@ export default function Navbar({ onOpenBooking, onOpenStatus }: { onOpenBooking?
                   )}
                 </AnimatePresence>
               </div>
+            ) : isAdmin ? (
+              <div className="flex items-center gap-3">
+                <Link 
+                  href="/admin"
+                  className="px-6 py-2 rounded-full bg-cyan/10 border border-cyan/30 text-cyan font-bold uppercase tracking-wider hover:bg-cyan/20 transition-all text-sm flex items-center gap-2"
+                >
+                  <ShieldOff className="w-4 h-4" />
+                  Quản trị
+                </Link>
+                <button 
+                  onClick={() => signOut()}
+                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 text-magenta flex items-center justify-center hover:bg-magenta/10 transition-all"
+                  title="Đăng xuất"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
             ) : (
               <button 
                 onClick={() => setIsLoginModalOpen(true)}
@@ -98,7 +161,7 @@ export default function Navbar({ onOpenBooking, onOpenStatus }: { onOpenBooking?
               </button>
             )}
 
-            <button suppressHydrationWarning onClick={() => onOpenBooking ? onOpenBooking('GA') : window.location.href = '/'} className="px-6 py-2 rounded-full bg-magenta/10 border border-magenta text-magenta font-bold uppercase tracking-wider hover:bg-magenta hover:text-white transition-all glow-magenta text-sm">Mua Vé</button>
+            <button suppressHydrationWarning onClick={() => onOpenBooking ? onOpenBooking(null) : window.location.href = '/'} className="px-6 py-2 rounded-full bg-magenta/10 border border-magenta text-magenta font-bold uppercase tracking-wider hover:bg-magenta hover:text-white transition-all glow-magenta text-sm">Mua Vé</button>
           </div>
           <button suppressHydrationWarning onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-silver">
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -110,16 +173,81 @@ export default function Navbar({ onOpenBooking, onOpenStatus }: { onOpenBooking?
               <a key={link.name} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className="block text-lg font-bold uppercase tracking-widest text-silver hover:text-cyan transition-colors">{link.name}</a>
             ))}
             
-            {session?.user ? (
+            {isUserAccount ? (
               <div className="space-y-4">
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
-                  {session.user.image && <img src={session.user.image} alt="" className="w-8 h-8 rounded-full" />}
-                  <div>
-                    <p className="text-sm font-bold text-silver">{session.user.name}</p>
-                    <p className="text-xs text-gray-500">{session.user.email}</p>
-                  </div>
+                <div className="space-y-2">
+                  <button 
+                    onClick={() => setIsMobileSubMenuOpen(!isMobileSubMenuOpen)}
+                    className={`w-full flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 transition-all group ${isMobileSubMenuOpen ? 'border-[#00FFFF]/50 bg-[#00FFFF]/5' : ''}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {session?.user?.image && !imageError ? (
+                        <img 
+                          src={session.user.image!} 
+                          alt="" 
+                          className="w-8 h-8 rounded-full border border-cyan/30" 
+                          referrerPolicy="no-referrer"
+                          onError={() => setImageError(true)}
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                          <User className="w-4 h-4 text-cyan" />
+                        </div>
+                      )}
+                      <div className="text-left">
+                        <p className="text-sm font-bold text-silver">{session?.user?.name}</p>
+                        <p className="text-xs text-gray-500">{session?.user?.email}</p>
+                      </div>
+                    </div>
+                    <ChevronRight className={`w-4 h-4 text-gray-500 group-hover:text-cyan transition-transform ${isMobileSubMenuOpen ? 'rotate-90' : ''}`} />
+                  </button>
+
+                  <AnimatePresence>
+                    {isMobileSubMenuOpen && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden bg-white/[0.02] rounded-xl border border-white/5"
+                      >
+                        <button 
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsMobileSubMenuOpen(false);
+                            onOpenMyTickets?.();
+                          }}
+                          className="w-full flex items-center gap-3 px-6 py-4 text-sm text-gray-300 hover:text-cyan transition-all"
+                        >
+                          <Ticket className="w-4 h-4" />
+                          Lịch sử mua vé
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-                <button suppressHydrationWarning onClick={() => { setIsMobileMenuOpen(false); signOut(); }} className="w-full py-4 rounded-xl bg-magenta/10 border border-magenta text-magenta font-bold uppercase tracking-widest">Đăng xuất</button>
+
+                <button suppressHydrationWarning onClick={() => { setIsMobileMenuOpen(false); signOut(); }} className="w-full py-4 rounded-xl bg-magenta/10 border border-magenta text-magenta font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Đăng xuất
+                </button>
+              </div>
+            ) : isAdmin ? (
+              <div className="space-y-4">
+                <Link 
+                  href="/admin"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full py-4 rounded-xl bg-cyan/10 border border-cyan/50 text-cyan font-bold uppercase tracking-widest flex items-center justify-center gap-2"
+                >
+                  <ShieldOff className="w-4 h-4" />
+                  Bảng Quản Trị
+                </Link>
+                <button 
+                  onClick={() => { setIsMobileMenuOpen(false); signOut(); }}
+                  className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-magenta font-bold uppercase tracking-widest flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Đăng xuất
+                </button>
               </div>
             ) : (
               <button suppressHydrationWarning onClick={() => { setIsMobileMenuOpen(false); setIsLoginModalOpen(true); }} className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-silver font-bold uppercase tracking-widest">Đăng nhập</button>

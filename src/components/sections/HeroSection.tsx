@@ -5,7 +5,7 @@ import { motion } from 'motion/react';
 import { Calendar, Clock, MapPin, Ticket } from 'lucide-react';
 import CountdownTimer from '@/components/ui/CountdownTimer';
 
-export default function HeroSection({ onOpenBooking }: { onOpenBooking: (type: 'GA' | 'VIP') => void }) {
+export default function HeroSection({ onOpenBooking }: { onOpenBooking: (type: 'GA' | 'VIP' | null) => void }) {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -26,8 +26,8 @@ export default function HeroSection({ onOpenBooking }: { onOpenBooking: (type: '
           <span className="inline-block py-1.5 px-4 rounded-full border border-cyan/30 bg-cyan/10 text-cyan text-[10px] md:text-sm font-medium tracking-[0.2em] mb-6 uppercase shadow-[0_0_15px_rgba(0,255,255,0.2)]">
             Neon Heritage Festival
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black uppercase leading-[1.1] mb-6">
-            <span className="text-gradient block pb-2">Dòng Chảy Di Sản</span>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black uppercase leading-[1.2] mb-6">
+            <span className="text-gradient block pb-2 pt-4">Dòng Chảy Di Sản</span>
             <span className="text-silver text-xl sm:text-2xl md:text-5xl lg:text-6xl block mt-2 tracking-wide">Bế Mạc Festival Ninh Bình</span>
           </h1>
         </motion.div>
@@ -54,7 +54,7 @@ export default function HeroSection({ onOpenBooking }: { onOpenBooking: (type: '
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.8 }} className="mt-12">
           <button
             suppressHydrationWarning
-            onClick={() => onOpenBooking('GA')}
+            onClick={() => onOpenBooking(null)}
             className="group relative px-10 py-5 bg-gradient-primary rounded-full font-bold text-xl tracking-wider uppercase overflow-hidden glow-magenta transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,0,136,0.8)]"
           >
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
