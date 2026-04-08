@@ -32,19 +32,33 @@ export async function POST(req: Request) {
     const bookingCode = generateBookingCode();
     
     // Create the booking record
-    const booking = await prisma.booking.create({
-      data: {
-        bookingCode,
-        userId: (session?.user as any)?.id || null,
-        name: body.name,
-        email: body.email || 'ticket-admin@event.com',
-        phone: body.phone || '',
-        ticketType: body.ticketType || 'GA',
-        quantity: parseInt(body.quantity?.toString() || '1'),
-        totalPrice: parseInt(body.totalPrice?.toString() || '0'),
-        ticketStatus: 'CREATED',
-        accessories: body.accessories || [],
-      },
+    const booking = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.create({
+        data: {
+          bookingCode,
+          userId: (session?.user as any)?.id || null,
+          name: body.name,
+          email: body.email || 'ticket-admin@event.com',
+          phone: body.phone || '',
+          ticketType: body.ticketType || 'GA',
+          quantity: parseInt(body.quantity?.toString() || '1'),
+          totalPrice: parseInt(body.totalPrice?.toString() || '0'),
+          discountCode: body.discountCode || null,
+          discountAmount: parseInt(body.discountAmount?.toString() || '0'),
+          ticketStatus: 'CREATED',
+          accessories: body.accessories || [],
+        },
+      });
+
+      // Increment campaign usage if a code was applied
+      if (body.discountCode) {
+        await tx.campaign.update({
+          where: { code: body.discountCode.toUpperCase() },
+          data: { used: { increment: 1 } },
+        });
+      }
+
+      return b;
     });
 
     console.log('--- BOOKING CREATED ---', booking.bookingCode);

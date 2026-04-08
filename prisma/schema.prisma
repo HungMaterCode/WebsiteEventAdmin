@@ -94,6 +94,8 @@ model Booking {
   ticketType      String
   quantity        Int
   totalPrice      Int
+  discountCode    String?
+  discountAmount  Int       @default(0)
   ticketStatus    String    @default("CREATED")
   accessories     Json?
   checkInTime     DateTime?
@@ -107,6 +109,23 @@ model Booking {
   status          String    @default("PENDING")
   user            User?     @relation(fields: [userId], references: [id])
 }
+
+model Campaign {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  type        String   // 'PERCENT' | 'AMOUNT'
+  value       Int
+  used        Int      @default(0)
+  limit       Int      @default(0) // 0 means unlimited
+  status      String   @default("ACTIVE")
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 
 model Faq {
   id        Int     @id @default(autoincrement())
