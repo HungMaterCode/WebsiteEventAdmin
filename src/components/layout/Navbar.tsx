@@ -10,21 +10,25 @@ export default function Navbar({
   onOpenBooking, 
   onOpenStatus,
   onOpenMyTickets,
-  isLoginModalOpen, 
-  setIsLoginModalOpen 
+  isLoginModalOpen: propIsLoginModalOpen, 
+  setIsLoginModalOpen: propSetIsLoginModalOpen 
 }: { 
   onOpenBooking?: (type: 'GA' | 'VIP' | null) => void, 
   onOpenStatus?: () => void,
   onOpenMyTickets?: () => void,
-  isLoginModalOpen: boolean,
-  setIsLoginModalOpen: (open: boolean) => void
+  isLoginModalOpen?: boolean,
+  setIsLoginModalOpen?: (open: boolean) => void
 }) {
   const { data: session } = useSession();
+  const [internalLoginModalOpen, setInternalLoginModalOpen] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
   const [isMobileSubMenuOpen, setIsMobileSubMenuOpen] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+
+  const isLoginModalOpen = propIsLoginModalOpen ?? internalLoginModalOpen;
+  const setIsLoginModalOpen = propSetIsLoginModalOpen ?? setInternalLoginModalOpen;
 
   React.useEffect(() => {
     setMounted(true);
