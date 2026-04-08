@@ -50,8 +50,9 @@ export async function POST(req: Request) {
     console.log('--- BOOKING CREATED ---', booking.bookingCode);
 
     // Send confirmation email - AWAIT this to ensure Vercel doesn't kill the process
+    let emailStatus = { sent: false, error: null as any };
     try {
-      await sendTicketEmail({
+      const emailResult = await sendTicketEmail({
         bookingCode,
         name: booking.name,
         email: booking.email,
@@ -59,13 +60,27 @@ export async function POST(req: Request) {
         quantity: booking.quantity,
         totalPrice: booking.totalPrice,
       });
-      console.log('--- EMAIL DISPATCHED SUCCESSFULLY ---');
-    } catch (err) {
-      console.error('--- EMAIL DISPATCH FAILED ---', err);
-      // We still return 201 because the booking WAS created in the DB
+      
+      if (emailResult.success) {
+        emailStatus.sent = true;
+        console.log('--- EMAIL DISPATCHED SUCCESSFULLY ---');
+      } else {
+        emailStatus.error = emailResult.error;
+        console.error('--- EMAIL DISPATCH RETURNED ERROR ---', emailResult.error);
+      }
+    } catch (err: any) {
+      emailStatus.error = err.message || err;
+      console.error('--- EMAIL DISPATCH EXCEPTION ---', err);
     }
 
-    return NextResponse.json(booking, { status: 201 });
+    return NextResponse.json({
+      ...booking,
+      debug: {
+        emailSent: emailStatus.sent,
+        emailError: emailStatus.error,
+        receivedMethod: body.paymentMethod
+      }
+    }, { status: 201 });
   } catch (error: any) {
     console.error('--- BOOKING ERROR ---', error.message || error);
     // Explicitly return JSON even on severe errors
