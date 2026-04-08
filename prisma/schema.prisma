@@ -106,6 +106,7 @@ model Booking {
   updatedAt       DateTime  @updatedAt
   status          String    @default("PENDING")
   user            User?     @relation(fields: [userId], references: [id])
+  transactions    Transaction[]
 }
 
 model Faq {
@@ -130,6 +131,7 @@ model Transaction {
   amount    Int
   status    String
   bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id])
   timestamp DateTime @default(now())
 }
 
