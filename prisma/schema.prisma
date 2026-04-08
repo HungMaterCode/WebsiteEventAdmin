@@ -104,6 +104,7 @@ model Booking {
   lotoPrintTime   DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  status          String    @default("PENDING")
   user            User?     @relation(fields: [userId], references: [id])
 }
 
@@ -179,69 +180,10 @@ model Post {
   updatedAt   DateTime  @updatedAt
 }
 
-model CommunityPost {
-  id        Int      @id @default(autoincrement())
-  username  String
-  content   String
-  timestamp String
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
+model SystemSetting {
+  id        String   @id @default("global")
+  data      Json     @default("{}")
   updatedAt DateTime
-}
-
-model GalleryItem {
-  id        Int      @id @default(autoincrement())
-  url       String
-  title     String?
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-}
-
-model LandingPageSettings {
-  id                 Int      @id @default(1)
-  title              String   @default("Dòng Chảy Di Sản Bế Mạc Festival Ninh Bình")
-  subtitle           String?  @default("Neon Heritage Festival")
-  eventDate          DateTime @default(dbgenerated("'2024-12-31 20:00:00'::timestamp without time zone"))
-  location           String?  @default("Thung Nham, Ninh Bình")
-  timeRange          String?  @default("20:00 - 00:30")
-  updatedAt          DateTime
-  videoSubtitle      String?  @default("CHẠM ĐỂ TRẢI NGHIỆM KHÔNG GIAN 3D MAPPING")
-  videoTitle         String?  @default("THE CINEMATIC TEASER")
-  videoUrl           String?  @default("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
-  artDescription     String?  @default("Tại Neon Heritage Festival, chúng tôi không chỉ trình diễn âm nhạc. Chúng tôi kể câu chuyện về sự giao thoa giữa quá khứ và tương lai.")
-  artImage           String?  @default("https://picsum.photos/seed/heritage-art/800/800")
-  artItems           Json?    @default("[{\"desc\": \"Nhạc cụ linh hồn của người Tày, Nùng, Thái. Tiếng đàn thanh cao hòa quyện cùng âm hưởng điện tử hiện đại.\", \"icon\": \"Music\", \"name\": \"Đàn Tính\"}, {\"desc\": \"Âm vang hào hùng từ những chiếc trống truyền thống, tạo nên nhịp đập mạnh mẽ cho dòng chảy di sản.\", \"icon\": \"Sparkles\", \"name\": \"Trống Hội\"}, {\"desc\": \"Giai điệu phóng khoáng của núi rừng Tây Bắc được tái hiện qua lăng kính âm nhạc đương đại.\", \"icon\": \"Music\", \"name\": \"Khèn Mông\"}]")
-  artSubtitle        String?  @default("Di Sản Cyber")
-  artTitle           String?  @default("Nghệ Thuật")
-  gallerySubtitle    String?  @default("Di Sản")
-  galleryTitle       String?  @default("Khoảnh Khắc")
-  timelineSubtitle   String?  @default("Sự Kiện")
-  timelineTitle      String?  @default("Lộ Trình")
-  communityFollowers String?  @default("25K+")
-  communityHashtag   String?  @default("#NeonHeritage2024")
-  communityMentions  String?  @default("150K+")
-  travelAdvice       String?  @default("Bạn nên đến Ninh Bình từ sớm để tham quan các danh thắng trước khi hòa mình vào không gian âm nhạc.")
-  travelDescription  String?  @default("Ninh Bình không chỉ là nơi diễn ra lễ hội, mà còn là một hành trình khám phá di sản.")
-  travelImage        String?  @default("https://picsum.photos/seed/ninhbinh-travel/800/1000")
-  travelItems        Json?    @default("[{\"bg\": \"bg-cyan/10\", \"desc\": \"Chỉ mất 1.5 - 2 giờ di chuyển từ Hà Nội qua cao tốc Pháp Vân - Cầu Giẽ.\", \"icon\": \"Car\", \"color\": \"text-cyan\", \"title\": \"Đường Bộ\"}, {\"bg\": \"bg-magenta/10\", \"desc\": \"Bay đến sân bay Nội Bài, sau đó sử dụng dịch vụ xe Limousine đưa đón.\", \"icon\": \"Plane\", \"color\": \"text-magenta\", \"title\": \"Đường Hàng Không\"}, {\"bg\": \"bg-gold/10\", \"desc\": \"Hệ thống Resort & Homestay cao cấp tại Thung Nham và khu vực lân cận.\", \"icon\": \"Hotel\", \"color\": \"text-gold\", \"title\": \"Lưu Trú\"}]")
-  travelSubtitle     String?  @default("Hành Trình Di Sản")
-  travelTitle        String?  @default("Di Chuyển & Lưu Trú")
-  mapAddress         String?  @default("Thôn Hải Nham, Xã Ninh Hải, Huyện Hoa Lư, Tỉnh Ninh Bình")
-  mapDescription     String?  @default("Sân khấu ngoài trời quy mô lớn, hòa mình vào thiên nhiên.")
-  mapGoogleUrl       String?  @default("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3736.6852504828133!2d105.914972575239!3d20.230485981226162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313679633633d3c7%3A0x6336d3c73633d3c7!2sKhu%20du%20l%E1%BB%8Bch%20sinh%20th%C3%A1i%20Thung%20Nham!5e0!3m2!1svi!2s!4v1712470000000!5m2!1svi!2s")
-  mapSubtitle        String?  @default("Khu Du Lịch Sinh Thái Thung Nham, Ninh Bình.")
-  mapTitle           String?  @default("Địa Điểm Tổ Chức")
-}
-
-model TimelineItem {
-  id          Int      @id @default(autoincrement())
-  time        String
-  title       String
-  description String?
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
 }
 
 enum Role {

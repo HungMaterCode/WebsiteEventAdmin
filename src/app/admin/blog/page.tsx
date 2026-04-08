@@ -9,9 +9,16 @@ import {
 } from 'lucide-react';
 import Toast from '@/components/ui/Toast';
 import SEOEditor from '@/components/ui/SEOEditor';
+import { PostStatus, Post } from '@/types/blog';
+
+const FILTER_OPTIONS: { id: PostStatus; label: string; icon: React.ReactNode }[] = [
+  { id: 'all', label: 'Tất Cả Trạng Thái', icon: <Filter className="w-4 h-4" /> },
+  { id: 'published', label: 'Đã Xuất Bản', icon: <CheckCircle2 className="w-4 h-4" /> },
+  { id: 'draft', label: 'Bản Nháp', icon: <Clock className="w-4 h-4" /> },
+];
 
 export default function AdminBlogPage() {
-  const [posts, setPosts] = React.useState<any[]>([]);
+  const [posts, setPosts] = React.useState<Post[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
@@ -36,6 +43,11 @@ export default function AdminBlogPage() {
     postTitle: ''
   });
 
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState<PostStatus>('all');
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
+
   const fetchPosts = React.useCallback(async () => {
     try {
       const res = await fetch('/api/posts');
@@ -59,7 +71,7 @@ export default function AdminBlogPage() {
     fetchPosts();
   }, []);
 
-  const handleOpenModal = (post: any = null) => {
+  const handleOpenModal = (post: Post | null = null) => {
     if (post) {
       setFormData({
         id: post.id,
@@ -115,7 +127,7 @@ export default function AdminBlogPage() {
     }
   };
 
-  const requestDelete = (post: any) => {
+  const requestDelete = (post: Post) => {
     setDeleteConfirm({
       isOpen: true,
       postId: post.id,
@@ -141,6 +153,24 @@ export default function AdminBlogPage() {
     }
   };
 
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         post.seoTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+                         
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'published' && post.published) || 
+                         (statusFilter === 'draft' && !post.published);
+                         
+    return matchesSearch && matchesStatus;
+  });
+
+  const getStatusLabel = () => {
+    if (statusFilter === 'published') return 'Đã Xuất Bản';
+    if (statusFilter === 'draft') return 'Bản Nháp';
+    return 'Tất Cả Trạng Thái';
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -163,12 +193,61 @@ export default function AdminBlogPage() {
             <input 
               type="text" 
               placeholder="Tìm kiếm bài viết..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-[#4F1F76]/50 text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20 transition-all w-full md:w-auto justify-center">
-            <Filter className="w-5 h-5" /> Lọc Theo Trạng Thái
-          </button>
+          <div className="relative w-full md:w-auto">
+            <button 
+              onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all w-full md:w-auto justify-center ${
+                statusFilter !== 'all' ? 'border-[#00FFFF] text-[#00FFFF] bg-[#00FFFF]/5' : 'border-[#4F1F76]/50 text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20'
+              }`}
+            >
+              <Filter className={`w-5 h-5 ${statusFilter !== 'all' ? 'animate-pulse' : ''}`} /> {getStatusLabel()}
+            </button>
+
+            <AnimatePresence>
+              {isFilterDropdownOpen && (
+                <>
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }} 
+                    onClick={() => setIsFilterDropdownOpen(false)}
+                    className="fixed inset-0 z-10"
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-2 w-full md:w-56 bg-[#0D0716]/95 backdrop-blur-xl border border-[#4F1F76]/50 rounded-2xl shadow-2xl p-2 z-20 overflow-hidden"
+                  >
+                    {FILTER_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => {
+                          setStatusFilter(opt.id);
+                          setIsFilterDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                          statusFilter === opt.id 
+                            ? 'bg-[#00FFFF]/10 text-[#00FFFF]' 
+                            : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-white'
+                        }`} 
+                      >
+                        <span className={statusFilter === opt.id ? 'text-[#00FFFF]' : 'text-[#4F1F76]'}>
+                          {opt.icon}
+                        </span>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -185,9 +264,9 @@ export default function AdminBlogPage() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={5} className="p-8 text-center text-[#8A8F98]">Đang tải dữ liệu...</td></tr>
-              ) : posts.length === 0 ? (
-                <tr><td colSpan={5} className="p-8 text-center text-[#8A8F98]">Chưa có bài viết nào.</td></tr>
-              ) : posts.map((post) => (
+              ) : filteredPosts.length === 0 ? (
+                <tr><td colSpan={5} className="p-8 text-center text-[#8A8F98]">Không tìm thấy bài viết phù hợp.</td></tr>
+              ) : filteredPosts.map((post) => (
                 <tr key={post.id} className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-4">
