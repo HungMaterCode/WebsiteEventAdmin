@@ -46,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const allowedMenuItems = MENU_ITEMS.filter(m => roles.some(r => m.role.includes(r as any)));
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' });
+    await signOut({ callbackUrl: '/', redirect: true });
   };
 
   if (pathname === '/admin/login') {

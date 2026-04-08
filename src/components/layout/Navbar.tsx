@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Menu, User, LogOut, ChevronDown, Ticket, ChevronRight } from 'lucide-react';
+import { X, Menu, User, LogOut, ChevronDown, Ticket, ChevronRight, ShieldOff } from 'lucide-react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import GoogleLoginButton from '../auth/GoogleLoginButton';
@@ -29,6 +29,21 @@ export default function Navbar({
 
   const isLoginModalOpen = propIsLoginModalOpen ?? internalLoginModalOpen;
   const setIsLoginModalOpen = propSetIsLoginModalOpen ?? setInternalLoginModalOpen;
+
+  const isLoggedIn = !!session?.user;
+  const isUserAccount = session?.user && (session.user as any).role === 'USER';
+  const isAdmin = session?.user && (session.user as any).role === 'ADMIN';
+
+  // Cơ chế "Ra khỏi Admin là hủy phiên": 
+  // Nếu phát hiện là Admin ở trang công khai, tự động đăng xuất
+  React.useEffect(() => {
+    if (isAdmin && typeof window !== 'undefined') {
+      const isPublicPath = !window.location.pathname.startsWith('/admin');
+      if (isPublicPath) {
+        signOut({ callbackUrl: '/', redirect: true });
+      }
+    }
+  }, [isAdmin]);
 
   React.useEffect(() => {
     setMounted(true);
@@ -61,16 +76,16 @@ export default function Navbar({
               <a key={link.name} href={link.href} className="text-sm font-bold uppercase tracking-wider text-gray-300 hover:text-cyan transition-colors">{link.name}</a>
             ))}
             
-            {session?.user ? (
+            {isUserAccount ? (
               <div className="relative">
                 <button 
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
                 >
-                  {session.user.image && !imageError ? (
+                   {session?.user?.image && !imageError ? (
                     <img 
-                      src={session.user.image} 
-                      alt={session.user.name || ''} 
+                      src={session.user.image!} 
+                      alt={session.user.name ?? ''} 
                       className="w-6 h-6 rounded-full border border-cyan/30" 
                       referrerPolicy="no-referrer"
                       onError={() => setImageError(true)}
@@ -78,7 +93,11 @@ export default function Navbar({
                   ) : (
                     <User className="w-5 h-5 text-cyan" />
                   )}
-                  <span className="text-sm font-bold text-silver truncate max-w-[100px]">{session.user.name?.split(' ').pop()}</span>
+                  <span className="text-sm font-bold text-silver truncate max-w-[100px]">
+                    {session?.user?.name?.split(' ').length === 1 
+                      ? session?.user?.name 
+                      : session?.user?.name?.split(' ').pop()}
+                  </span>
                   <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -92,7 +111,7 @@ export default function Navbar({
                     >
                       <div className="p-4 border-b border-royal/10">
                         <p className="text-xs text-gray-500 mb-1">Đã đăng nhập</p>
-                        <p className="text-sm font-bold text-silver truncate">{session.user.email}</p>
+                        <p className="text-sm font-bold text-silver truncate">{session?.user?.email}</p>
                       </div>
                       <button 
                         onClick={() => {
@@ -114,6 +133,23 @@ export default function Navbar({
                     </motion.div>
                   )}
                 </AnimatePresence>
+              </div>
+            ) : isAdmin ? (
+              <div className="flex items-center gap-3">
+                <Link 
+                  href="/admin"
+                  className="px-6 py-2 rounded-full bg-cyan/10 border border-cyan/30 text-cyan font-bold uppercase tracking-wider hover:bg-cyan/20 transition-all text-sm flex items-center gap-2"
+                >
+                  <ShieldOff className="w-4 h-4" />
+                  Quản trị
+                </Link>
+                <button 
+                  onClick={() => signOut()}
+                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 text-magenta flex items-center justify-center hover:bg-magenta/10 transition-all"
+                  title="Đăng xuất"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
             ) : (
               <button 
@@ -137,7 +173,7 @@ export default function Navbar({
               <a key={link.name} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className="block text-lg font-bold uppercase tracking-widest text-silver hover:text-cyan transition-colors">{link.name}</a>
             ))}
             
-            {session?.user ? (
+            {isUserAccount ? (
               <div className="space-y-4">
                 <div className="space-y-2">
                   <button 
@@ -145,9 +181,9 @@ export default function Navbar({
                     className={`w-full flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 transition-all group ${isMobileSubMenuOpen ? 'border-[#00FFFF]/50 bg-[#00FFFF]/5' : ''}`}
                   >
                     <div className="flex items-center gap-3">
-                      {session.user.image && !imageError ? (
+                      {session?.user?.image && !imageError ? (
                         <img 
-                          src={session.user.image} 
+                          src={session.user.image!} 
                           alt="" 
                           className="w-8 h-8 rounded-full border border-cyan/30" 
                           referrerPolicy="no-referrer"
@@ -159,8 +195,8 @@ export default function Navbar({
                         </div>
                       )}
                       <div className="text-left">
-                        <p className="text-sm font-bold text-silver">{session.user.name}</p>
-                        <p className="text-xs text-gray-500">{session.user.email}</p>
+                        <p className="text-sm font-bold text-silver">{session?.user?.name}</p>
+                        <p className="text-xs text-gray-500">{session?.user?.email}</p>
                       </div>
                     </div>
                     <ChevronRight className={`w-4 h-4 text-gray-500 group-hover:text-cyan transition-transform ${isMobileSubMenuOpen ? 'rotate-90' : ''}`} />
@@ -191,6 +227,24 @@ export default function Navbar({
                 </div>
 
                 <button suppressHydrationWarning onClick={() => { setIsMobileMenuOpen(false); signOut(); }} className="w-full py-4 rounded-xl bg-magenta/10 border border-magenta text-magenta font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Đăng xuất
+                </button>
+              </div>
+            ) : isAdmin ? (
+              <div className="space-y-4">
+                <Link 
+                  href="/admin"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full py-4 rounded-xl bg-cyan/10 border border-cyan/50 text-cyan font-bold uppercase tracking-widest flex items-center justify-center gap-2"
+                >
+                  <ShieldOff className="w-4 h-4" />
+                  Bảng Quản Trị
+                </Link>
+                <button 
+                  onClick={() => { setIsMobileMenuOpen(false); signOut(); }}
+                  className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-magenta font-bold uppercase tracking-widest flex items-center justify-center gap-2"
+                >
                   <LogOut className="w-4 h-4" />
                   Đăng xuất
                 </button>

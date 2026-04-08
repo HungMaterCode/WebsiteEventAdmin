@@ -1,15 +1,19 @@
 'use client';
 
 import React from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 export default function GoogleLoginButton() {
-
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handleLogin = async () => {
     setIsLoading(true);
     try {
+      // Nếu đang có session (ví dụ phiên Admin), hãy xóa nó trước để tránh xung đột
+      if (session) {
+        await signOut({ redirect: false });
+      }
       await signIn('google', { callbackUrl: '/' });
     } catch (error) {
       console.error('Google login error:', error);
