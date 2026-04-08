@@ -7,7 +7,7 @@ import {
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
   CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, Star, 
   Newspaper, Lock, BarChart3, Settings,
-  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown
+  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 
@@ -33,7 +33,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Mock roles for now until auth is fully implemented on client side
   const roles = ['ADMIN']; 
@@ -50,11 +56,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-[#060010] text-[#FFFFFF] font-sans selection:bg-[#E6C753] selection:text-[#060010] flex overflow-hidden">
       {/* Sidebar Overlay (Mobile) */}
-      <div className={`fixed inset-0 bg-[#060010]/80 backdrop-blur-sm z-40 lg:hidden ${false ? 'block' : 'hidden'}`} onClick={() => {}}></div>
+      <AnimatePresence>
+        {isMobileSidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#060010]/80 backdrop-blur-sm z-40 lg:hidden" 
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar components */}
       <motion.aside 
-        animate={{ width: isSidebarCollapsed ? 80 : 280 }}
+        initial={false}
+        animate={{ 
+          width: isSidebarCollapsed ? 80 : 280,
+          x: mounted && typeof window !== 'undefined' && window.innerWidth < 1024 
+            ? (isMobileSidebarOpen ? 0 : -280) 
+            : 0
+        }}
+        transition={{ type: 'spring', damping: 20, stiffness: 200 }}
         className="fixed lg:relative z-50 h-screen bg-[#0D0716] border-r border-[#4F1F76]/30 flex flex-col pt-6 shrink-0"
       >
         <div className="px-6 mb-8 flex items-center justify-between">
@@ -71,6 +94,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link
                 key={item.id}
                 href={item.path}
+                onClick={() => {
+                  if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                    setIsMobileSidebarOpen(false);
+                  }
+                }}
                 className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
                   ${isActive 
                     ? 'bg-gradient-to-r from-[#00FFFF]/20 to-transparent border-l-4 border-[#00FFFF] text-[#00FFFF]' 
@@ -117,6 +145,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Top Header */}
         <header className="h-20 bg-[#0D0716]/80 backdrop-blur-md border-b border-[#4F1F76]/30 flex items-center justify-between px-6 shrink-0 relative z-30">
           <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-[#8A8F98] hover:text-white transition-all"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
             <h1 className="text-xl md:text-2xl font-display font-bold uppercase tracking-widest text-[#FFFFFF]">Quản Trị Hệ Thống</h1>
           </div>
 
