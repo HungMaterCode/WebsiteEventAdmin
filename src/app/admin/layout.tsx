@@ -237,7 +237,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 {hasChildren && isExpanded && !isSidebarCollapsed && (
                   <div className="ml-9 border-l border-[#4F1F76]/30 space-y-1 py-1">
-                    {item.children?.map((child) => {
+                    {item.children?.map((child: any) => {
                       const isChildActive = pathname === child.path;
                       return (
                         <Link
