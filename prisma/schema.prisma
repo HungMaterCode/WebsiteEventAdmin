@@ -78,7 +78,7 @@ model Product {
   description String?
   image       String
   category    String?
-  price       Int
+  price       Float
   stock       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -93,9 +93,9 @@ model Booking {
   phone           String
   ticketType      String
   quantity        Int
-  totalPrice      Int
+  totalPrice      Float
   discountCode    String?
-  discountAmount  Int       @default(0)
+  discountAmount  Float       @default(0)
   status          String    @default("PENDING")
   ticketStatus    String    @default("CREATED")
   accessories     Json?
@@ -116,7 +116,7 @@ model Campaign {
   name        String
   description String?
   type        String   // 'PERCENT' | 'AMOUNT'
-  value       Int
+  value       Float
   used        Int      @default(0)
   limit       Int      @default(0) // 0 means unlimited
   status      String   @default("ACTIVE")
@@ -146,7 +146,7 @@ model Zone {
 model Transaction {
   id        String   @id @default(cuid())
   method    String
-  amount    Int
+  amount    Float
   status    String
   bookingId String?
   timestamp DateTime @default(now())
