@@ -1,34 +1,52 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   DollarSign, TrendingUp, TrendingDown, Clock, CheckCircle2,
-  XCircle, Search, Filter, ArrowUpRight, ArrowDownRight
+  XCircle, Search, Filter, ArrowUpRight, ArrowDownRight, Ticket, ShoppingBag
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const mockTransactions = [
-  { id: 'TXN-9941', type: 'Mua vé', customer: 'Nguyễn Văn A', amount: '+3,500,000 VNĐ', gateway: 'VNPay', status: 'Thành công', time: '22:14 - 05/04' },
-  { id: 'TXN-9940', type: 'Mua vé', customer: 'Trần Thị B', amount: '+1,500,000 VNĐ', gateway: 'MoMo', status: 'Thành công', time: '21:50 - 05/04' },
-  { id: 'TXN-9939', type: 'Hoàn tiền', customer: 'Lê Văn C', amount: '-3,000,000 VNĐ', gateway: 'Chuyển khoản', status: 'Đã hoàn', time: '20:33 - 05/04' },
-  { id: 'TXN-9938', type: 'Mua vé', customer: 'Hoàng Minh D', amount: '+7,000,000 VNĐ', gateway: 'VNPay', status: 'Thành công', time: '19:22 - 05/04' },
-  { id: 'TXN-9937', type: 'Mua vé', customer: 'Phạm Thị E', amount: '+1,200,000 VNĐ', gateway: 'MoMo', status: 'Thất bại', time: '18:10 - 05/04' },
-  { id: 'TXN-9936', type: 'Mua vé', customer: 'Đỗ Văn F', amount: '+3,500,000 VNĐ', gateway: 'VNPay', status: 'Thành công', time: '17:05 - 05/04' },
-];
-
-const chartData = [
-  { time: '08:00', value: 15 }, { time: '10:00', value: 55 }, { time: '12:00', value: 30 },
-  { time: '14:00', value: 80 }, { time: '16:00', value: 60 }, { time: '18:00', value: 120 },
-  { time: '20:00', value: 90 }, { time: '22:00', value: 150 },
-];
-
 export default function AdminTransactionsPage() {
-  const [mounted, setMounted] = React.useState(false);
+  const [data, setData] = useState<any>({ transactions: [], stats: { revenueToday: 0, gaTickets: 0, vipTickets: 0, totalOrders: 0 } });
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState('ALL');
+  const [mounted, setMounted] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
+    fetch('/api/admin/transactions')
+      .then(res => res.json())
+      .then(d => {
+        setData(d);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch transactions:', err);
+        setLoading(false);
+      });
   }, []);
+
+  const filteredTransactions = data.transactions.filter((tx: any) => {
+    const matchesSearch = 
+      tx.displayId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (tx.bookingCode && tx.bookingCode.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      tx.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tx.gateway.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesType = filterType === 'ALL' || tx.type.includes(filterType);
+    
+    return matchesSearch && matchesType;
+  });
+
+  const chartData = [
+    { time: '08:00', value: 0 }, 
+    { time: '12:00', value: data.stats.revenueToday / 2000000 }, 
+    { time: '16:00', value: data.stats.revenueToday / 1500000 }, 
+    { time: '20:00', value: data.stats.revenueToday / 1000000 }
+  ];
 
   const getStatusStyle = (s: string) => {
     if (s === 'Thành công') return 'bg-[#00C099]/10 text-[#00C099] border-[#00C099]/30';
@@ -37,21 +55,27 @@ export default function AdminTransactionsPage() {
     return 'bg-[#8A8F98]/10 text-[#8A8F98] border-[#8A8F98]/30';
   };
 
+  const stats = [
+    { label: 'Doanh Thu Hôm Nay', value: `${(data.stats.revenueToday / 1000000).toFixed(1)}M VNĐ`, icon: DollarSign, color: 'text-[#00FFFF]', bg: 'bg-[#00FFFF]/10 border-[#00FFFF]/20', trend: '+100%', up: true },
+    { label: 'Vé GA Đã Bán', value: data.stats.gaTickets.toString(), icon: Ticket, color: 'text-[#00C099]', bg: 'bg-[#00C099]/10 border-[#00C099]/20', trend: 'Live', up: true },
+    { label: 'Vé VIP Đã Bán', value: data.stats.vipTickets.toString(), icon: Ticket, color: 'text-[#FF0088]', bg: 'bg-[#FF0088]/10 border-[#FF0088]/20', trend: 'Live', up: true },
+    { label: 'Tổng Giao Dịch', value: data.stats.totalOrders.toString(), icon: ArrowUpRight, color: 'text-[#E6C753]', bg: 'bg-[#E6C753]/10 border-[#E6C753]/20', trend: 'Total', up: true },
+  ];
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen text-[#8A8F98] animate-pulse">Đang tải dữ liệu giao dịch...</div>;
+  }
+
   return (
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div>
         <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Quản Lý Giao Dịch</h2>
-        <p className="text-[#8A8F98] text-sm mt-1">Lịch sử thanh toán thời gian thực, hoàn tiền và xuất báo cáo tài chính</p>
+        <p className="text-[#8A8F98] text-sm mt-1">Lịch sử thanh toán thời gian thực và thống kê lượng vé đã bán</p>
       </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'Doanh Thu Hôm Nay', value: '156.5M VNĐ', icon: DollarSign, color: 'text-[#00FFFF]', bg: 'bg-[#00FFFF]/10 border-[#00FFFF]/20', trend: '+18.2%', up: true },
-          { label: 'Giao Dịch Thành Công', value: '248', icon: CheckCircle2, color: 'text-[#00C099]', bg: 'bg-[#00C099]/10 border-[#00C099]/20', trend: '+5.4%', up: true },
-          { label: 'Đang Xử Lý', value: '12', icon: Clock, color: 'text-[#E6C753]', bg: 'bg-[#E6C753]/10 border-[#E6C753]/20', trend: '-2', up: false },
-          { label: 'Thất Bại / Hoàn Tiền', value: '7', icon: XCircle, color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/20', trend: '-3', up: true },
-        ].map((s, i) => (
+        {stats.map((s, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className={`p-5 rounded-2xl border backdrop-blur-md bg-white/5 relative overflow-hidden group hover:scale-[1.02] transition-all duration-300 ${s.bg}`}>
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -66,7 +90,7 @@ export default function AdminTransactionsPage() {
         ))}
       </div>
 
-      {/* Mini Chart */}
+      {/* Mini Chart - Simplified for real data */}
       <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-white/5 backdrop-blur-md border border-white/10 shadow-xl">
         <div className="flex items-center gap-4 mb-6">
           <div className="p-3 rounded-2xl bg-[#00FFFF]/10 border border-[#00FFFF]/20">
@@ -95,6 +119,7 @@ export default function AdminTransactionsPage() {
               </AreaChart>
             </ResponsiveContainer>
           )}
+
         </div>
       </div>
 
@@ -103,12 +128,28 @@ export default function AdminTransactionsPage() {
         <div className="p-6 border-b border-[#4F1F76]/30 flex flex-col md:flex-row gap-4 justify-between items-center bg-[#4F1F76]/5">
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A8F98]" />
-            <input type="text" placeholder="Tìm mã giao dịch, khách hàng..."
-              className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" />
+            <input 
+              type="text" 
+              placeholder="Tìm theo mã vé hoặc tên"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" 
+            />
           </div>
-          <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-[#4F1F76]/50 text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20 transition-all w-full md:w-auto justify-center">
-            <Filter className="w-5 h-5" /> Cổng Thanh Toán
-          </button>
+          <div className="flex gap-2 w-full md:w-auto">
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8F98] pointer-events-none" />
+              <select 
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-10 pr-8 py-3 text-xs font-bold text-[#8A8F98] hover:text-[#FFFFFF] appearance-none cursor-pointer outline-none focus:border-[#00FFFF]"
+              >
+                <option value="ALL">TẤT CẢ LOẠI</option>
+                <option value="GA">VÉ GA</option>
+                <option value="VIP">VÉ VIP</option>
+              </select>
+            </div>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -118,35 +159,42 @@ export default function AdminTransactionsPage() {
                 <th className="p-4 font-bold border-b border-[#4F1F76]/30">Loại</th>
                 <th className="p-4 font-bold border-b border-[#4F1F76]/30 min-w-[180px]">Khách Hàng</th>
                 <th className="p-4 font-bold border-b border-[#4F1F76]/30">Cổng TT</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-center">Trạng Thái</th>
                 <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-right">Số Tiền</th>
                 <th className="p-4 font-bold border-b border-[#4F1F76]/30 hidden md:table-cell text-right whitespace-nowrap">Thời Gian</th>
               </tr>
             </thead>
             <tbody>
-              {mockTransactions.map((tx, i) => (
-                <motion.tr key={tx.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                  className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors group">
-                  <td className="p-4"><span className="font-mono text-sm font-bold text-[#00FFFF]">{tx.id}</span></td>
-                  <td className="p-4 text-sm text-[#8A8F98]">
-                    <div className="flex items-center gap-2">
-                      {tx.type === 'Hoàn tiền' ? <TrendingDown className="w-4 h-4 text-[#FF0088]" /> : <TrendingUp className="w-4 h-4 text-[#00C099]" />}
-                      {tx.type}
-                    </div>
-                  </td>
-                  <td className="p-4 text-sm font-bold text-[#FFFFFF]">{tx.customer}</td>
-                  <td className="p-4 text-sm text-[#8A8F98]">{tx.gateway}</td>
-                  <td className="p-4 text-center">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusStyle(tx.status)}`}>
-                      {tx.status}
-                    </span>
-                  </td>
-                  <td className={`p-4 text-right font-bold ${tx.amount.startsWith('+') ? 'text-[#00C099]' : 'text-[#FF0088]'}`}>
-                    {tx.amount}
-                  </td>
-                  <td className="p-4 hidden md:table-cell text-right text-xs text-[#8A8F98] whitespace-nowrap">{tx.time}</td>
-                </motion.tr>
-              ))}
+              {filteredTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-12 text-center text-[#8A8F98] italic">Không tìm thấy giao dịch nào phù hợp.</td>
+                </tr>
+              ) : (
+                filteredTransactions.map((tx: any, i: number) => (
+                  <motion.tr key={tx.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                    className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors group">
+                    <td className="p-4"><span className="font-mono text-sm font-bold text-[#00FFFF]">TXN-{tx.displayId}</span></td>
+                    <td className="p-4 text-sm text-[#8A8F98]">
+                      <div className="flex items-center gap-2">
+                        {tx.type.includes('Hoàn tiền') ? <TrendingDown className="w-4 h-4 text-[#FF0088]" /> : <TrendingUp className="w-4 h-4 text-[#00C099]" />}
+                        {tx.type}
+                      </div>
+                    </td>
+                    <td className="p-4 text-sm font-bold text-[#FFFFFF]">
+                      {tx.customer}
+                      {tx.bookingCode && (
+                        <div className="text-[10px] font-mono text-[#00FFFF] mt-1 opacity-70">Vé: {tx.bookingCode}</div>
+                      )}
+                    </td>
+                    <td className="p-4 text-sm text-[#8A8F98] uppercase font-bold">{tx.gateway}</td>
+                    <td className={`p-4 text-right font-bold ${tx.amount > 0 ? 'text-[#00C099]' : 'text-[#FF0088]'}`}>
+                      {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()} VNĐ
+                    </td>
+                    <td className="p-4 hidden md:table-cell text-right text-xs text-[#8A8F98] whitespace-nowrap">
+                      {new Date(tx.time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} - {new Date(tx.time).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
+                    </td>
+                  </motion.tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
