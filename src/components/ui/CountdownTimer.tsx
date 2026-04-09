@@ -2,15 +2,19 @@
 
 import React from 'react';
 
-export default function CountdownTimer() {
+export default function CountdownTimer({ targetDate }: { targetDate?: string | Date }) {
   const [timeLeft, setTimeLeft] = React.useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   React.useEffect(() => {
-    const targetDate = new Date('2024-12-31T20:00:00').getTime();
+    const finalTargetDate = targetDate ? new Date(targetDate).getTime() : new Date('2024-12-31T20:00:00').getTime();
     const interval = setInterval(() => {
       const now = new Date().getTime();
-      const distance = targetDate - now;
-      if (distance < 0) { clearInterval(interval); return; }
+      const distance = finalTargetDate - now;
+      if (distance < 0) { 
+        clearInterval(interval); 
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return; 
+      }
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
         hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
@@ -19,7 +23,7 @@ export default function CountdownTimer() {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [targetDate]);
 
   return (
     <div className="flex gap-4 md:gap-8 justify-center mt-8">

@@ -4,50 +4,53 @@ import { auth } from '@/lib/auth';
 
 export async function GET() {
   try {
-    const faqs = await prisma.faq.findMany({ orderBy: { sortOrder: 'asc' } });
-    return NextResponse.json(faqs);
-  } catch {
-    return NextResponse.json([], { status: 200 });
+    const items = await prisma.timelineItem.findMany({
+      orderBy: { sortOrder: 'asc' },
+    });
+    return NextResponse.json(items);
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
     const session = await auth();
     if (!session || (session.user as any)?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const count = await prisma.faq.count();
-
-    const faq = await prisma.faq.create({
-      data: { 
-        question: body.question, 
-        answer: body.answer, 
-        category: body.category, 
-        sortOrder: body.sortOrder !== undefined ? body.sortOrder : count 
+    const body = await request.json();
+    const count = await prisma.timelineItem.count();
+    
+    const item = await prisma.timelineItem.create({
+      data: {
+        time: body.time,
+        title: body.title,
+        description: body.description,
+        sortOrder: body.sortOrder !== undefined ? body.sortOrder : count,
       },
     });
-    return NextResponse.json(faq, { status: 201 });
+
+    return NextResponse.json(item);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create FAQ' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create' }, { status: 500 });
   }
 }
 
-export async function PUT(req: Request) {
+export async function PUT(request: Request) {
   try {
     const session = await auth();
     if (!session || (session.user as any)?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await request.json();
 
     if (Array.isArray(body)) {
       // Bulk update (reorder)
       const updates = body.map((item: any) =>
-        prisma.faq.update({
+        prisma.timelineItem.update({
           where: { id: item.id },
           data: {
             sortOrder: item.sortOrder,
@@ -58,37 +61,39 @@ export async function PUT(req: Request) {
       await prisma.$transaction(updates);
       return NextResponse.json({ success: true, count: updates.length });
     } else {
-      // Single update
-      const { id, question, answer, category, sortOrder } = body;
-      const faq = await prisma.faq.update({
+      // Single update (edit item)
+      const { id, time, title, description, sortOrder } = body;
+      const item = await prisma.timelineItem.update({
         where: { id },
-        data: { question, answer, category, sortOrder },
+        data: { time, title, description, sortOrder },
       });
-      return NextResponse.json(faq);
+      return NextResponse.json(item);
     }
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update FAQ' }, { status: 500 });
+    console.error('Update error:', error);
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
   }
 }
 
-export async function DELETE(req: Request) {
+
+export async function DELETE(request: Request) {
   try {
     const session = await auth();
     if (!session || (session.user as any)?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
-    await prisma.faq.delete({
+    await prisma.timelineItem.delete({
       where: { id: parseInt(id) },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete FAQ' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
   }
 }

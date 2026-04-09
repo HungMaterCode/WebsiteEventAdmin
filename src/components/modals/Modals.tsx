@@ -4,14 +4,25 @@ import { motion } from 'framer-motion';
 import { X, Clock, Music, Camera, Tv, ShoppingCart, Tag } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/currency';
 
-export function VideoModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+export function VideoModal({ isOpen, onClose, videoUrl }: { isOpen: boolean, onClose: () => void, videoUrl?: string }) {
   if (!isOpen) return null;
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1";
+    try {
+      const videoId = url.split('v=')[1]?.split('&')[0] || url.split('be/')[1]?.split('?')[0];
+      return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
+    } catch {
+      return url;
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-midnight/95 backdrop-blur-2xl" />
       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden border border-royal/50 shadow-2xl">
         <button onClick={onClose} className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-all"><X className="w-6 h-6" /></button>
-        <iframe className="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" title="Concert Teaser" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+        <iframe className="w-full h-full" src={getEmbedUrl(videoUrl as string)} title="Concert Teaser" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
       </motion.div>
     </div>
   );
