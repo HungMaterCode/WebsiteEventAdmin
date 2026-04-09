@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Send, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Question, Answer } from "@/types/survey";
 
-export default function SurveyPage() {
+function SurveyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const bookingCode = searchParams.get("code") || undefined;
+  
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
@@ -45,7 +46,7 @@ export default function SurveyPage() {
   }, [currentStep]);
 
   const handleSubmit = async (finalAnswers: Answer[]) => {
-    if (isSubmitting) return; // Prevent double submission
+    if (isSubmitting) return; 
     
     setIsSubmitting(true);
     const totalTimeSpend = Math.round((Date.now() - totalStartTimeRef.current) / 1000);
@@ -99,7 +100,6 @@ export default function SurveyPage() {
     setAnswers(updatedAnswers);
 
     if (currentStep < questions.length - 1) {
-      // Small delay for smooth transition
       setTimeout(() => {
         setCurrentStep(prev => prev + 1);
         const nextAnswer = updatedAnswers.find(a => a.questionId === questions[currentStep + 1]?.id);
@@ -156,7 +156,7 @@ export default function SurveyPage() {
         <div className="flex justify-center mb-6">
           <CheckCircle2 className="w-20 h-20 text-cyan animate-pulse" />
         </div>
-        <h1 className="text-3xl font-display font-bold text-gradient mb-4 uppercase tracking-tighter">
+        <h1 className="text-3xl font-display font-black text-gradient mb-4 uppercase tracking-tighter">
           Cảm ơn bạn!
         </h1>
         <p className="text-silver/80 leading-relaxed mb-8">
@@ -208,7 +208,6 @@ export default function SurveyPage() {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="glass-card p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden neon-border-cyan group"
         >
-          {/* Internal Scanline Effect */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="scanline"></div>
           </div>
@@ -268,5 +267,18 @@ export default function SurveyPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function SurveyPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="animate-spin text-cyan w-12 h-12" />
+        <p className="ml-4 text-silver/40 font-mono text-xs uppercase tracking-widest">Loading Protocol...</p>
+      </div>
+    }>
+      <SurveyContent />
+    </Suspense>
   );
 }
