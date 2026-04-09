@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/sections/HeroSection';
@@ -24,6 +25,7 @@ import ScrollProgress, { BackToTop, FloatingDecorations, Preloader } from '@/com
 import { VideoModal, ArtistDetailModal, ProductDetailModal } from '@/components/modals/Modals';
 import BookingStatusModal from '@/components/modals/BookingStatusModal';
 import BookingModal from '@/components/modals/BookingModal';
+import MyTicketsModal from '@/components/modals/MyTicketsModal';
 
 const defaultArtists = [
   { id: 1, name: "Hồ Ngọc Hà", genre: "Pop / Dance", image: "https://picsum.photos/seed/hongocha/600/800", performanceTime: "22:30 - 23:15" },
@@ -32,30 +34,26 @@ const defaultArtists = [
   { id: 4, name: "Double2T", genre: "Rap / Hip Hop", image: "https://picsum.photos/seed/double2t/600/800", performanceTime: "23:15 - 00:00" },
 ];
 
-const defaultProducts = [
-  { id: 1, name: "Heritage Neon Hoodie", description: "Áo hoodie phiên bản giới hạn với họa tiết Đàn Tính phản quang.", image: "https://picsum.photos/seed/hoodie/600/600", category: "Apparel", price: 750000 },
-  { id: 2, name: "Cyber Lotus Tote Bag", description: "Túi tote canvas cao cấp kết hợp họa tiết hoa sen Cyberpunk.", image: "https://picsum.photos/seed/tote/600/600", category: "Accessories", price: 250000 },
-  { id: 3, name: "Neon Heritage Lightstick", description: "Gậy cổ vũ đổi màu theo nhịp điệu âm nhạc tại concert.", image: "https://picsum.photos/seed/lightstick/600/600", category: "Accessories", price: 150000 },
-  { id: 4, name: "Traditional Art Poster", description: "Poster nghệ thuật in lụa với chữ ký của dàn nghệ sĩ.", image: "https://picsum.photos/seed/poster/600/600", category: "Art", price: 100000 },
-];
-
 const defaultFaqs = [
   { id: 1, question: "Sự kiện diễn ra ở đâu và khi nào?", answer: "Sự kiện diễn ra tại Thung Nham, Ninh Bình vào đêm 31/12/2024, từ 20:00 đến 00:30 sáng hôm sau." },
   { id: 2, question: "Làm thế nào để nhận vé sau khi thanh toán?", answer: "Sau khi thanh toán thành công, vé điện tử (E-ticket) sẽ được gửi trực tiếp đến email của bạn." },
-  { id: 3, question: "Vé VIP có những quyền lợi gì đặc biệt?", answer: "Vé VIP bao gồm vị trí sát sân khấu, lối đi riêng, set quà tặng độc quyền và quyền truy cập khu vực F&B cao cấp." },
+  { id: 3, question: "Vé VIP có những quyền lợi gì đặc biệt?", answer: "Vé VIP bao gồm vị trí sát sân khấu, lối đi riêng, set sản phẩm độc quyền và quyền truy cập khu vực F&B cao cấp." },
   { id: 4, question: "Tôi có thể hoàn vé hoặc đổi vé không?", answer: "Theo quy định, vé đã mua không được hoàn trả. Tuy nhiên, bạn có thể chuyển nhượng vé cho người khác thông qua mã QR." },
   { id: 5, question: "Trẻ em có được tham gia sự kiện không?", answer: "Sự kiện dành cho khán giả từ 12 tuổi trở lên. Trẻ em dưới 12 tuổi cần có người giám hộ đi cùng." },
 ];
 
 export default function HomePage() {
-  const [bookingState, setBookingState] = React.useState<{ isOpen: boolean; type: 'GA' | 'VIP' | null }>({ isOpen: false, type: null });
+  const { data: session } = useSession();
+  const [bookingState, setBookingState] = React.useState<{isOpen: boolean, type: 'GA' | 'VIP' | null}>({ isOpen: false, type: null });
+  const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = React.useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = React.useState(false);
+  const [isMyTicketsOpen, setIsMyTicketsOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
   const [selectedArtist, setSelectedArtist] = React.useState<any>(null);
 
   const [artists, setArtists] = React.useState<any[]>(defaultArtists);
-  const [products, setProducts] = React.useState<any[]>(defaultProducts);
+  const [products, setProducts] = React.useState<any[]>([]);
   const [faqs, setFaqs] = React.useState<any[]>(defaultFaqs);
   const [posts, setPosts] = React.useState<any[]>([]);
   const [landingSettings, setLandingSettings] = React.useState<any>(null);
@@ -82,7 +80,13 @@ export default function HomePage() {
 
   }, []);
 
-  const openBooking = (type: 'GA' | 'VIP') => setBookingState({ isOpen: true, type });
+  const openBooking = (type: 'GA' | 'VIP' | null) => {
+    if (!session) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    setBookingState({ isOpen: true, type });
+  };
   const closeBooking = () => setBookingState({ ...bookingState, isOpen: false });
 
   return (
@@ -91,7 +95,13 @@ export default function HomePage() {
       <ScrollProgress />
       <BackToTop />
       <FloatingDecorations />
-      <Navbar onOpenBooking={openBooking} onOpenStatus={() => setIsStatusModalOpen(true)} />
+      <Navbar 
+        onOpenBooking={openBooking} 
+        onOpenStatus={() => setIsStatusModalOpen(true)} 
+        onOpenMyTickets={() => setIsMyTicketsOpen(true)}
+        isLoginModalOpen={isLoginModalOpen} 
+        setIsLoginModalOpen={setIsLoginModalOpen} 
+      />
 
       <main className="relative z-10">
         <HeroSection onOpenBooking={openBooking} settings={landingSettings} />
@@ -118,7 +128,9 @@ export default function HomePage() {
       <AnimatePresence>
         <BookingModal key="booking-modal" isOpen={bookingState.isOpen} onClose={closeBooking} selectedType={bookingState.type} />
         <BookingStatusModal key="status-modal" isOpen={isStatusModalOpen} onClose={() => setIsStatusModalOpen(false)} />
+        <MyTicketsModal key="my-tickets-modal" isOpen={isMyTicketsOpen} onClose={() => setIsMyTicketsOpen(false)} />
         <VideoModal key="video-modal" isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} videoUrl={landingSettings?.videoUrl} />
+
         <ProductDetailModal key="product-modal" isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} product={selectedProduct} />
         <ArtistDetailModal key="artist-modal" isOpen={!!selectedArtist} onClose={() => setSelectedArtist(null)} artist={selectedArtist} />
       </AnimatePresence>

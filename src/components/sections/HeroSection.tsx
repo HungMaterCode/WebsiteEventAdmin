@@ -5,7 +5,8 @@ import { motion } from 'motion/react';
 import { Calendar, Clock, MapPin, Ticket } from 'lucide-react';
 import CountdownTimer from '@/components/ui/CountdownTimer';
 
-export default function HeroSection({ onOpenBooking, settings }: { onOpenBooking: (type: 'GA' | 'VIP') => void, settings?: any }) {
+export default function HeroSection({ onOpenBooking, settings }: { onOpenBooking: (type: 'GA' | 'VIP' | null) => void, settings?: any }) {
+
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -42,6 +43,7 @@ export default function HeroSection({ onOpenBooking, settings }: { onOpenBooking
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-7xl lg:text-8xl font-display font-black uppercase leading-[1.1] mb-6 whitespace-pre-line">
             {displayTitle}
+
           </h1>
         </motion.div>
 
@@ -67,7 +69,7 @@ export default function HeroSection({ onOpenBooking, settings }: { onOpenBooking
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.8 }} className="mt-12">
           <button
             suppressHydrationWarning
-            onClick={() => onOpenBooking('GA')}
+            onClick={() => onOpenBooking(null)}
             className="group relative px-10 py-5 bg-gradient-primary rounded-full font-bold text-xl tracking-wider uppercase overflow-hidden glow-magenta transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,0,136,0.8)]"
           >
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>

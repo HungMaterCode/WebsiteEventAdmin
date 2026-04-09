@@ -1,37 +1,68 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+// GET specific booking (optional but useful)
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = await params;
-    // Search by bookingCode or by id
-    const booking = await prisma.booking.findFirst({
-      where: {
-        OR: [
-          { bookingCode: id },
-          { id: id },
-        ],
-      },
+    const id = (await params).id;
+    const booking = await prisma.booking.findUnique({
+      where: { id },
     });
+    
     if (!booking) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
+    
     return NextResponse.json(booking);
-  } catch {
-    return NextResponse.json({ error: 'Failed to fetch booking' }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+// PATCH to update booking details
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = await params;
+    const id = (await params).id;
     const body = await req.json();
-    const booking = await prisma.booking.update({
+    
+    const updatedBooking = await prisma.booking.update({
       where: { id },
-      data: body,
+      data: {
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        ticketType: body.ticketType,
+        ticketStatus: body.ticketStatus,
+        quantity: body.quantity ? parseInt(body.quantity.toString()) : undefined,
+        totalPrice: body.totalPrice ? parseInt(body.totalPrice.toString()) : undefined,
+      },
     });
-    return NextResponse.json(booking);
-  } catch {
-    return NextResponse.json({ error: 'Failed to update booking' }, { status: 500 });
+    
+    return NextResponse.json(updatedBooking);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// DELETE to remove booking
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const id = (await params).id;
+    await prisma.booking.delete({
+      where: { id },
+    });
+    
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
