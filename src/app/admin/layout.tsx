@@ -54,21 +54,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
-<<<<<<< HEAD
   const [expandedMenus, setExpandedMenus] = React.useState<string[]>(['landing-page']);
+  const [mounted, setMounted] = React.useState(false);
 
   const toggleMenu = (id: string) => {
     setExpandedMenus(prev => 
       prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
     );
   };
-=======
-  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
->>>>>>> 0382b6ed5578be737ddd7b8a09a15bf770fc88e7
+
 
   // Mock roles for now until auth is fully implemented on client side
   const roles = ['ADMIN']; 
