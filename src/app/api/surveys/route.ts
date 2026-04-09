@@ -16,17 +16,32 @@ export async function POST(req: Request) {
       );
     }
 
-    const { answers, totalTimeSpend } = validation.data;
+    const { answers, totalTimeSpend, bookingCode } = validation.data;
+    
+    // SPAM DETECTION LOGIC
+    let isSpam = false;
+    
+    // 1. Total time check (< 45s is suspicious for 15 questions)
+    if (totalTimeSpend < 45) {
+      isSpam = true;
+    }
+
+    // 2. Individual click speed check (< 1.2s for any MCQ question)
+    answers.forEach(a => {
+      if (a.timeSpentMs < 1200) isSpam = true;
+    });
 
     const surveyResponse = await prisma.surveyResponse.create({
       data: {
-        answers: answers as any, // Cast to any for JSON column
+        bookingCode,
+        answers: answers as any, 
         totalTimeSpend,
+        isSpam,
       },
     });
 
     return NextResponse.json(
-      { success: true, data: { id: surveyResponse.id } },
+      { success: true, data: { id: surveyResponse.id, isSpam } },
       { status: 201 }
     );
   } catch (error) {

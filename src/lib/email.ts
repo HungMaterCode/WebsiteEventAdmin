@@ -79,3 +79,53 @@ export async function sendTicketEmail(booking: {
     return { success: false, error: err };
   }
 }
+
+export async function sendSurveyEmail(booking: {
+  bookingCode: string;
+  name: string;
+  email: string;
+}) {
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY || 're_mock_key');
+    const surveyUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/survey?code=${booking.bookingCode}`;
+
+    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_placeholder') {
+      console.log('Skipping survey email - RESEND_API_KEY not configured.');
+      return { success: true, mock: true };
+    }
+
+    if (booking.email === 'ticket-admin@event.com') return { success: true, skipped: true };
+
+    const { data, error } = await resend.emails.send({
+      from: 'Neon Heritage <onboarding@resend.dev>',
+      to: [booking.email],
+      subject: `[Neon Heritage] Trải nghiệm của bạn thế nào? Hãy chia sẻ cùng chúng tôi!`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6; background: #060010; padding: 40px; border-radius: 30px; border: 1px solid #4F1F76;">
+          <h1 style="color: #00ffff; text-transform: uppercase; text-align: center; margin-bottom: 30px; letter-spacing: 2px;">Cảm ơn bạn đã tham dự!</h1>
+          
+          <p style="color: #fff; text-align: center;">Chào <strong>${booking.name}</strong>,</p>
+          <p style="color: #8A8F98; text-align: center;">Hành trình tại <strong>Neon Heritage Festival</strong> vừa khép lại, bạn thấy thế nào?</p>
+          
+          <div style="text-align: center; border: 1px solid #4F1F76; padding: 40px; border-radius: 20px; margin: 40px 0; background: rgba(79, 31, 118, 0.1);">
+            <p style="color: #fff; margin-bottom: 25px;">Hãy dành 2 phút để giúp chúng tôi làm tốt hơn trong những mùa lễ hội tiếp theo nhé.</p>
+            <a href="${surveyUrl}" style="background: linear-gradient(90deg, #00ffff, #00c099); color: #060010; padding: 18px 35px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; text-transform: uppercase; letter-spacing: 1px;">Bắt đầu Khảo sát</a>
+          </div>
+
+          <p style="color: #8A8F98; font-size: 13px; text-align: center;">Sau khi hoàn thành, bạn sẽ nhận được sự trân trọng tuyệt đối từ ban tổ chức.</p>
+          
+          <p style="text-align: center; margin-top: 50px; color: #ff0088; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; font-size: 12px;">
+            Neon Heritage Protocol 2024
+          </p>
+        </div>
+      `,
+    });
+
+    if (error) return { success: false, error };
+    return { success: true, data };
+  } catch (err) {
+    console.error('Survey Email Error:', err);
+    return { success: false, error: err };
+  }
+}
+

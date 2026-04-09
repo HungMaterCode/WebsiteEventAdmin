@@ -9,6 +9,7 @@ export const AnswerSchema = z.object({
 });
 
 export const SurveySubmissionSchema = z.object({
+  bookingCode: z.string().optional(),
   answers: z.array(AnswerSchema).min(1, "Danh sách câu trả lời không được để trống"),
   totalTimeSpend: z.number().int().nonnegative(),
 });

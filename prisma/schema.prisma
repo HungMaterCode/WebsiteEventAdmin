@@ -112,6 +112,7 @@ model Booking {
 }
 
 
+
 model Campaign {
   id          String   @id @default(cuid())
   code        String   @unique
@@ -295,6 +296,7 @@ model CommunityPost {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 
 enum Role {
 

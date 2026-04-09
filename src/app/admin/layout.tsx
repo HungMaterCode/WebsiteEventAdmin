@@ -44,7 +44,21 @@ const MENU_ITEMS = [
   { id: 'reviews', label: 'Quản lý Câu hỏi', icon: <ListTodo />, role: ['ADMIN', 'ANALYST'], path: '/admin/reviews' },
   { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/news' },
   { id: 'roles', label: 'Vai trò & Quyền hạn', icon: <Lock />, role: ['ADMIN'], path: '/admin/roles' },
-  { id: 'analytics', label: 'Phân tích & Báo cáo', icon: <BarChart3 />, role: ['ADMIN', 'ANALYST'], path: '/admin/analytics' },
+  { 
+    id: 'analytics', 
+    label: 'Phân tích & Báo cáo', 
+    icon: <BarChart3 />, 
+    role: ['ADMIN', 'ANALYST'], 
+    path: '/admin/analytics',
+    children: [
+      { id: 'analytics-overview', label: 'Tổng quan', path: '/admin/analytics/overview' },
+      { id: 'analytics-tickets', label: 'Vé & Doanh thu', path: '/admin/analytics/tickets-revenue' },
+      { id: 'analytics-checkin', label: 'Báo cáo Check-in', path: '/admin/analytics/checkin-checkout' },
+      { id: 'analytics-customers', label: 'Phân tích Khách hàng', path: '/admin/analytics/customers' },
+      { id: 'analytics-feedback', label: 'Đánh giá', path: '/admin/analytics/feedback' },
+      { id: 'analytics-export', label: 'Xuất Excel', path: '/admin/analytics/export' },
+    ]
+  },
   { id: 'settings', label: 'Cài đặt (Nhật ký)', icon: <Settings />, role: ['ADMIN'], path: '/admin/settings' },
 ];
 
@@ -54,8 +68,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
-  const [expandedMenus, setExpandedMenus] = React.useState<string[]>(['landing-page']);
+  const [expandedMenus, setExpandedMenus] = React.useState<string[]>(['landing-page', 'analytics']);
   const [mounted, setMounted] = React.useState(false);
+
 
   const toggleMenu = (id: string) => {
     setExpandedMenus(prev => 
@@ -66,6 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
 
 
   // Mock roles for now until auth is fully implemented on client side
@@ -172,31 +188,80 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             }
 
             return (
-              <Link
-                key={item.id}
-                href={item.path}
-                onClick={() => {
-                  if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-                    setIsMobileSidebarOpen(false);
-                  }
-                }}
-                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-[#00FFFF]/20 to-transparent border-l-4 border-[#00FFFF] text-[#00FFFF]' 
-                    : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-[#FFFFFF]'
-                  }`}
-                title={item.label}
-              >
-                <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
-                  {item.icon}
-                </div>
-                {!isSidebarCollapsed && (
-                  <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
+              <div key={item.id} className="space-y-1">
+                {hasChildren ? (
+                  <button
+                    onClick={() => toggleMenu(item.id)}
+                    className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
+                      ${isActive 
+                        ? 'bg-[#4F1F76]/20 text-[#00FFFF]' 
+                        : 'text-[#8A8F98] hover:bg-[#4F1F76]/10 hover:text-[#FFFFFF]'
+                      }`}
+                  >
+                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
+                      {item.icon}
+                    </div>
+                    {!isSidebarCollapsed && (
+                      <>
+                        <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
+                        <ChevronDown className={`ml-auto w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <Link
+                    href={item.path}
+                    onClick={() => {
+                      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                        setIsMobileSidebarOpen(false);
+                      }
+                    }}
+                    className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
+                      ${isActive 
+                        ? 'bg-gradient-to-r from-[#00FFFF]/20 to-transparent border-l-4 border-[#00FFFF] text-[#00FFFF]' 
+                        : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-[#FFFFFF]'
+                      }`}
+                    title={item.label}
+                  >
+                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
+                      {item.icon}
+                    </div>
+                    {!isSidebarCollapsed && (
+                      <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
+                    )}
+                    {isActive && !isSidebarCollapsed && (
+                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#E6C753] glow-gold shadow-[0_0_10px_#E6C753]"></div>
+                    )}
+                  </Link>
                 )}
-                {isActive && !isSidebarCollapsed && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#E6C753] glow-gold shadow-[0_0_10px_#E6C753]"></div>
+
+                {hasChildren && isExpanded && !isSidebarCollapsed && (
+                  <div className="ml-9 border-l border-[#4F1F76]/30 space-y-1 py-1">
+                    {item.children?.map((child: any) => {
+                      const isChildActive = pathname === child.path;
+                      return (
+                        <Link
+                          key={child.id}
+                          href={child.path}
+                          onClick={() => {
+                            if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                              setIsMobileSidebarOpen(false);
+                            }
+                          }}
+                          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all duration-200
+                            ${isChildActive 
+                              ? 'text-[#00FFFF] font-bold' 
+                              : 'text-[#8A8F98] hover:text-white hover:bg-white/5'
+                            }`}
+                        >
+                          <div className={`w-1.5 h-1.5 rounded-full ${isChildActive ? 'bg-[#00FFFF] glow-cyan' : 'bg-transparent border border-[#8A8F98]'}`} />
+                          {child.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
-              </Link>
+              </div>
             );
           })}
         </nav>
