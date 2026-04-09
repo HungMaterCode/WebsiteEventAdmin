@@ -104,6 +104,9 @@ model Booking {
   lotoPrintTime   DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  discountAmount  Int       @default(0)
+  discountCode    String?
+  status          String    @default("PENDING")
   user            User?     @relation(fields: [userId], references: [id])
 }
 
@@ -181,8 +184,10 @@ model Post {
 
 model SurveyResponse {
   id              String   @id @default(cuid())
+  bookingCode     String?  
   answers         Json     
   totalTimeSpend  Int?     
+  isSpam          Boolean  @default(false)
   submittedAt     DateTime @default(now())
 }
 
@@ -196,6 +201,28 @@ model SurveyQuestion {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Campaign {
+  id          String    @id
+  code        String    @unique
+  name        String
+  description String?
+  type        String
+  value       Int
+  used        Int       @default(0)
+  limit       Int       @default(0)
+  status      String    @default("ACTIVE")
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model SystemSetting {
+  id        String   @id @default("global")
+  data      Json     @default("{}")
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {

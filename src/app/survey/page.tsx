@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Send, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Question, Answer } from "@/types/survey";
 
 export default function SurveyPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const bookingCode = searchParams.get("code") || undefined;
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
@@ -55,6 +57,7 @@ export default function SurveyPage() {
         body: JSON.stringify({
           answers: finalAnswers,
           totalTimeSpend,
+          bookingCode,
         }),
       });
 
