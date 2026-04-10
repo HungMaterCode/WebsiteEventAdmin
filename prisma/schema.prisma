@@ -8,19 +8,22 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  image         String?
-  role          Role      @default(USER)
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  password      String?
-  accounts      Account[]
-  bookings      Booking[]
-  reviews       Review[]
-  sessions      Session[]
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String?
+  image            String?
+  role             Role      @default(USER)
+  emailVerified    DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  password         String?
+  otpCode          String?
+  otpExpires       DateTime?
+  twoFactorEnabled Boolean   @default(false)
+  accounts         Account[]
+  bookings         Booking[]
+  reviews          Review[]
+  sessions         Session[]
 }
 
 model Account {
@@ -78,54 +81,54 @@ model Product {
   description String?
   image       String
   category    String?
-  price       Int
+  price       Float
   stock       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Booking {
-  id              String    @id @default(cuid())
-  bookingCode     String    @unique
+  id              String        @id @default(cuid())
+  bookingCode     String        @unique
   userId          String?
   name            String
   email           String
   phone           String
   ticketType      String
   quantity        Int
-  totalPrice      Int
+  totalPrice      Float
   discountCode    String?
-  discountAmount  Int       @default(0)
-  ticketStatus    String    @default("CREATED")
+  discountAmount  Float         @default(0)
+  ticketStatus    String        @default("CREATED")
   accessories     Json?
   checkInTime     DateTime?
   checkOutTime    DateTime?
   surveyData      Json?
-  surveyCompleted Boolean   @default(false)
+  surveyCompleted Boolean       @default(false)
   lotoStatus      String?
   lotoPrintTime   DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  status          String    @default("PENDING")
-  user            User?     @relation(fields: [userId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  status          String        @default("PENDING")
+  user            User?         @relation(fields: [userId], references: [id])
+  transactions    Transaction[]
 }
 
 model Campaign {
-  id          String   @id @default(cuid())
-  code        String   @unique
+  id          String    @id @default(cuid())
+  code        String    @unique
   name        String
   description String?
-  type        String   // 'PERCENT' | 'AMOUNT'
-  value       Int
-  used        Int      @default(0)
-  limit       Int      @default(0) // 0 means unlimited
-  status      String   @default("ACTIVE")
+  type        String
+  value       Float
+  used        Int       @default(0)
+  limit       Int       @default(0)
+  status      String    @default("ACTIVE")
   startDate   DateTime?
   endDate     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
-
 
 model Faq {
   id        Int     @id @default(autoincrement())
@@ -146,10 +149,17 @@ model Zone {
 model Transaction {
   id        String   @id @default(cuid())
   method    String
-  amount    Int
+  amount    Float
   status    String
   bookingId String?
   timestamp DateTime @default(now())
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+}
+
+model SystemSetting {
+  id        String   @id @default("global")
+  data      Json     @default("{}")
+  updatedAt DateTime @updatedAt
 }
 
 model Review {
@@ -168,8 +178,8 @@ model Message {
   name      String
   email     String
   subject   String?
-  message   String
-  status    String   @default("unread")
+  message   String?
+  phone     String?
   createdAt DateTime @default(now())
 }
 
@@ -199,10 +209,91 @@ model Post {
   updatedAt   DateTime  @updatedAt
 }
 
-model SystemSetting {
-  id        String   @id @default("global")
-  data      Json     @default("{}")
-  updatedAt DateTime
+model LandingPageSettings {
+  id                 Int      @id @default(1)
+  title              String   @default("Dòng Chảy Di Sản Bế Mạc Festival Ninh Bình")
+  subtitle           String?  @default("Neon Heritage Festival")
+  eventDate          DateTime @default(dbgenerated("'2024-12-31 20:00:00'::timestamp without time zone"))
+  location           String?  @default("Thung Nham, Ninh Bình")
+  timeRange          String?  @default("20:00 - 00:30")
+  videoUrl           String?  @default("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+  videoTitle         String?  @default("THE CINEMATIC TEASER")
+  videoSubtitle      String?  @default("CHẠM ĐỂ TRẢI NGHIỆM KHÔNG GIAN 3D MAPPING")
+  artTitle           String?  @default("Nghệ Thuật")
+  artSubtitle        String?  @default("Di Sản Cyber")
+  artDescription     String?  @default("Tại Neon Heritage Festival, chúng tôi không chỉ trình diễn âm nhạc. Chúng tôi kể câu chuyện về sự giao thoa giữa quá khứ và tương lai.")
+  artImage           String?  @default("https://picsum.photos/seed/heritage-art/800/800")
+  artItems           Json?    @default("[{\"desc\": \"Nhạc cụ linh hồn của người Tày, Nùng, Thái. Tiếng đàn thanh cao hòa quyện cùng âm hưởng điện tử hiện đại.\", \"icon\": \"Music\", \"name\": \"Đàn Tính\"}, {\"desc\": \"Âm vang hào hùng từ những chiếc trống truyền thống, tạo nên nhịp đập mạnh mẽ cho dòng chảy di sản.\", \"icon\": \"Sparkles\", \"name\": \"Trống Hội\"}, {\"desc\": \"Giai điệu phóng khoáng của núi rừng Tây Bắc được tái hiện qua lăng kính âm nhạc đương đại.\", \"icon\": \"Music\", \"name\": \"Khèn Mông\"}]")
+  galleryTitle       String?  @default("Khoảnh Khắc")
+  gallerySubtitle    String?  @default("Di Sản")
+  timelineTitle      String?  @default("Lộ Trình")
+  timelineSubtitle   String?  @default("Sự Kiện")
+  communityHashtag   String?  @default("#NeonHeritage2024")
+  communityFollowers String?  @default("25K+")
+  communityMentions  String?  @default("150K+")
+  travelTitle        String?  @default("Di Chuyển & Lưu Trú")
+  travelSubtitle     String?  @default("Hành Trình Di Sản")
+  travelDescription  String?  @default("Ninh Bình không chỉ là nơi diễn ra lễ hội, mà còn là một hành trình khám phá di sản.")
+  travelImage        String?  @default("https://picsum.photos/seed/ninhbinh-travel/800/1000")
+  travelAdvice       String?  @default("Bạn nên đến Ninh Bình từ sớm để tham quan các danh thắng trước khi hòa mình vào không gian âm nhạc.")
+  travelItems        Json?    @default("[{\"bg\": \"bg-cyan/10\", \"desc\": \"Chỉ mất 1.5 - 2 giờ di chuyển từ Hà Nội qua cao tốc Pháp Vân - Cầu Giẽ.\", \"icon\": \"Car\", \"color\": \"text-cyan\", \"title\": \"Đường Bộ\"}, {\"bg\": \"bg-magenta/10\", \"desc\": \"Bay đến sân bay Nội Bài, sau đó sử dụng dịch vụ xe Limousine đưa đón.\", \"icon\": \"Plane\", \"color\": \"text-magenta\", \"title\": \"Đường Hàng Không\"}, {\"bg\": \"bg-gold/10\", \"desc\": \"Hệ thống Resort & Homestay cao cấp tại Thung Nham và khu vực lân cận.\", \"icon\": \"Hotel\", \"color\": \"text-gold\", \"title\": \"Lưu Trú\"}]")
+  travelImage2      String?  @default("https://picsum.photos/seed/ninhbinh-travel/800/1000") // Added if missing from merge
+  mapTitle           String?  @default("Địa Điểm Tổ Chức")
+  mapSubtitle        String?  @default("Trường Đại học Cần Thơ (CTU)")
+  mapAddress         String?  @default("Khu II, đường 3/2, P. Xuân Khánh, Q. Ninh Kiều, TP. Cần Thơ")
+  mapDescription     String?  @default("Hội trường lớn / Sân vận động Đại học Cần Thơ - Không gian năng động, hiện đại.")
+  mapGoogleUrl       String?  @default("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.841518413207!2d105.76842607573646!3d10.02993307253303!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a0883d033783a5%3A0x62916b5104d49818!2sCan%20Tho%20University!5e0!3m2!1sen!2s!4v1712493000000!5m2!1sen!2s")
+  updatedAt          DateTime @updatedAt
+}
+
+model GalleryItem {
+  id        Int      @id @default(autoincrement())
+  url       String
+  title     String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TimelineItem {
+  id          Int      @id @default(autoincrement())
+  time        String
+  title       String
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SurveyResponse {
+  id             String   @id @default(cuid())
+  answers        Json
+  totalTimeSpend Int?
+  submittedAt    DateTime @default(now())
+  bookingCode    String?
+  isSpam         Boolean  @default(false)
+}
+
+model SurveyQuestion {
+  id          String   @id @default(cuid())
+  text        String
+  type        String   @default("choice")
+  options     String[]
+  placeholder String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CommunityPost {
+  id        Int      @id @default(autoincrement())
+  username  String
+  content   String
+  timestamp String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {

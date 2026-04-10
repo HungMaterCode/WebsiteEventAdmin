@@ -31,9 +31,9 @@ export async function POST(req: Request) {
 
     const bookingCode = generateBookingCode();
     
-    // Create the booking record
-    const booking = await prisma.$transaction(async (tx) => {
-      const b = await tx.booking.create({
+    // Create the booking record and transaction in a single database transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const booking = await tx.booking.create({
         data: {
           bookingCode,
           userId: (session?.user as any)?.id || null,
@@ -42,15 +42,16 @@ export async function POST(req: Request) {
           phone: body.phone || '',
           ticketType: body.ticketType || 'GA',
           quantity: parseInt(body.quantity?.toString() || '1'),
-          totalPrice: parseInt(body.totalPrice?.toString() || '0'),
+          totalPrice: parseFloat(body.totalPrice?.toString() || '0'),
           discountCode: body.discountCode || null,
-          discountAmount: parseInt(body.discountAmount?.toString() || '0'),
-          ticketStatus: 'CREATED',
+          discountAmount: parseFloat(body.discountAmount?.toString() || '0'),
+          ticketStatus: 'SUCCESS', // Set to SUCCESS as per current workflow
           accessories: body.accessories || [],
+          status: 'PENDING', // Base status from Gia Lac branch
         },
       });
 
-      // Increment campaign usage if a code was applied
+      // 1. Increment campaign usage if a code was applied
       if (body.discountCode) {
         await tx.campaign.update({
           where: { code: body.discountCode.toUpperCase() },
@@ -58,25 +59,56 @@ export async function POST(req: Request) {
         });
       }
 
-      return b;
+      // 2. Create a transaction record linked to this booking
+      await tx.transaction.create({
+        data: {
+          method: body.paymentMethod || 'UNKNOWN',
+          amount: booking.totalPrice,
+          status: 'Thành công',
+          bookingId: booking.id,
+        }
+      });
+
+      return booking;
     });
 
-    console.log('--- BOOKING CREATED ---', booking.bookingCode);
+    const booking = result;
+    console.log('--- BOOKING & TRANSACTION CREATED ---', booking.bookingCode);
 
-    // Send confirmation email asynchronously
-    sendTicketEmail({
-      bookingCode,
-      name: booking.name,
-      email: booking.email,
-      ticketType: booking.ticketType,
-      quantity: booking.quantity,
-      totalPrice: booking.totalPrice,
-    }).catch(err => console.error('Background email dispatch failed:', err));
+    // Send confirmation email
+    let emailStatus = { sent: false, error: null as any };
+    try {
+      const emailResult = await sendTicketEmail({
+        bookingCode,
+        name: booking.name,
+        email: booking.email,
+        ticketType: booking.ticketType,
+        quantity: booking.quantity,
+        totalPrice: booking.totalPrice,
+      });
+      
+      if (emailResult.success) {
+        emailStatus.sent = true;
+        console.log('--- EMAIL DISPATCHED SUCCESSFULLY ---');
+      } else {
+        emailStatus.error = emailResult.error;
+        console.error('--- EMAIL DISPATCH RETURNED ERROR ---', emailResult.error);
+      }
+    } catch (err: any) {
+      emailStatus.error = err.message || err;
+      console.error('--- EMAIL DISPATCH EXCEPTION ---', err);
+    }
 
-    return NextResponse.json(booking, { status: 201 });
+    return NextResponse.json({
+      ...booking,
+      debug: {
+        emailSent: emailStatus.sent,
+        emailError: emailStatus.error,
+        receivedMethod: body.paymentMethod
+      }
+    }, { status: 201 });
   } catch (error: any) {
     console.error('--- BOOKING ERROR ---', error.message || error);
-    // Explicitly return JSON even on severe errors
     return new Response(JSON.stringify({ error: error.message || 'Failed to create booking' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

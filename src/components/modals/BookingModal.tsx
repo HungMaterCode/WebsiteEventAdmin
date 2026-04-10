@@ -84,9 +84,19 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
     if (!paymentMethod || !internalSelectedType) return;
     setIsSubmitting(true);
     try {
+      const requestBody = {
+        ...formData,
+        ticketType: internalSelectedType,
+        totalPrice: total,
+        paymentMethod,
+      };
+      
+      console.log('--- SUBMITTING BOOKING ---', requestBody);
+
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+<<<<<<< HEAD
         body: JSON.stringify({
           ...formData,
           ticketType: internalSelectedType,
@@ -95,6 +105,9 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
           discountAmount: discountAmount,
           paymentMethod,
         }),
+=======
+        body: JSON.stringify(requestBody),
+>>>>>>> 23805874a04c368578da1387028aebcad26f1bbc
       });
 
       if (!res.ok) {
