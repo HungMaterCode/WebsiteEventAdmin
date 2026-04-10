@@ -1,19 +1,49 @@
 @import "tailwindcss";
 
 @theme {
-  --color-midnight: #1A0F2B;
-  --color-royal: #4F1F76;
+  --color-midnight: var(--theme-bg-primary);
+  --color-royal: var(--theme-bg-secondary);
   --color-royal-light: #7B3FA0;
   --color-magenta: #FF0088;
   --color-cyan: #00FFFF;
   --color-gold: #E6C753;
   --color-teal: #009999;
-  --color-silver: #FFFFFF;
+  --color-silver: var(--theme-text-primary);
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+
+  --color-admin-bg: var(--admin-bg);
+  --color-admin-panel: var(--admin-panel);
+  --color-admin-border: var(--admin-border);
+  --color-admin-text: var(--admin-text);
+  --color-admin-text-muted: var(--admin-text-muted);
 }
 
 @layer base {
+  :root {
+    /* ADMIN UI Variables (Light Mode) */
+    --admin-bg: #F3F4F6;
+    --admin-panel: #FFFFFF;
+    --admin-border: #E5E7EB;
+    --admin-text: #111827;
+    --admin-text-muted: #6B7280;
+
+    /* PUBLIC UI Variables (Locked to Dark Mode / Premium Neon) */
+    --theme-bg-primary: #1A0F2B; 
+    --theme-bg-secondary: #4F1F76;
+    --theme-text-primary: #FFFFFF;
+    --theme-glass-bg: rgba(255, 255, 255, 0.05);
+    --theme-glass-border: rgba(255, 255, 255, 0.1);
+  }
+  
+  .dark, [data-theme='dark'] {
+    /* ADMIN UI (Dark Mode) */
+    --admin-bg: #060010;
+    --admin-panel: #0D0716;
+    --admin-border: #4F1F76;
+    --admin-text: #FFFFFF;
+    --admin-text-muted: #8A8F98;
+  }
   body {
     @apply bg-midnight text-silver font-sans antialiased selection:bg-magenta selection:text-white overflow-x-hidden;
   }
@@ -83,7 +113,9 @@
     box-shadow: inset 0 0 10px rgba(255, 0, 136, 0.2), 0 0 10px rgba(255, 0, 136, 0.2);
   }
   .glass-card {
-    @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+    @apply backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.1)];
+    background-color: var(--theme-glass-bg);
+    border: 1px solid var(--theme-glass-border);
   }
   .neon-border-cyan {
     @apply border border-cyan/30 shadow-[0_0_15px_rgba(0,255,255,0.2),inset_0_0_15px_rgba(0,255,255,0.1)];

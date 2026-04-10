@@ -26,6 +26,7 @@ export default function Navbar({
   const [isMobileSubMenuOpen, setIsMobileSubMenuOpen] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+  const [systemSettings, setSystemSettings] = React.useState<any>(null);
 
   const isLoginModalOpen = propIsLoginModalOpen ?? internalLoginModalOpen;
   const setIsLoginModalOpen = propSetIsLoginModalOpen ?? setInternalLoginModalOpen;
@@ -47,6 +48,10 @@ export default function Navbar({
 
   React.useEffect(() => {
     setMounted(true);
+    fetch('/api/settings/system')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => setSystemSettings(data))
+      .catch(() => {});
   }, []);
 
   const navLinks = [

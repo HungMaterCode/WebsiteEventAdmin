@@ -8,19 +8,22 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  image         String?
-  role          Role      @default(USER)
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  password      String?
-  accounts      Account[]
-  bookings      Booking[]
-  reviews       Review[]
-  sessions      Session[]
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String?
+  image            String?
+  role             Role      @default(USER)
+  emailVerified    DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  password         String?
+  otpCode          String?
+  otpExpires       DateTime?
+  twoFactorEnabled Boolean   @default(false)
+  accounts         Account[]
+  bookings         Booking[]
+  reviews          Review[]
+  sessions         Session[]
 }
 
 model Account {
@@ -78,15 +81,15 @@ model Product {
   description String?
   image       String
   category    String?
-  price       Int
+  price       Float
   stock       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Booking {
-  id              String    @id @default(cuid())
-  bookingCode     String    @unique
+  id              String        @id @default(cuid())
+  bookingCode     String        @unique
   userId          String?
   name            String
   email           String
@@ -94,19 +97,16 @@ model Booking {
   ticketType      String
   quantity        Int
   totalPrice      Int
-  discountCode    String?
-  discountAmount  Int       @default(0)
   ticketStatus    String    @default("CREATED")
   accessories     Json?
   checkInTime     DateTime?
   checkOutTime    DateTime?
   surveyData      Json?
-  surveyCompleted Boolean   @default(false)
+  surveyCompleted Boolean       @default(false)
   lotoStatus      String?
   lotoPrintTime   DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  status          String    @default("PENDING")
   user            User?     @relation(fields: [userId], references: [id])
 }
 
@@ -146,10 +146,17 @@ model Zone {
 model Transaction {
   id        String   @id @default(cuid())
   method    String
-  amount    Int
+  amount    Float
   status    String
   bookingId String?
   timestamp DateTime @default(now())
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+}
+
+model SystemSetting {
+  id        String   @id @default("global")
+  data      Json     @default("{}")
+  updatedAt DateTime @updatedAt
 }
 
 model Review {
@@ -169,7 +176,7 @@ model Message {
   email     String
   subject   String?
   message   String
-  status    String   @default("unread")
+  phone     String?
   createdAt DateTime @default(now())
 }
 
@@ -197,12 +204,6 @@ model Post {
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-}
-
-model SystemSetting {
-  id        String   @id @default("global")
-  data      Json     @default("{}")
-  updatedAt DateTime
 }
 
 enum Role {

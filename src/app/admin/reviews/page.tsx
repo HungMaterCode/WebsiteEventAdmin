@@ -1,113 +1,201 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Star, MessageSquare, CheckCircle2, XCircle, User, Calendar, ThumbsUp, ThumbsDown } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Plus, X, Loader2, AlertCircle, 
+  CheckCircle2, Info, LayoutList
+} from "lucide-react";
+import { Question } from "@/types/survey";
+import { QuestionForm } from "@/components/admin/survey/QuestionForm";
+import { QuestionListItem } from "@/components/admin/survey/QuestionListItem";
 
-const mockReviews = [
-  { id: 'REV-001', author: 'Nguyễn Văn A', avatar: 'N', rating: 5, content: 'Sự kiện tuyệt vời! Sân khấu cực kỳ ấn tượng, âm thanh ánh sáng đỉnh cao. Nhất định sẽ quay lại năm sau!', status: 'Đã duyệt', date: '2026-04-05', likes: 42 },
-  { id: 'REV-002', author: 'Trần Thị B', avatar: 'T', rating: 4, content: 'Trải nghiệm rất tốt, tuy nhiên khu ẩm thực hơi đông và chờ hơi lâu. Nhìn chung vẫn rất đáng tiền vé.', status: 'Đã duyệt', date: '2026-04-04', likes: 18 },
-  { id: 'REV-003', author: 'Lê Văn C', avatar: 'L', rating: 2, content: 'Tổ chức hơi lộn xộn ở cổng vào. Xếp hàng mất gần 1 tiếng mới vào được, cần cải thiện khâu check-in.', status: 'Chờ duyệt', date: '2026-04-05', likes: 5 },
-  { id: 'REV-004', author: 'Hoàng Minh D', avatar: 'H', rating: 5, content: 'Ban nhạc quá đỉnh! Độ đầu tư của ban tổ chức rất cao. Màn trình diễn ánh sáng laser là highlight của đêm!', status: 'Đã duyệt', date: '2026-04-04', likes: 67 },
-  { id: 'REV-005', author: 'Phạm Thị E', avatar: 'P', rating: 1, content: 'Nội dung spam, không liên quan đến sự kiện.', status: 'Đã ẩn', date: '2026-04-03', likes: 0 },
-];
+export default function AdminQuestionsPage() {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Question>>({});
+  const [isAdding, setIsAdding] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map(s => (
-        <Star key={s} className={`w-4 h-4 ${s <= rating ? 'text-[#E6C753] fill-[#E6C753]' : 'text-[#4F1F76]'}`} />
-      ))}
-    </div>
-  );
-}
+  const fetchQuestions = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/questions");
+      const data = await res.json();
+      setQuestions(data);
+    } catch (error) {
+      console.error(error);
+      setMessage({ type: 'error', text: 'Không thể tải danh sách câu hỏi.' });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-export default function AdminReviewsPage() {
-  const avg = (mockReviews.reduce((a, r) => a + r.rating, 0) / mockReviews.length).toFixed(1);
+  useEffect(() => {
+    fetchQuestions();
+  }, [fetchQuestions]);
 
-  const getStatusStyle = (s: string) => {
-    if (s === 'Đã duyệt') return 'bg-[#00C099]/10 text-[#00C099] border-[#00C099]/30';
-    if (s === 'Chờ duyệt') return 'bg-[#E6C753]/10 text-[#E6C753] border-[#E6C753]/30';
-    return 'bg-[#8A8F98]/10 text-[#8A8F98] border-[#8A8F98]/30';
+  const handleSave = async (id?: string) => {
+    const url = id ? `/api/admin/questions/${id}` : "/api/admin/questions";
+    const method = id ? "PUT" : "POST";
+    
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: id ? 'Cập nhật thành công!' : 'Thêm mới thành công!' });
+        setIsEditing(null);
+        setIsAdding(false);
+        setEditForm({});
+        fetchQuestions();
+      } else {
+        setMessage({ type: 'error', text: 'Có lỗi xảy ra khi lưu.' });
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage({ type: 'error', text: 'Lỗi kết nối.' });
+    }
   };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa câu hỏi này?")) return;
+    
+    try {
+      const res = await fetch(`/api/admin/questions/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Đã xóa câu hỏi.' });
+        fetchQuestions();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const startEdit = (q: Question) => {
+    setIsEditing(q.id);
+    setEditForm(q);
+  };
+
+  const startAdd = () => {
+    setIsAdding(true);
+    setEditForm({
+      text: "",
+      type: "choice",
+      options: ["Lựa chọn 1", "Lựa chọn 2"],
+      order: questions.length + 1,
+      isActive: true,
+    });
+  };
+
+  if (loading && questions.length === 0) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="animate-spin text-cyan w-12 h-12" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
-      <div>
-        <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Quản Lý Đánh Giá</h2>
-        <p className="text-[#8A8F98] text-sm mt-1">Kiểm duyệt bình luận, lọc nội dung không phù hợp và theo dõi chỉ số hài lòng</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text tracking-tighter flex items-center gap-3">
+            <LayoutList className="text-cyan" /> Quản Lý Câu Hỏi Khảo Sát
+          </h2>
+          <p className="text-admin-text-muted text-sm mt-1 uppercase tracking-widest flex items-center gap-2">
+            <span className="w-2 h-2 bg-magenta rounded-full animate-pulse" /> Dynamic Survey Form Protocol
+          </p>
+        </div>
+        {!isAdding && (
+          <button 
+            onClick={startAdd}
+            className="px-6 py-3 bg-gradient-to-r from-cyan to-royal-light rounded-xl font-bold uppercase tracking-widest flex items-center gap-2 hover:glow-cyan transition-all"
+          >
+            <Plus size={20} /> Thêm câu hỏi
+          </button>
+        )}
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'Đánh Giá TB', value: `${avg}★`, icon: Star, color: 'text-[#E6C753]', bg: 'bg-[#E6C753]/10 border-[#E6C753]/20' },
-          { label: 'Tổng Đánh Giá', value: '1,842', icon: MessageSquare, color: 'text-[#00FFFF]', bg: 'bg-[#00FFFF]/10 border-[#00FFFF]/20' },
-          { label: 'Chờ Kiểm Duyệt', value: '23', icon: CheckCircle2, color: 'text-[#FF0088]', bg: 'bg-[#FF0088]/10 border-[#FF0088]/20' },
-          { label: 'Đã Ẩn', value: '8', icon: XCircle, color: 'text-[#8A8F98]', bg: 'bg-[#8A8F98]/10 border-[#8A8F98]/20' },
-        ].map((s, i) => (
-          <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
-            className={`p-5 rounded-2xl border bg-white/5 backdrop-blur-md relative overflow-hidden group hover:scale-[1.02] transition-all ${s.bg}`}>
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <s.icon className={`w-16 h-16 ${s.color}`} />
-            </div>
-            <div className="text-[#8A8F98] text-[10px] font-bold uppercase tracking-widest mb-2">{s.label}</div>
-            <div className={`text-2xl font-display font-black ${s.color}`}>{s.value}</div>
+      <AnimatePresence>
+        {message && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            className={`p-4 rounded-xl flex items-center gap-3 border ${message.type === 'success' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}
+          >
+            {message.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+            <span className="font-bold text-sm uppercase tracking-wide">{message.text}</span>
+            <button onClick={() => setMessage(null)} className="ml-auto opacity-50 hover:opacity-100"><X size={16} /></button>
           </motion.div>
-        ))}
-      </div>
+        )}
+      </AnimatePresence>
 
-      {/* Review Cards */}
       <div className="space-y-4">
-        {mockReviews.map((review, i) => (
-          <motion.div key={review.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-            className="glass-card p-6 rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 shadow-xl hover:border-[#4F1F76]/50 transition-all">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Avatar + Info */}
-              <div className="flex items-start gap-4 flex-1">
-                <div className="w-12 h-12 rounded-full border-2 border-[#4F1F76]/50 flex items-center justify-center font-display font-black text-lg text-[#FFFFFF] bg-[#4F1F76]/30 shrink-0">
-                  {review.avatar}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-3 mb-1">
-                    <span className="font-bold text-[#FFFFFF]">{review.author}</span>
-                    <StarRating rating={review.rating} />
-                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-widest ${getStatusStyle(review.status)}`}>
-                      {review.status}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[10px] text-[#8A8F98] font-bold mb-3">
-                    <span className="flex items-center gap-1"><User className="w-3 h-3" /> {review.id}</span>
-                    <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {review.date}</span>
-                  </div>
-                  <p className="text-sm text-[#C0C5CC] leading-relaxed">{review.content}</p>
-                  <div className="flex items-center gap-1 mt-3 text-xs text-[#8A8F98]">
-                    <ThumbsUp className="w-3.5 h-3.5 text-[#00C099]" /> <span className="font-bold text-[#00C099]">{review.likes}</span> <span>người thấy hữu ích</span>
-                  </div>
-                </div>
-              </div>
+        {/* Adding New Question Form */}
+        <AnimatePresence>
+          {isAdding && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="glass-card p-6 rounded-2xl border-cyan/30 bg-cyan/5"
+            >
+              <QuestionForm 
+                editForm={editForm}
+                setEditForm={setEditForm}
+                onSave={handleSave}
+                onCancel={() => setIsAdding(false)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-              {/* Actions */}
-              <div className="flex sm:flex-col gap-2 shrink-0">
-                {review.status === 'Chờ duyệt' && (
-                  <button className="px-4 py-2 rounded-xl bg-[#00C099]/10 border border-[#00C099]/30 text-[#00C099] font-bold text-xs hover:bg-[#00C099] hover:text-[#060010] transition-all flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Duyệt
-                  </button>
-                )}
-                {review.status !== 'Đã ẩn' && (
-                  <button className="px-4 py-2 rounded-xl bg-[#8A8F98]/10 border border-[#8A8F98]/30 text-[#8A8F98] font-bold text-xs hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all flex items-center gap-1.5">
-                    <XCircle className="w-3.5 h-3.5" /> Ẩn
-                  </button>
-                )}
-                {review.status === 'Đã ẩn' && (
-                  <button className="px-4 py-2 rounded-xl bg-[#4F1F76]/20 border border-[#4F1F76]/30 text-[#8A8F98] font-bold text-xs hover:text-[#FFFFFF] transition-all flex items-center gap-1.5">
-                    <ThumbsDown className="w-3.5 h-3.5" /> Đã ẩn
-                  </button>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        ))}
+        {/* Questions List */}
+        <div className="space-y-4">
+          {questions.map((q, index) => (
+            <QuestionListItem 
+              key={q.id}
+              question={q}
+              index={index}
+              isEditing={isEditing === q.id}
+              onEdit={startEdit}
+              onDelete={handleDelete}
+              renderEditForm={() => (
+                <QuestionForm 
+                  editForm={editForm}
+                  setEditForm={setEditForm}
+                  onSave={handleSave}
+                  onCancel={() => setIsEditing(null)}
+                  isEditing
+                  questionId={q.id}
+                />
+              )}
+            />
+          ))}
+          
+          {questions.length === 0 && !isAdding && (
+             <div className="text-center py-20 border-2 border-dashed border-admin-border/10 rounded-[2rem]">
+               <Info className="mx-auto mb-4 text-admin-text-muted/20" size={48} />
+               <p className="text-admin-text-muted/40 font-display uppercase tracking-widest">Chưa có câu hỏi nào trong database</p>
+               <button onClick={startAdd} className="mt-4 text-cyan hover:underline uppercase text-xs font-bold tracking-widest">Bấm để tạo ngay</button>
+             </div>
+          )}
+        </div>
+      </div>
+      
+      <div className="p-6 glass-card rounded-2xl border-admin-border/10 flex items-start gap-4">
+         <AlertCircle className="text-gold shrink-0 mt-1" size={20} />
+         <div>
+            <h5 className="font-bold text-gold uppercase text-xs mb-1">Lưu ý bảo trì hệ thống</h5>
+            <p className="text-xs text-admin-text-muted/60 leading-relaxed">
+              Việc thay đổi câu hỏi khảo sát đang diễn ra công khai sẽ ảnh hưởng đến tính nhất quán của dữ liệu đã thu thập. 
+              Khuyên dùng: Chỉ nên **Ẩn (Deactivate)** câu hỏi cũ thay vì **Xóa (Delete)** để giữ toàn vẹn lịch sử khảo sát.
+            </p>
+         </div>
       </div>
     </div>
   );

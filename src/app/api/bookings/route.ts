@@ -32,48 +32,69 @@ export async function POST(req: Request) {
     const bookingCode = generateBookingCode();
     
     // Create the booking record
-    const booking = await prisma.$transaction(async (tx) => {
-      const b = await tx.booking.create({
-        data: {
-          bookingCode,
-          userId: (session?.user as any)?.id || null,
-          name: body.name,
-          email: body.email || 'ticket-admin@event.com',
-          phone: body.phone || '',
-          ticketType: body.ticketType || 'GA',
-          quantity: parseInt(body.quantity?.toString() || '1'),
-          totalPrice: parseInt(body.totalPrice?.toString() || '0'),
-          discountCode: body.discountCode || null,
-          discountAmount: parseInt(body.discountAmount?.toString() || '0'),
-          ticketStatus: 'CREATED',
-          accessories: body.accessories || [],
-        },
-      });
-
-      // Increment campaign usage if a code was applied
-      if (body.discountCode) {
-        await tx.campaign.update({
-          where: { code: body.discountCode.toUpperCase() },
-          data: { used: { increment: 1 } },
-        });
-      }
-
-      return b;
+    const booking = await prisma.booking.create({
+      data: {
+        bookingCode,
+        userId: (session?.user as any)?.id || null,
+        name: body.name,
+        email: body.email || 'ticket-admin@event.com',
+        phone: body.phone || '',
+        ticketType: body.ticketType || 'GA',
+        quantity: parseInt(body.quantity?.toString() || '1'),
+        totalPrice: parseInt(body.totalPrice?.toString() || '0'),
+        ticketStatus: 'CREATED',
+        accessories: body.accessories || [],
+      },
     });
 
-    console.log('--- BOOKING CREATED ---', booking.bookingCode);
+      // Create a transaction record linked to this booking
+      await tx.transaction.create({
+        data: {
+          method: body.paymentMethod || 'UNKNOWN',
+          amount: booking.totalPrice,
+          status: 'Thành công',
+          bookingId: booking.id,
+        }
+      });
 
-    // Send confirmation email asynchronously
-    sendTicketEmail({
-      bookingCode,
-      name: booking.name,
-      email: booking.email,
-      ticketType: booking.ticketType,
-      quantity: booking.quantity,
-      totalPrice: booking.totalPrice,
-    }).catch(err => console.error('Background email dispatch failed:', err));
+      return booking;
+    });
 
-    return NextResponse.json(booking, { status: 201 });
+    const booking = result;
+    console.log('--- BOOKING & TRANSACTION CREATED ---', booking.bookingCode);
+
+    // Send confirmation email - AWAIT this to ensure Vercel doesn't kill the process
+    let emailStatus = { sent: false, error: null as any };
+    try {
+      const emailResult = await sendTicketEmail({
+        bookingCode,
+        name: booking.name,
+        email: booking.email,
+        ticketType: booking.ticketType,
+        quantity: booking.quantity,
+        totalPrice: booking.totalPrice,
+      });
+      
+      if (emailResult.success) {
+        emailStatus.sent = true;
+        console.log('--- EMAIL DISPATCHED SUCCESSFULLY ---');
+      } else {
+        emailStatus.error = emailResult.error;
+        console.error('--- EMAIL DISPATCH RETURNED ERROR ---', emailResult.error);
+      }
+    } catch (err: any) {
+      emailStatus.error = err.message || err;
+      console.error('--- EMAIL DISPATCH EXCEPTION ---', err);
+    }
+
+    return NextResponse.json({
+      ...booking,
+      debug: {
+        emailSent: emailStatus.sent,
+        emailError: emailStatus.error,
+        receivedMethod: body.paymentMethod
+      }
+    }, { status: 201 });
   } catch (error: any) {
     console.error('--- BOOKING ERROR ---', error.message || error);
     // Explicitly return JSON even on severe errors
