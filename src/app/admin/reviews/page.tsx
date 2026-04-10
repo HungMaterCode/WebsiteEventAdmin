@@ -104,10 +104,10 @@ export default function AdminQuestionsPage() {
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF] tracking-tighter flex items-center gap-3">
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text tracking-tighter flex items-center gap-3">
             <LayoutList className="text-cyan" /> Quản Lý Câu Hỏi Khảo Sát
           </h2>
-          <p className="text-[#8A8F98] text-sm mt-1 uppercase tracking-widest flex items-center gap-2">
+          <p className="text-admin-text-muted text-sm mt-1 uppercase tracking-widest flex items-center gap-2">
             <span className="w-2 h-2 bg-magenta rounded-full animate-pulse" /> Dynamic Survey Form Protocol
           </p>
         </div>
@@ -178,20 +178,20 @@ export default function AdminQuestionsPage() {
           ))}
           
           {questions.length === 0 && !isAdding && (
-             <div className="text-center py-20 border-2 border-dashed border-silver/10 rounded-[2rem]">
-               <Info className="mx-auto mb-4 text-silver/20" size={48} />
-               <p className="text-silver/40 font-display uppercase tracking-widest">Chưa có câu hỏi nào trong database</p>
+             <div className="text-center py-20 border-2 border-dashed border-admin-border/10 rounded-[2rem]">
+               <Info className="mx-auto mb-4 text-admin-text-muted/20" size={48} />
+               <p className="text-admin-text-muted/40 font-display uppercase tracking-widest">Chưa có câu hỏi nào trong database</p>
                <button onClick={startAdd} className="mt-4 text-cyan hover:underline uppercase text-xs font-bold tracking-widest">Bấm để tạo ngay</button>
              </div>
           )}
         </div>
       </div>
       
-      <div className="p-6 glass-card rounded-2xl border-white/5 flex items-start gap-4">
+      <div className="p-6 glass-card rounded-2xl border-admin-border/10 flex items-start gap-4">
          <AlertCircle className="text-gold shrink-0 mt-1" size={20} />
          <div>
             <h5 className="font-bold text-gold uppercase text-xs mb-1">Lưu ý bảo trì hệ thống</h5>
-            <p className="text-xs text-silver/60 leading-relaxed">
+            <p className="text-xs text-admin-text-muted/60 leading-relaxed">
               Việc thay đổi câu hỏi khảo sát đang diễn ra công khai sẽ ảnh hưởng đến tính nhất quán của dữ liệu đã thu thập. 
               Khuyên dùng: Chỉ nên **Ẩn (Deactivate)** câu hỏi cũ thay vì **Xóa (Delete)** để giữ toàn vẹn lịch sử khảo sát.
             </p>

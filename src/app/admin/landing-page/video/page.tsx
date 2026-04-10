@@ -80,67 +80,67 @@ export default function VideoManagement() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF] tracking-tight italic">Quản Lý Video</h2>
-          <p className="text-[#8A8F98] text-sm mt-1">Cấu hình video teaser và nội dung hiển thị trên trang chủ</p>
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text tracking-tight italic">Quản Lý Video</h2>
+          <p className="text-admin-text-muted text-sm mt-1">Cấu hình video teaser và nội dung hiển thị trên trang chủ</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Form Settings */}
         <form onSubmit={handleSave} className="space-y-6">
-          <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF0088]/5 rounded-full blur-3xl -mr-16 -mt-16" />
+          <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-admin-panel border border-admin-border shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-magenta/5 rounded-full blur-3xl -mr-16 -mt-16" />
             
             <div className="space-y-6 relative z-10">
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-xl bg-[#00FFFF]/10 border border-[#00FFFF]/30">
-                  <Layout className="w-5 h-5 text-[#00FFFF]" />
+                <div className="p-2 rounded-xl bg-cyan/10 border border-cyan/30">
+                  <Layout className="w-5 h-5 text-cyan" />
                 </div>
-                <h3 className="text-lg font-display font-bold text-white uppercase tracking-wider">Thông tin hiển thị</h3>
+                <h3 className="text-lg font-display font-bold text-admin-text uppercase tracking-wider">Thông tin hiển thị</h3>
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Tiêu đề Video</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Tiêu đề Video</label>
                   <div className="relative">
                     <input 
                       type="text" 
                       value={form.videoTitle} 
                       onChange={e => setForm({ ...form, videoTitle: e.target.value })}
                       placeholder="VD: THE CINEMATIC TEASER" 
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all font-medium" 
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all font-medium" 
                     />
-                    <Type className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8F98]" />
+                    <Type className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Mô tả phụ</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Mô tả phụ</label>
                   <div className="relative">
                     <textarea 
                       value={form.videoSubtitle} 
                       onChange={e => setForm({ ...form, videoSubtitle: e.target.value })}
                       placeholder="VD: CHẠM ĐỂ TRẢI NGHIỆM..." 
                       rows={2}
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all resize-none font-medium" 
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all resize-none font-medium" 
                     />
-                    <AlignLeft className="absolute left-4 top-6 w-4 h-4 text-[#8A8F98]" />
+                    <AlignLeft className="absolute left-4 top-6 w-4 h-4 text-admin-text-muted" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Link Video (Youtube)</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Link Video (Youtube)</label>
                   <div className="relative">
                     <input 
                       type="text" 
                       value={form.videoUrl} 
                       onChange={e => setForm({ ...form, videoUrl: e.target.value })}
                       placeholder="https://www.youtube.com/watch?v=..." 
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FF0088] transition-all font-medium" 
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-magenta transition-all font-medium" 
                     />
-                    <ExternalLink className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8F98]" />
+                    <ExternalLink className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                   </div>
-                  <p className="text-[10px] text-[#4F1F76] italic mt-1 font-bold">* Hỗ trợ link Youtube rút gọn (youtu.be) hoặc link đầy đủ</p>
+                  <p className="text-[10px] text-magenta italic mt-1 font-bold">* Hỗ trợ link Youtube rút gọn (youtu.be) hoặc link đầy đủ</p>
                 </div>
               </div>
 
@@ -157,7 +157,7 @@ export default function VideoManagement() {
               <button 
                 type="submit" 
                 disabled={saving}
-                className="w-full py-4 bg-gradient-to-r from-[#00FFFF] to-[#4F1F76] text-[#000000] font-bold rounded-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-all glow-cyan shadow-[0_0_20px_rgba(0,255,255,0.2)] disabled:opacity-50"
+                className="w-full py-4 bg-gradient-to-r from-cyan to-magenta text-midnight font-bold rounded-xl flex items-center justify-center gap-3 hover:scale-[1.02] transition-all glow-cyan shadow-[0_0_20px_rgba(0,255,255,0.2)] disabled:opacity-50"
               >
                 {saving ? <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <Save className="w-5 h-5" />}
                 LƯU CẤU HÌNH VIDEO
@@ -168,19 +168,19 @@ export default function VideoManagement() {
 
         {/* Video Preview */}
         <div className="space-y-6">
-          <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 shadow-2xl h-full flex flex-col relative overflow-hidden">
-             <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[#00FFFF]/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
+          <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-admin-panel border border-admin-border shadow-2xl h-full flex flex-col relative overflow-hidden">
+             <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-cyan/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
              
             <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="p-2 rounded-xl bg-[#FF0088]/10 border border-[#FF0088]/30">
-                <Play className="w-5 h-5 text-[#FF0088]" />
+              <div className="p-2 rounded-xl bg-magenta/10 border border-magenta/30">
+                <Play className="w-5 h-5 text-magenta" />
               </div>
-              <h3 className="text-lg font-display font-bold text-white uppercase tracking-wider">Xem trước hiển thị</h3>
+              <h3 className="text-lg font-display font-bold text-admin-text uppercase tracking-wider">Xem trước hiển thị</h3>
             </div>
 
             <div className="flex-1 flex flex-col gap-6 relative z-10">
               {/* Fake UI Preview */}
-              <div className="relative aspect-video rounded-2xl border border-[#4F1F76]/50 bg-black overflow-hidden group shadow-inner">
+              <div className="relative aspect-video rounded-2xl border border-admin-border bg-black overflow-hidden group shadow-inner">
                 {getYoutubeEmbedUrl(form.videoUrl) ? (
                   <iframe 
                     src={getYoutubeEmbedUrl(form.videoUrl)} 
@@ -189,7 +189,7 @@ export default function VideoManagement() {
                     allowFullScreen
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-[#4F1F76] gap-3">
+                  <div className="w-full h-full flex flex-col items-center justify-center text-admin-text-muted gap-3">
                     <Video className="w-12 h-12 opacity-20" />
                     <span className="text-xs font-bold uppercase tracking-widest opacity-40">Chưa có video hợp lệ</span>
                   </div>
@@ -198,21 +198,21 @@ export default function VideoManagement() {
               </div>
 
               {/* Text Preview Overlay simulation */}
-              <div className="p-6 rounded-2xl bg-[#060010] border border-[#4F1F76]/30 space-y-3 shadow-2xl">
-                <div className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest mb-1 opacity-60">Mô phỏng giao diện chính:</div>
+              <div className="p-6 rounded-2xl bg-admin-bg border border-admin-border space-y-3 shadow-2xl">
+                <div className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest mb-1 opacity-60">Mô phỏng giao diện chính:</div>
                 <div className="space-y-1">
-                  <h4 className="text-2xl font-display font-black text-white italic tracking-tighter uppercase whitespace-pre-line leading-none">
+                  <h4 className="text-2xl font-display font-black text-admin-text italic tracking-tighter uppercase whitespace-pre-line leading-none">
                     {form.videoTitle || 'THE CINEMATIC TEASER'}
                   </h4>
-                  <p className="text-[10px] text-[#00FFFF] font-bold tracking-[0.2em] uppercase mt-2">
+                  <p className="text-[10px] text-cyan font-bold tracking-[0.2em] uppercase mt-2">
                     {form.videoSubtitle || 'CHẠM ĐỂ TRẢI NGHIỆM...'}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-auto p-4 bg-[#FF0088]/5 rounded-xl border border-[#FF0088]/20">
-                 <p className="text-[10px] text-[#8A8F98] leading-relaxed">
-                   <strong className="text-[#FF0088] uppercase tracking-wider">Lưu ý:</strong> Mọi thay đổi sẽ được áp dụng ngay lập tức cho phần <strong>Cinematic Experience</strong> trên trang chủ sau khi bạn nhấn Lưu.
+              <div className="mt-auto p-4 bg-magenta/5 rounded-xl border border-magenta/20">
+                 <p className="text-[10px] text-admin-text-muted leading-relaxed">
+                   <strong className="text-magenta uppercase tracking-wider">Lưu ý:</strong> Mọi thay đổi sẽ được áp dụng ngay lập tức cho phần <strong>Cinematic Experience</strong> trên trang chủ sau khi bạn nhấn Lưu.
                  </p>
               </div>
             </div>

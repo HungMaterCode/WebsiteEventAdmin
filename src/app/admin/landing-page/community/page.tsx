@@ -121,7 +121,7 @@ export default function CommunityManagement() {
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-white tracking-tight italic text-glow-cyan flex items-center gap-4">
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text tracking-tight italic text-glow-cyan flex items-center gap-4">
             Quản Lý Cộng Đồng
             {isSyncing && (
               <span className="flex items-center gap-2 text-[10px] font-bold text-cyan animate-pulse bg-cyan/10 px-3 py-1 rounded-full border border-cyan/20 normal-case italic tracking-normal">
@@ -130,7 +130,7 @@ export default function CommunityManagement() {
               </span>
             )}
           </h2>
-          <p className="text-[#8A8F98] text-sm mt-1">Quản lý các bài đăng/phản hồi từ cộng đồng trên Landing Page</p>
+          <p className="text-admin-text-muted text-sm mt-1">Quản lý các bài đăng/phản hồi từ cộng đồng trên Landing Page</p>
         </div>
         <button
           onClick={() => setEditingItem({ username: '', content: '', timestamp: 'Vừa xong', sortOrder: items.length })}
@@ -141,20 +141,20 @@ export default function CommunityManagement() {
       </div>
 
       {/* Cấu hình hiển thị */}
-      <div className="glass-card p-6 rounded-3xl bg-[#0D0716]/90 border border-[#4F1F76]/40 space-y-5">
-        <h3 className="text-lg font-display font-bold text-white uppercase tracking-wider flex items-center gap-2"><Hash className="w-5 h-5 text-magenta" /> Cấu hình hiển thị</h3>
+      <div className="glass-card p-6 rounded-3xl bg-admin-panel border border-admin-border space-y-5">
+        <h3 className="text-lg font-display font-bold text-admin-text uppercase tracking-wider flex items-center gap-2"><Hash className="w-5 h-5 text-magenta" /> Cấu hình hiển thị</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Hashtag</label>
-            <input value={communitySettings.communityHashtag} onChange={e => setCommunitySettings({...communitySettings, communityHashtag: e.target.value})} className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-cyan font-bold focus:outline-none focus:border-cyan transition-all" />
+            <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Hashtag</label>
+            <input value={communitySettings.communityHashtag} onChange={e => setCommunitySettings({...communitySettings, communityHashtag: e.target.value})} className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-cyan font-bold focus:outline-none focus:border-cyan transition-all" />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Followers</label>
-            <input value={communitySettings.communityFollowers} onChange={e => setCommunitySettings({...communitySettings, communityFollowers: e.target.value})} className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-magenta font-bold focus:outline-none focus:border-cyan transition-all" />
+            <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Followers</label>
+            <input value={communitySettings.communityFollowers} onChange={e => setCommunitySettings({...communitySettings, communityFollowers: e.target.value})} className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-magenta font-bold focus:outline-none focus:border-cyan transition-all" />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Mentions</label>
-            <input value={communitySettings.communityMentions} onChange={e => setCommunitySettings({...communitySettings, communityMentions: e.target.value})} className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-cyan font-bold focus:outline-none focus:border-cyan transition-all" />
+            <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Mentions</label>
+            <input value={communitySettings.communityMentions} onChange={e => setCommunitySettings({...communitySettings, communityMentions: e.target.value})} className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-cyan font-bold focus:outline-none focus:border-cyan transition-all" />
           </div>
         </div>
         <button onClick={saveSettings} disabled={savingSettings} className="px-6 py-3 bg-gradient-to-r from-magenta to-royal text-white font-black rounded-xl flex items-center gap-2 hover:scale-[1.03] transition-all text-xs uppercase tracking-widest disabled:opacity-50">
@@ -180,12 +180,12 @@ export default function CommunityManagement() {
                 damping: 35,
                 mass: 1 
               }}
-              className="glass-card p-5 md:p-6 rounded-3xl bg-[#0D0716]/90 backdrop-blur-xl border border-[#4F1F76]/40 flex flex-col md:flex-row items-start md:items-center gap-6 group hover:border-cyan/40 shadow-2xl relative overflow-hidden"
+              className="glass-card p-5 md:p-6 rounded-3xl bg-admin-panel border border-admin-border flex flex-col md:flex-row items-start md:items-center gap-6 group hover:border-cyan/40 shadow-2xl relative overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-cyan/50 group-hover:bg-cyan transition-colors" />
 
               <div className="flex items-center gap-5 shrink-0">
-                <div className="text-gray-600 group-hover:text-cyan transition-colors cursor-grab active:cursor-grabbing p-2 hover:bg-white/5 rounded-lg">
+                <div className="text-admin-text-muted group-hover:text-cyan transition-colors cursor-grab active:cursor-grabbing p-2 hover:bg-admin-bg/5 rounded-lg">
                   <GripVertical className="w-6 h-6" />
                 </div>
                 <div className="p-3.5 rounded-2xl bg-royal/20 border border-royal/30 text-magenta shadow-[0_0_15px_rgba(255,0,136,0.1)]">
@@ -196,9 +196,9 @@ export default function CommunityManagement() {
               <motion.div className="flex-1 min-w-0" layout="position">
                 <div className="flex items-center gap-3 mb-1.5">
                   <span className="text-cyan font-bold tracking-wide">{item.username}</span>
-                  <span className="text-gray-500 text-[10px] uppercase tracking-tighter">{item.timestamp}</span>
+                  <span className="text-admin-text-muted text-[10px] uppercase tracking-tighter">{item.timestamp}</span>
                 </div>
-                <p className="text-silver/80 text-sm leading-relaxed italic">&quot;{item.content}&quot;</p>
+                <p className="text-admin-text text-sm leading-relaxed italic">&quot;{item.content}&quot;</p>
               </motion.div>
 
               <div className="flex items-center gap-2 shrink-0 self-end md:self-center bg-black/40 p-2 rounded-2xl border border-white/5">
@@ -214,7 +214,7 @@ export default function CommunityManagement() {
         </Reorder.Group>
 
         {items.length === 0 && (
-          <div className="text-center py-24 bg-royal/5 border-2 border-dashed border-[#4F1F76]/20 rounded-[3rem] text-gray-600 italic font-medium">
+          <div className="text-center py-24 bg-admin-bg/50 border-2 border-dashed border-admin-border rounded-[3rem] text-admin-text-muted italic font-medium">
             Chưa có bài đăng nào từ cộng đồng. Hãy khởi tạo những phản hồi đầu tiên!
           </div>
         )}
@@ -223,63 +223,63 @@ export default function CommunityManagement() {
       <AnimatePresence>
         {editingItem && (
           <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditingItem(null)} className="absolute inset-0 bg-[#060010]/95 backdrop-blur-xl" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditingItem(null)} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-xl" />
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-[#0D0716] border border-[#4F1F76]/50 rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,255,255,0.15)]"
+              className="relative w-full max-w-lg bg-admin-panel border border-admin-border rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(255,0,136,0.15)]"
             >
-              <div className="p-8 border-b border-[#4F1F76]/30 flex justify-between items-center bg-[#4F1F76]/10 relative overflow-hidden">
+              <div className="p-8 border-b border-admin-border flex justify-between items-center bg-admin-bg/50 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan/5 to-transparent pointer-events-none" />
                 <div className="flex items-center gap-3 relative z-10">
                   <div className="p-2 rounded-xl bg-cyan/10 border border-cyan/30">
                     <MessageSquare className="w-5 h-5 text-cyan" />
                   </div>
-                  <h3 className="text-xl font-display font-bold text-white uppercase italic tracking-wider">{editingItem.id ? 'Sửa bài đăng' : 'Thêm bài đăng mới'}</h3>
+                  <h3 className="text-xl font-display font-bold text-admin-text uppercase italic tracking-wider">{editingItem.id ? 'Sửa bài đăng' : 'Thêm bài đăng mới'}</h3>
                 </div>
-                <button type="button" onClick={() => setEditingItem(null)} className="p-2 text-[#8A8F98] hover:text-white hover:bg-white/5 rounded-full transition-all relative z-10"><X className="w-6 h-6" /></button>
+                <button type="button" onClick={() => setEditingItem(null)} className="p-2 text-admin-text-muted hover:text-admin-text hover:bg-admin-bg/5 rounded-full transition-all relative z-10"><X className="w-6 h-6" /></button>
               </div>
 
               <form onSubmit={handleAddEdit} className="p-8 space-y-6">
                 <div className="space-y-5">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Tên người dùng (Username - VD: @minh_anh)</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Tên người dùng (Username - VD: @minh_anh)</label>
                     <input
                       required
                       type="text"
                       value={editingItem.username}
                       onChange={e => setEditingItem({ ...editingItem, username: e.target.value })}
                       placeholder="@username"
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan font-bold outline-none transition-all placeholder:opacity-30"
+                      className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text focus:outline-none focus:border-cyan font-bold outline-none transition-all placeholder:opacity-30"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Thời gian hiển thị (VD: 2m ago, Vừa xong...)</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Thời gian hiển thị (VD: 2m ago, Vừa xong...)</label>
                     <input
                       required
                       type="text"
                       value={editingItem.timestamp}
                       onChange={e => setEditingItem({ ...editingItem, timestamp: e.target.value })}
                       placeholder="Vừa xong"
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan outline-none transition-all placeholder:opacity-30"
+                      className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text focus:outline-none focus:border-cyan outline-none transition-all placeholder:opacity-30"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Nội dung phản hồi</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Nội dung phản hồi</label>
                     <textarea
                       required
                       value={editingItem.content}
                       onChange={e => setEditingItem({ ...editingItem, content: e.target.value })}
                       rows={4}
                       placeholder="Nhập nội dung cộng đồng đang nói gì..."
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan text-sm leading-relaxed outline-none transition-all resize-none shadow-[inset_0_0_20px_rgba(0,255,255,0.02)]"
+                      className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text text-sm leading-relaxed outline-none transition-all resize-none shadow-[inset_0_0_20px_rgba(255,0,255,0.02)]"
                     />
                   </div>
                 </div>
 
                 <div className="flex gap-4 pt-4">
-                  <button type="button" onClick={() => setEditingItem(null)} className="flex-1 py-5 rounded-2xl border border-[#4F1F76] text-white font-black hover:bg-white/5 transition-all text-sm uppercase tracking-widest">HỦY BỎ</button>
+                  <button type="button" onClick={() => setEditingItem(null)} className="flex-1 py-5 rounded-2xl border border-admin-border text-admin-text font-black hover:bg-admin-bg/5 transition-all text-sm uppercase tracking-widest">HỦY BỎ</button>
                   <button type="submit" disabled={saving} className="flex-1 py-5 rounded-2xl bg-gradient-to-r from-cyan to-royal text-midnight font-black hover:scale-[1.02] transition-all glow-cyan text-sm uppercase tracking-widest disabled:opacity-50">
                     {saving ? 'ĐANG LƯU...' : (editingItem.id ? 'LƯU THAY ĐỔI' : 'THÊM MỚI')}
                   </button>

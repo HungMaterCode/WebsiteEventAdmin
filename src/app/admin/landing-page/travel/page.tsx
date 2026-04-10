@@ -101,14 +101,14 @@ export default function TravelManagement() {
   return (
     <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700 pb-20">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-[#0D0716]/50 p-8 rounded-[2.5rem] border border-[#4F1F76]/30 backdrop-blur-xl relative overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-admin-panel/50 p-8 rounded-[2.5rem] border border-admin-border backdrop-blur-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-cyan/5 blur-[100px] -z-10" />
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-white tracking-widest italic text-glow-cyan flex items-center gap-4">
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text tracking-widest italic text-glow-cyan flex items-center gap-4">
             <Car className="text-cyan w-8 h-8" />
             Di Chuyển & Lưu Trú
           </h2>
-          <p className="text-[#8A8F98] text-sm mt-2 font-medium tracking-wide">Quản lý cách thức di chuyển và thông tin lưu trú cho khách hàng</p>
+          <p className="text-admin-text-muted text-sm mt-2 font-medium tracking-wide">Quản lý cách thức di chuyển và thông tin lưu trú cho khách hàng</p>
         </div>
         <button
           onClick={handleSave}
@@ -133,69 +133,70 @@ export default function TravelManagement() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Basic Info Column */}
         <div className="lg:col-span-1 space-y-8">
-          <div className="glass-card p-8 rounded-[2.5rem] bg-[#0D0716]/80 border border-[#4F1F76]/30 shadow-2xl space-y-8 relative overflow-hidden">
-            <div className="flex items-center gap-3 pb-6 border-b border-[#4F1F76]/30">
+          <div className="glass-card p-8 rounded-[2.5rem] bg-admin-panel border border-admin-border shadow-2xl space-y-8 relative overflow-hidden">
+            <div className="flex items-center gap-3 pb-6 border-b border-admin-border">
               <div className="p-2.5 rounded-xl bg-cyan/10 border border-cyan/30 text-cyan">
                 <Type className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-white italic">Thông tin chung</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-admin-text italic">Thông tin chung</h3>
             </div>
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-widest block pl-1">Tiêu đề chính</label>
+                <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-widest block pl-1">Tiêu đề chính</label>
                 <input
                   type="text"
                   value={settings?.travelTitle || ''}
                   onChange={e => setSettings({ ...settings, travelTitle: e.target.value })}
-                  className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan transition-all font-bold tracking-wide shadow-inner"
+                  className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text focus:outline-none focus:border-cyan transition-all font-bold tracking-wide shadow-inner"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-widest block pl-1">Tiêu đề phụ</label>
+                <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-widest block pl-1">Tiêu đề phụ</label>
                 <input
                   type="text"
                   value={settings?.travelSubtitle || ''}
                   onChange={e => setSettings({ ...settings, travelSubtitle: e.target.value })}
-                  className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan transition-all font-bold tracking-wide"
+                  className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text focus:outline-none focus:border-cyan transition-all font-bold tracking-wide"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-widest block pl-1">Mô tả ngắn</label>
+                <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-widest block pl-1">Mô tả ngắn</label>
                 <textarea
                   value={settings?.travelDescription || ''}
                   onChange={e => setSettings({ ...settings, travelDescription: e.target.value })}
                   rows={3}
-                  className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan transition-all text-sm leading-relaxed"
+                  className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text focus:outline-none focus:border-cyan transition-all text-sm leading-relaxed"
                 />
               </div>
 
               <div className="space-y-2 pt-4">
                 <label className="text-[10px] font-black text-cyan uppercase tracking-widest block pl-1 flex items-center gap-2">
-                  <Info className="w-3 h-3" /> Lời khuyên (Advice)
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan" /> 
+                  Lời khuyên (Advice)
                 </label>
                 <textarea
                   value={settings?.travelAdvice || ''}
                   onChange={e => setSettings({ ...settings, travelAdvice: e.target.value })}
                   rows={4}
-                  className="w-full bg-[#060010] border border-cyan/30 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan transition-all text-sm leading-relaxed"
+                  className="w-full bg-admin-bg border border-cyan/30 rounded-2xl px-6 py-4 text-admin-text focus:outline-none focus:border-cyan transition-all text-sm leading-relaxed"
                 />
               </div>
 
               <div className="space-y-2 pt-4">
-                <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-widest block pl-1 flex items-center gap-2">
+                <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-widest block pl-1 flex items-center gap-2">
                   <ImageIcon className="w-3 h-3" /> URL Hình ảnh
                 </label>
                 <input
                   type="text"
                   value={settings?.travelImage || ''}
                   onChange={e => setSettings({ ...settings, travelImage: e.target.value })}
-                  className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-xs text-cyan focus:outline-none focus:border-cyan transition-all"
+                  className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-xs text-cyan focus:outline-none focus:border-cyan transition-all"
                 />
                 {settings?.travelImage && (
-                  <div className="mt-4 rounded-3xl overflow-hidden border border-[#4F1F76]/30 aspect-video">
+                  <div className="mt-4 rounded-3xl overflow-hidden border border-admin-border aspect-video">
                     <img src={settings.travelImage} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
@@ -206,13 +207,13 @@ export default function TravelManagement() {
 
         {/* Categories / Items Column */}
         <div className="lg:col-span-2 space-y-8">
-          <div className="glass-card p-8 rounded-[2.5rem] bg-[#0D0716]/80 border border-[#4F1F76]/30 shadow-2xl relative overflow-hidden">
-            <div className="flex items-center justify-between pb-6 border-b border-[#4F1F76]/30">
+          <div className="glass-card p-8 rounded-[2.5rem] bg-admin-panel border border-admin-border shadow-2xl relative overflow-hidden">
+            <div className="flex items-center justify-between pb-6 border-b border-admin-border">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-magenta/10 border border-magenta/30 text-magenta">
                   <AlignLeft className="w-5 h-5" />
                 </div>
-                <h3 className="text-sm font-black uppercase tracking-widest text-white italic">Các phương thức & Lưu trú</h3>
+                <h3 className="text-sm font-black uppercase tracking-widest text-admin-text italic">Các phương thức & Lưu trú</h3>
               </div>
               <button 
                 onClick={addItem}
@@ -228,11 +229,11 @@ export default function TravelManagement() {
                   <Reorder.Item 
                     key={index} 
                     value={item}
-                    className="p-8 rounded-[2rem] bg-[#060010]/50 border border-[#4F1F76]/30 hover:border-cyan/30 transition-all group relative"
+                    className="p-8 rounded-[2rem] bg-admin-bg/50 border border-admin-border hover:border-cyan/30 transition-all group relative"
                   >
                     <div className="flex flex-col md:flex-row gap-8">
                       <div className="flex items-center gap-4 shrink-0">
-                        <div className="cursor-grab active:cursor-grabbing text-[#8A8F98] hover:text-cyan transition-colors p-2">
+                        <div className="cursor-grab active:cursor-grabbing text-admin-text-muted hover:text-cyan transition-colors p-2">
                           <GripVertical className="w-6 h-6" />
                         </div>
                         <div className={`w-20 h-20 rounded-2xl ${item.bg} flex items-center justify-center ${item.color} border border-current/20 shadow-lg`}>
@@ -243,51 +244,51 @@ export default function TravelManagement() {
                       <div className="flex-1 space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-widest block">Tiêu đề mục</label>
+                            <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-widest block">Tiêu đề mục</label>
                             <input
                               type="text"
                               value={item.title}
                               onChange={e => updateItem(index, 'title', e.target.value)}
-                              className="w-full bg-[#0D0716] border border-[#4F1F76]/50 rounded-xl px-5 py-3 text-white text-sm focus:outline-none focus:border-cyan"
+                              className="w-full bg-admin-bg border border-admin-border rounded-xl px-5 py-3 text-admin-text text-sm focus:outline-none focus:border-cyan"
                             />
                           </div>
                           <div className="flex gap-4">
                             <div className="flex-1 space-y-2">
-                              <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-widest block">Icon</label>
+                              <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-widest block">Icon</label>
                               <div className="relative">
                                 <select 
                                   value={item.icon}
                                   onChange={e => updateItem(index, 'icon', e.target.value)}
-                                  className="w-full bg-[#0D0716] border border-[#4F1F76]/50 rounded-xl px-5 py-3 text-white text-sm focus:outline-none focus:border-cyan appearance-none"
+                                  className="w-full bg-admin-bg border border-admin-border rounded-xl px-5 py-3 text-admin-text text-sm focus:outline-none focus:border-cyan appearance-none"
                                 >
-                                  {ICON_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                  {ICON_OPTIONS.map(opt => <option key={opt.value} value={opt.value} className="bg-admin-panel">{opt.label}</option>)}
                                 </select>
-                                <ChevronDown className="absolute right-4 top-3.5 w-4 h-4 text-[#8A8F98] pointer-events-none" />
+                                <ChevronDown className="absolute right-4 top-3.5 w-4 h-4 text-admin-text-muted pointer-events-none" />
                               </div>
                             </div>
                             <div className="flex-1 space-y-2">
-                              <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-widest block">Màu sắc</label>
+                              <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-widest block">Màu sắc</label>
                               <div className="relative">
                                 <select 
                                   value={item.color}
                                   onChange={e => updateItem(index, 'color', e.target.value)}
-                                  className="w-full bg-[#0D0716] border border-[#4F1F76]/50 rounded-xl px-5 py-3 text-white text-sm focus:outline-none focus:border-cyan appearance-none"
+                                  className="w-full bg-admin-bg border border-admin-border rounded-xl px-5 py-3 text-admin-text text-sm focus:outline-none focus:border-cyan appearance-none"
                                 >
-                                  {COLOR_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                  {COLOR_OPTIONS.map(opt => <option key={opt.value} value={opt.value} className="bg-admin-panel">{opt.label}</option>)}
                                 </select>
-                                <ChevronDown className="absolute right-4 top-3.5 w-4 h-4 text-[#8A8F98] pointer-events-none" />
+                                <ChevronDown className="absolute right-4 top-3.5 w-4 h-4 text-admin-text-muted pointer-events-none" />
                               </div>
                             </div>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-widest block">Mô tả nội dung</label>
+                          <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-widest block">Mô tả nội dung</label>
                           <input
                             type="text"
                             value={item.desc}
                             onChange={e => updateItem(index, 'desc', e.target.value)}
-                            className="w-full bg-[#0D0716] border border-[#4F1F76]/50 rounded-xl px-5 py-3 text-white text-sm focus:outline-none focus:border-cyan"
+                            className="w-full bg-admin-bg border border-admin-border rounded-xl px-5 py-3 text-admin-text text-sm focus:outline-none focus:border-cyan"
                           />
                         </div>
                       </div>
@@ -304,7 +305,7 @@ export default function TravelManagement() {
               </Reorder.Group>
 
               {items.length === 0 && (
-                <div className="text-center py-20 bg-[#060010]/30 rounded-[2rem] border-2 border-dashed border-[#4F1F76]/20 text-[#8A8F98] italic font-medium">
+                <div className="text-center py-20 bg-admin-bg/30 rounded-[2rem] border-2 border-dashed border-admin-border text-admin-text-muted italic font-medium">
                   Chưa có mục nào. Nhấn "Thêm mục" để bắt đầu.
                 </div>
               )}

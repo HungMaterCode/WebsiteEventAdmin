@@ -73,8 +73,8 @@ export default function GalleryManagement() {
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-white tracking-tight italic">Khoảnh Khắc Di Sản</h2>
-          <p className="text-[#8A8F98] text-sm mt-1">Quản lý tối đa 6 hình ảnh đẹp nhất hiển thị trên trang chủ</p>
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text tracking-tight italic">Khoảnh Khắc Di Sản</h2>
+          <p className="text-admin-text-muted text-sm mt-1">Quản lý tối đa 6 hình ảnh đẹp nhất hiển thị trên trang chủ</p>
         </div>
       </div>
 
@@ -138,12 +138,12 @@ export default function GalleryManagement() {
       <AnimatePresence>
         {editingItem && (
           <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditingItem(null)} className="absolute inset-0 bg-[#060010]/95 backdrop-blur-xl" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditingItem(null)} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-xl" />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-[#0D0716] border border-[#4F1F76]/50 rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,255,255,0.15)] flex flex-col"
+              className="relative w-full max-w-lg bg-admin-panel border border-admin-border rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,255,255,0.15)] flex flex-col"
             >
-              <div className="p-8 border-b border-[#4F1F76]/30 flex justify-between items-center bg-[#4F1F76]/10">
+              <div className="p-8 border-b border-admin-border flex justify-between items-center bg-admin-bg/50">
                 <div className="flex items-center gap-3">
                    <div className="p-2 rounded-xl bg-cyan/10 border border-cyan/30">
                       <ImageIcon className="w-5 h-5 text-cyan" />
@@ -156,7 +156,7 @@ export default function GalleryManagement() {
               <form onSubmit={handleAddEdit} className="p-8 space-y-6">
                 <div className="space-y-5">
                    <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Tiêu đề ảnh</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Tiêu đề ảnh</label>
                     <div className="relative">
                       <input 
                         required
@@ -164,14 +164,14 @@ export default function GalleryManagement() {
                         value={editingItem.title} 
                         onChange={e => setEditingItem({ ...editingItem, title: e.target.value })}
                         placeholder="VD: Vũ Điệu Neon..." 
-                        className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-cyan outline-none transition-all font-medium pl-12" 
+                        className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-4 text-admin-text focus:outline-none focus:border-cyan outline-none transition-all font-medium pl-12" 
                       />
-                      <Type className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8F98]" />
+                      <Type className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Hình ảnh khoảnh khắc</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Hình ảnh khoảnh khắc</label>
                     <div className="flex gap-3">
                        <div className="relative flex-1">
                         <input 
@@ -180,9 +180,9 @@ export default function GalleryManagement() {
                           value={editingItem.url} 
                           onChange={e => setEditingItem({ ...editingItem, url: e.target.value })}
                           placeholder="Link ảnh (https://...)" 
-                          className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-cyan outline-none transition-all text-xs font-medium" 
+                          className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-4 text-admin-text focus:outline-none focus:border-cyan outline-none transition-all text-xs font-medium" 
                         />
-                        <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8F98]" />
+                        <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                        </div>
                       <CldUploadWidget 
                         uploadPreset="ml_default"

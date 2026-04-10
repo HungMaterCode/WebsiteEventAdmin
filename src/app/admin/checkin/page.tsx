@@ -148,14 +148,14 @@ export default function AdminCheckinPage() {
     if (log.checkOutTime && !isCheckInRecent) {
       return { 
         label: 'RA (OUT)', 
-        style: 'bg-orange-500/10 text-orange-500 border-orange-500/30', 
+        style: 'bg-gold/10 text-gold border-gold/30', 
         icon: LogOut,
         time: log.checkOutTime
       };
     }
     return { 
       label: 'VÀO (IN)', 
-      style: 'bg-[#00C099]/10 text-[#00C099] border-[#00C099]/30', 
+      style: 'bg-emerald/10 text-emerald border-emerald/30', 
       icon: LogIn,
       time: log.checkInTime
     };
@@ -165,22 +165,22 @@ export default function AdminCheckinPage() {
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Hệ Thống Check-In/Out</h2>
-          <p className="text-[#8A8F98] text-sm mt-1">Xác thực vé và kiểm soát luồng người tham dự thực tế</p>
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text">Hệ Thống Check-In/Out</h2>
+          <p className="text-admin-text-muted text-sm mt-1">Xác thực vé và kiểm soát luồng người tham dự thực tế</p>
         </div>
         
-        <div className="flex bg-[#0D0716] p-1 rounded-2xl border border-[#4F1F76]/30">
+        <div className="flex bg-admin-bg p-1 rounded-2xl border border-admin-border/30">
           <button 
             onClick={() => setMode('IN')}
             className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2
-              ${mode === 'IN' ? 'bg-[#00FFFF] text-[#060010] glow-cyan' : 'text-[#8A8F98] hover:text-white'}`}
+              ${mode === 'IN' ? 'bg-cyan text-midnight glow-cyan' : 'text-admin-text-muted hover:text-admin-text'}`}
           >
             <LogIn className="w-4 h-4" /> Lối Vào
           </button>
           <button 
             onClick={() => setMode('OUT')}
             className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2
-              ${mode === 'OUT' ? 'bg-[#FF0088] text-white glow-magenta' : 'text-[#8A8F98] hover:text-white'}`}
+              ${mode === 'OUT' ? 'bg-magenta text-white glow-magenta' : 'text-admin-text-muted hover:text-admin-text'}`}
           >
             <LogOut className="w-4 h-4" /> Lối Ra
           </button>
@@ -190,17 +190,17 @@ export default function AdminCheckinPage() {
       {/* Live Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Tổng Vé Bán', value: stats?.totalTickets.toLocaleString() || '0', color: 'text-white', bg: 'bg-white/5 border-white/10', icon: Users },
-          { label: 'Đã Check-In', value: stats?.checkedIn.toLocaleString() || '0', color: 'text-[#00FFFF]', bg: 'bg-[#00FFFF]/10 border-[#00FFFF]/20', icon: LogIn },
-          { label: 'Đang Ở Lại', value: stats?.currentlyPresent.toLocaleString() || '0', color: 'text-[#E6C753]', bg: 'bg-[#E6C753]/10 border-[#E6C753]/20', icon: TrendingUp },
-          { label: 'Đã Ra Về', value: stats?.checkedOut.toLocaleString() || '0', color: 'text-[#FF0088]', bg: 'bg-[#FF0088]/10 border-[#FF0088]/20', icon: LogOut },
+          { label: 'Tổng Vé Bán', value: stats?.totalTickets.toLocaleString() || '0', color: 'text-admin-text', bg: 'bg-admin-text/5 border-admin-text/10', icon: Users },
+          { label: 'Đã Check-In', value: stats?.checkedIn.toLocaleString() || '0', color: 'text-cyan', bg: 'bg-cyan/10 border-cyan/20', icon: LogIn },
+          { label: 'Đang Ở Lại', value: stats?.currentlyPresent.toLocaleString() || '0', color: 'text-gold', bg: 'bg-gold/10 border-gold/20', icon: TrendingUp },
+          { label: 'Đã Ra Về', value: stats?.checkedOut.toLocaleString() || '0', color: 'text-magenta', bg: 'bg-magenta/10 border-magenta/20', icon: LogOut },
         ].map((s, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className={`p-5 rounded-2xl border bg-white/5 backdrop-blur-md relative overflow-hidden group hover:scale-[1.02] transition-all shadow-xl ${s.bg}`}>
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <s.icon className={`w-16 h-16 ${s.color}`} />
             </div>
-            <div className="text-[#8A8F98] text-[10px] font-bold uppercase tracking-widest mb-2 font-mono">{s.label}</div>
+            <div className="text-admin-text-muted text-[10px] font-bold uppercase tracking-widest mb-2 font-mono">{s.label}</div>
             <div className={`text-2xl font-display font-black ${s.color}`}>{s.value}</div>
           </motion.div>
         ))}
@@ -209,35 +209,35 @@ export default function AdminCheckinPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* QR Scanner Panel */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="glass-card p-6 rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 shadow-2xl overflow-hidden relative">
-            <div className={`absolute top-0 left-0 w-full h-1 animate-pulse ${mode === 'IN' ? 'bg-[#00FFFF]' : 'bg-[#FF0088]'}`} />
+          <div className="glass-card p-6 rounded-[2rem] bg-admin-panel/80 backdrop-blur-md border border-admin-border/30 shadow-2xl overflow-hidden relative">
+            <div className={`absolute top-0 left-0 w-full h-1 animate-pulse ${mode === 'IN' ? 'bg-cyan' : 'bg-magenta'}`} />
             
             <div className="flex items-center gap-3 mb-6">
-              <div className={`p-3 rounded-2xl border transition-colors ${mode === 'IN' ? 'bg-[#00FFFF]/10 border-[#00FFFF]/20' : 'bg-[#FF0088]/10 border-[#FF0088]/20'}`}>
-                <QrCode className={`w-6 h-6 ${mode === 'IN' ? 'text-[#00FFFF]' : 'text-[#FF0088]'}`} />
+              <div className={`p-3 rounded-2xl border transition-colors ${mode === 'IN' ? 'bg-cyan/10 border-cyan/20' : 'bg-magenta/10 border-magenta/20'}`}>
+                <QrCode className={`w-6 h-6 ${mode === 'IN' ? 'text-cyan' : 'text-magenta'}`} />
               </div>
               <div>
-                <h3 className="text-lg font-display font-black text-white uppercase tracking-wider">
+                <h3 className="text-lg font-display font-black text-admin-text uppercase tracking-wider">
                   QUÉT {mode === 'IN' ? 'LỐI VÀO' : 'LỐI RA'}
                 </h3>
-                <p className="text-[10px] text-[#8A8F98] tracking-widest font-bold uppercase mt-0.5">Sử dụng Camera thiết bị</p>
+                <p className="text-[10px] text-admin-text-muted tracking-widest font-bold uppercase mt-0.5">Sử dụng Camera thiết bị</p>
               </div>
             </div>
 
             {/* QR Scanner Container */}
-            <div id="reader" className="w-full rounded-2xl overflow-hidden bg-black border border-[#4F1F76]/30 shadow-inner mb-6 min-h-[300px]">
+            <div id="reader" className="w-full rounded-2xl overflow-hidden bg-admin-bg border border-admin-border/30 shadow-inner mb-6 min-h-[300px]">
               {/* html5-qrcode will render here */}
             </div>
 
             <form onSubmit={handleManualSubmit} className="space-y-3">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8F98]" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                 <input 
                   type="text" 
                   value={scanInput} 
                   onChange={e => setScanInput(e.target.value)}
                   placeholder="Hoặc nhập mã tay..."
-                  className="w-full bg-[#060010] border border-[#4F1F76]/30 rounded-xl pl-12 pr-4 py-3 text-sm text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" 
+                  className="w-full bg-admin-bg border border-admin-border/30 rounded-xl pl-12 pr-4 py-3 text-sm text-admin-text focus:outline-none focus:border-cyan transition-all" 
                 />
               </div>
               <button 
@@ -245,8 +245,8 @@ export default function AdminCheckinPage() {
                 disabled={isProcessing}
                 className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all transform active:scale-95
                   ${mode === 'IN' 
-                    ? 'bg-gradient-to-r from-[#00FFFF] to-[#00C099] text-[#060010] glow-cyan' 
-                    : 'bg-gradient-to-r from-[#FF0088] to-[#9D00FF] text-white glow-magenta'
+                    ? 'bg-gradient-to-r from-cyan to-emerald text-midnight glow-cyan' 
+                    : 'bg-gradient-to-r from-magenta to-purple text-white glow-magenta'
                   }`}
               >
                 {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
@@ -264,12 +264,12 @@ export default function AdminCheckinPage() {
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                 className={`p-6 rounded-[2rem] border-2 shadow-2xl relative overflow-hidden
                   ${lastScanResult.success 
-                    ? 'bg-[#00C099]/10 border-[#00C099]/30 text-[#00C099]' 
+                    ? 'bg-emerald/10 border-emerald/30 text-emerald' 
                     : 'bg-red-500/10 border-red-500/30 text-red-500'}`}
               >
                 <div className="flex items-start gap-4">
                   {lastScanResult.success ? (
-                    <div className="p-3 rounded-full bg-[#00C099]/20 shadow-[0_0_20px_rgba(0,192,153,0.3)]">
+                    <div className="p-3 rounded-full bg-emerald/20 shadow-[0_0_20px_rgba(0,192,153,0.3)]">
                       <CheckCircle2 className="w-6 h-6" />
                     </div>
                   ) : (
@@ -281,10 +281,10 @@ export default function AdminCheckinPage() {
                     <div className="text-xl font-display font-black uppercase tracking-tight mb-1">{lastScanResult.message}</div>
                     {lastScanResult.guest && (
                       <div className="space-y-1">
-                        <div className="text-sm font-bold text-white/90">{lastScanResult.guest}</div>
+                        <div className="text-sm font-bold text-admin-text">{lastScanResult.guest}</div>
                         {lastScanResult.type && (
                           <div className={`text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded border inline-block
-                            ${lastScanResult.type === 'VIP' ? 'border-[#FF0088] text-[#FF0088]' : 'border-white/20 text-white/50'}`}>
+                            ${lastScanResult.type === 'VIP' ? 'border-magenta text-magenta' : 'border-admin-border text-admin-text-muted'}`}>
                             Hạng vé: {lastScanResult.type}
                           </div>
                         )}
@@ -298,40 +298,40 @@ export default function AdminCheckinPage() {
         </div>
 
         {/* Recent Checkins Feed */}
-        <div className="lg:col-span-2 glass-card rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 overflow-hidden shadow-2xl flex flex-col h-[700px]">
-          <div className="p-6 border-b border-[#4F1F76]/30 bg-[#4F1F76]/5 flex justify-between items-center">
+        <div className="lg:col-span-2 glass-card rounded-[2rem] bg-admin-panel/80 backdrop-blur-md border border-admin-border/30 overflow-hidden shadow-2xl flex flex-col h-[700px]">
+          <div className="p-6 border-b border-admin-border/30 bg-admin-bg/5 flex justify-between items-center">
             <div>
-              <h3 className="text-lg font-display font-black text-white uppercase tracking-wider">Log Hoạt Động Thời Gian Thực</h3>
+              <h3 className="text-lg font-display font-black text-admin-text uppercase tracking-wider">Log Hoạt Động Thời Gian Thực</h3>
               <div className="flex items-center gap-2 mt-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#00FFFF] animate-pulse" />
-                <p className="text-[10px] text-[#00FFFF] font-bold uppercase tracking-widest">Live Updates Available</p>
+                <div className="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse" />
+                <p className="text-[10px] text-cyan font-bold uppercase tracking-widest">Live Updates Available</p>
               </div>
             </div>
-            <button onClick={fetchData} className="p-2 rounded-xl bg-white/5 text-[#8A8F98] hover:text-[#00FFFF] transition-all">
+            <button onClick={fetchData} className="p-2 rounded-xl bg-admin-bg/5 text-admin-text-muted hover:text-cyan transition-all">
               <RefreshCw className="w-5 h-5" />
             </button>
           </div>
           <div className="overflow-y-auto flex-1 custom-scrollbar">
             <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 z-10 bg-[#160D25] shadow-lg">
-                <tr className="text-[#8A8F98] text-[10px] uppercase tracking-widest">
-                  <th className="p-4 font-black border-b border-[#4F1F76]/30 pl-8">Khách Hàng</th>
-                  <th className="p-4 font-black border-b border-[#4F1F76]/30 hidden sm:table-cell">Hạng Vé</th>
-                  <th className="p-4 font-black border-b border-[#4F1F76]/30 text-center">Trạng Thái</th>
-                  <th className="p-4 font-black border-b border-[#4F1F76]/30 text-right pr-8">Thời Gian</th>
+              <thead className="sticky top-0 z-10 bg-admin-bg shadow-lg">
+                <tr className="text-admin-text-muted text-[10px] uppercase tracking-widest">
+                  <th className="p-4 font-black border-b border-admin-border/30 pl-8">Khách Hàng</th>
+                  <th className="p-4 font-black border-b border-admin-border/30 hidden sm:table-cell">Hạng Vé</th>
+                  <th className="p-4 font-black border-b border-admin-border/30 text-center">Trạng Thái</th>
+                  <th className="p-4 font-black border-b border-admin-border/30 text-right pr-8">Thời Gian</th>
                 </tr>
               </thead>
               <tbody>
                 {isLoading ? (
                   <tr>
                     <td colSpan={4} className="p-20 text-center">
-                      <Loader2 className="w-8 h-8 text-[#00FFFF] animate-spin mx-auto mb-4" />
-                      <p className="text-xs text-[#8A8F98] uppercase tracking-widest font-bold">Đang nạp nhật ký...</p>
+                      <Loader2 className="w-8 h-8 text-cyan animate-spin mx-auto mb-4" />
+                      <p className="text-xs text-admin-text-muted uppercase tracking-widest font-bold">Đang nạp nhật ký...</p>
                     </td>
                   </tr>
                 ) : logs.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-20 text-center text-[#8A8F98]">
+                    <td colSpan={4} className="p-20 text-center text-admin-text-muted">
                       <p className="text-sm">Chưa có hoạt động nào được ghi nhận hôm nay.</p>
                     </td>
                   </tr>
@@ -345,15 +345,15 @@ export default function AdminCheckinPage() {
                         initial={{ opacity: 0, x: 20 }} 
                         animate={{ opacity: 1, x: 0 }} 
                         transition={{ delay: i * 0.05 }}
-                        className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors group"
+                        className="border-b border-admin-border/10 hover:bg-admin-bg/5 transition-colors group"
                       >
                         <td className="p-4 pl-8">
-                          <div className="font-bold text-[#FFFFFF] text-sm group-hover:text-[#00FFFF] transition-colors">{log.guestName}</div>
-                          <div className="text-[10px] text-[#8A8F98] font-mono mt-0.5 tracking-tighter opacity-70">{log.bookingCode}</div>
+                          <div className="font-bold text-admin-text text-sm group-hover:text-cyan transition-colors">{log.guestName}</div>
+                          <div className="text-[10px] text-admin-text-muted font-mono mt-0.5 tracking-tighter opacity-70">{log.bookingCode}</div>
                         </td>
                         <td className="p-4 hidden sm:table-cell">
                           <span className={`text-[10px] font-black tracking-widest px-2 py-0.5 rounded border 
-                            ${log.type === 'VIP' ? 'border-[#FF0088] text-[#FF0088] bg-[#FF0088]/5' : 'border-white/10 text-[#8A8F98]'}`}>
+                            ${log.type === 'VIP' ? 'border-magenta text-magenta bg-magenta/5' : 'border-admin-border text-admin-text-muted'}`}>
                             {log.type}
                           </span>
                         </td>
@@ -363,7 +363,7 @@ export default function AdminCheckinPage() {
                             <StatusIcon className="w-3.5 h-3.5" /> {status.label}
                           </span>
                         </td>
-                        <td className="p-4 text-right pr-8 font-mono text-xs text-[#FFFFFF]">
+                        <td className="p-4 text-right pr-8 font-mono text-xs text-admin-text">
                           {status.time ? new Date(status.time).toLocaleTimeString('vi-VN', { hour12: false }) : '--:--:--'}
                         </td>
                       </motion.tr>
@@ -378,7 +378,7 @@ export default function AdminCheckinPage() {
       
       <style jsx global>{`
         #reader {
-          background-color: #000;
+          background-color: var(--midnight);
         }
         #reader video {
           object-fit: cover !important;
@@ -387,8 +387,8 @@ export default function AdminCheckinPage() {
           border-radius: 1rem;
         }
         #reader__dashboard_section_csr button {
-          background: #00FFFF !important;
-          color: #060010 !important;
+          background: var(--cyan) !important;
+          color: var(--midnight) !important;
           border: none !important;
           padding: 8px 16px !important;
           border-radius: 8px !important;
