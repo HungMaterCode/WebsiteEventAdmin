@@ -35,16 +35,7 @@ export default function Navbar({
   const isUserAccount = session?.user && (session.user as any).role === 'USER';
   const isAdmin = session?.user && (session.user as any).role === 'ADMIN';
 
-  // Cơ chế "Ra khỏi Admin là hủy phiên": 
-  // Nếu phát hiện là Admin ở trang công khai, tự động đăng xuất
-  React.useEffect(() => {
-    if (isAdmin && typeof window !== 'undefined') {
-      const isPublicPath = !window.location.pathname.startsWith('/admin');
-      if (isPublicPath) {
-        signOut({ callbackUrl: '/', redirect: true });
-      }
-    }
-  }, [isAdmin]);
+  // Cơ chế "Ra khỏi Admin là hủy phiên" đã bị loại bỏ để tránh loop reload.
 
   React.useEffect(() => {
     setMounted(true);

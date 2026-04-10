@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 const { auth } = NextAuth(authConfig);
 
-export const proxy = auth(async (req) => {
+export default auth(async (req) => {
   const { pathname } = req.nextUrl;
   const isAdminRoute = pathname.startsWith('/admin');
   const isLoginPage = pathname === '/admin/login';
@@ -20,21 +20,23 @@ export const proxy = auth(async (req) => {
   // 2. Logic kiểm tra bảo trì (Chỉ chạy cho các trang Public)
   if (!isAdminRoute) {
     try {
-      // Fetch settings from internal API (with cache/timeout if possible)
-      // Note: In a real production setup, consider using a faster store like Redis or Edge Config
+      // Lưu ý: Fetch từ middleware có thể gây chậm trễ trên Vercel Edge.
+      // Cân nhắc sử dụng Edge Config hoặc Vercel Blob để lưu trạng thái bảo trì.
       const baseUrl = req.nextUrl.origin;
       const response = await fetch(`${baseUrl}/api/settings/system`, { 
-        next: { revalidate: 60 } // Cache for 60 seconds
+        next: { revalidate: 60 } 
       });
-      const settings = await response.json();
-
-      if (settings?.maintenanceMode) {
-        // Nếu đang bảo trì, kiểm tra xem có phải Admin không
-        const role = (req.auth?.user as any)?.role;
-        if (role !== 'ADMIN') {
-          const url = req.nextUrl.clone();
-          url.pathname = '/maintenance';
-          return NextResponse.redirect(url);
+      
+      if (response.ok) {
+        const settings = await response.json();
+        if (settings?.maintenanceMode) {
+          // Nếu đang bảo trì, kiểm tra role người dùng
+          const role = (req.auth?.user as any)?.role;
+          if (role !== 'ADMIN') {
+            const url = req.nextUrl.clone();
+            url.pathname = '/maintenance';
+            return NextResponse.redirect(url);
+          }
         }
       }
     } catch (error) {
@@ -42,7 +44,7 @@ export const proxy = auth(async (req) => {
     }
   }
 
-  // 3. Logic bảo vệ trang Admin (Giữ nguyên logic cũ)
+  // 3. Logic bảo vệ trang Admin
   if (isAdminRoute && !isLoginPage) {
     if (!req.auth) {
       const url = req.nextUrl.clone();
