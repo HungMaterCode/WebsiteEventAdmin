@@ -100,8 +100,6 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
           ...formData,
           ticketType: internalSelectedType,
           totalPrice: total,
-          discountCode: appliedDiscount?.code || null,
-          discountAmount: discountAmount,
           paymentMethod,
         }),
       });

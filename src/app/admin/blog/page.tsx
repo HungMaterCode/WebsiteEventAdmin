@@ -193,6 +193,7 @@ export default function AdminBlogPage() {
             <input 
               type="text" 
               placeholder="Tìm kiếm bài viết..." 
+<<<<<<< HEAD
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all"
@@ -248,6 +249,14 @@ export default function AdminBlogPage() {
               )}
             </AnimatePresence>
           </div>
+=======
+              className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all"
+            />
+          </div>
+          <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-[#4F1F76]/50 text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20 transition-all w-full md:w-auto justify-center">
+            <Filter className="w-5 h-5" /> Lọc Theo Trạng Thái
+          </button>
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
         </div>
 
         <div className="overflow-x-auto">
@@ -263,11 +272,19 @@ export default function AdminBlogPage() {
             </thead>
             <tbody>
               {loading ? (
+<<<<<<< HEAD
                 <tr><td colSpan={5} className="p-8 text-center text-admin-text-muted">Đang tải dữ liệu...</td></tr>
               ) : filteredPosts.length === 0 ? (
                 <tr><td colSpan={5} className="p-8 text-center text-admin-text-muted">Không tìm thấy bài viết phù hợp.</td></tr>
               ) : filteredPosts.map((post) => (
                 <tr key={post.id} className="border-b border-admin-border hover:bg-admin-bg/5 transition-colors">
+=======
+                <tr><td colSpan={5} className="p-8 text-center text-[#8A8F98]">Đang tải dữ liệu...</td></tr>
+              ) : posts.length === 0 ? (
+                <tr><td colSpan={5} className="p-8 text-center text-[#8A8F98]">Chưa có bài viết nào.</td></tr>
+              ) : posts.map((post) => (
+                <tr key={post.id} className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors">
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
                   <td className="p-4">
                     <div className="flex items-center gap-4">
                       {post.coverImage ? (
@@ -298,8 +315,13 @@ export default function AdminBlogPage() {
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
+<<<<<<< HEAD
                       <button onClick={() => handleOpenModal(post)} className="p-2 rounded-lg bg-cyan/10 text-cyan border border-cyan/20 hover:bg-cyan hover:text-midnight transition-colors"><Edit2 className="w-4 h-4" /></button>
                       <button onClick={() => requestDelete(post)} className="p-2 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-colors"><Trash2 className="w-4 h-4" /></button>
+=======
+                      <button onClick={() => handleOpenModal(post)} className="p-2 rounded-lg bg-[#00FFFF]/10 text-[#00FFFF] border border-[#00FFFF]/20 hover:bg-[#00FFFF] hover:text-[#060010] transition-colors"><Edit2 className="w-4 h-4" /></button>
+                      <button onClick={() => handleDelete(post.id)} className="p-2 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-colors"><Trash2 className="w-4 h-4" /></button>
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
                     </div>
                   </td>
                 </tr>
@@ -338,12 +360,17 @@ export default function AdminBlogPage() {
                       <input type="text" value={formData.coverImage} onChange={e => setFormData({...formData, coverImage: e.target.value})} placeholder="https://..." className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan" />
                     </div>
                     <div>
+<<<<<<< HEAD
                       <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block mb-2">Nội dung chi tiết (Trình soạn thảo chuẩn SEO) *</label>
                       <SEOEditor 
                         content={formData.content} 
                         onChange={(html) => setFormData({ ...formData, content: html })} 
                         placeholder="Hãy kể câu chuyện về sự kiện của bạn tại đây..."
                       />
+=======
+                      <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block mb-2">Nội dung chi tiết (HTML/MD hỗ trợ bởi DB) *</label>
+                      <textarea required rows={8} value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] font-mono text-sm" />
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
                     </div>
                     <div>
                       <label className="flex items-center gap-3 cursor-pointer p-4 border border-admin-border rounded-xl bg-admin-bg">

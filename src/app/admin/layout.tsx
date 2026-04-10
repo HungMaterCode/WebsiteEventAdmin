@@ -6,8 +6,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import { 
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
   CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, ListTodo, 
+<<<<<<< HEAD
   Newspaper, Lock, BarChart3, Settings, Star,
   ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu, MessageSquare
+=======
+  Newspaper, Lock, BarChart3, Settings,
+  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu, Star
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 
@@ -42,7 +47,11 @@ const MENU_ITEMS = [
   { id: 'loto', label: 'Trò chơi (Loto)', icon: <Gamepad2 />, role: ['ADMIN', 'CHECKIN'], path: '/admin/loto' },
   { id: 'marketing', label: 'Marketing & Khuyến mãi', icon: <Megaphone />, role: ['ADMIN'], path: '/admin/marketing' },
   { id: 'reviews', label: 'Quản lý Đánh giá', icon: <Star />, role: ['ADMIN', 'ANALYST'], path: '/admin/reviews' },
+<<<<<<< HEAD
   { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/blog' },
+=======
+  { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/news' },
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
   { id: 'roles', label: 'Vai trò & Quyền hạn', icon: <Lock />, role: ['ADMIN'], path: '/admin/roles' },
   { 
     id: 'analytics', 

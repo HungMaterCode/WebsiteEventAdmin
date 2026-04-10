@@ -31,9 +31,15 @@ export async function POST(req: Request) {
 
     const bookingCode = generateBookingCode();
     
+<<<<<<< HEAD
     // Create the booking record and transaction in a single database transaction
     const result = await prisma.$transaction(async (tx) => {
       const booking = await tx.booking.create({
+=======
+    // Create the booking record and transaction in a transaction
+    const booking = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.create({
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
         data: {
           bookingCode,
           userId: (session?.user as any)?.id || null,
@@ -42,15 +48,21 @@ export async function POST(req: Request) {
           phone: body.phone || '',
           ticketType: body.ticketType || 'GA',
           quantity: parseInt(body.quantity?.toString() || '1'),
+<<<<<<< HEAD
           totalPrice: parseFloat(body.totalPrice?.toString() || '0'),
           discountCode: body.discountCode || null,
           discountAmount: parseFloat(body.discountAmount?.toString() || '0'),
           ticketStatus: 'SUCCESS', // Set to SUCCESS as per current workflow
+=======
+          totalPrice: parseInt(body.totalPrice?.toString() || '0'),
+          ticketStatus: 'CREATED',
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
           accessories: body.accessories || [],
           status: 'PENDING', // Base status from Gia Lac branch
         },
       });
 
+<<<<<<< HEAD
       // 1. Increment campaign usage if a code was applied
       if (body.discountCode) {
         await tx.campaign.update({
@@ -60,19 +72,24 @@ export async function POST(req: Request) {
       }
 
       // 2. Create a transaction record linked to this booking
+=======
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
       await tx.transaction.create({
         data: {
           method: body.paymentMethod || 'UNKNOWN',
-          amount: booking.totalPrice,
+          amount: b.totalPrice,
           status: 'Thành công',
-          bookingId: booking.id,
+          bookingId: b.id,
         }
       });
 
+<<<<<<< HEAD
       return booking;
+=======
+      return b;
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
     });
 
-    const booking = result;
     console.log('--- BOOKING & TRANSACTION CREATED ---', booking.bookingCode);
 
     // Send confirmation email

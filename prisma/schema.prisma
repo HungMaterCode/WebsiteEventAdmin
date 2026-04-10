@@ -96,10 +96,15 @@ model Booking {
   phone           String
   ticketType      String
   quantity        Int
+<<<<<<< HEAD
   totalPrice      Float
   discountCode    String?
   discountAmount  Float         @default(0)
   ticketStatus    String        @default("CREATED")
+=======
+  totalPrice      Int
+  ticketStatus    String    @default("CREATED")
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
   accessories     Json?
   checkInTime     DateTime?
   checkOutTime    DateTime?
@@ -107,14 +112,21 @@ model Booking {
   surveyCompleted Boolean       @default(false)
   lotoStatus      String?
   lotoPrintTime   DateTime?
+<<<<<<< HEAD
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   status          String        @default("PENDING")
   user            User?         @relation(fields: [userId], references: [id])
+=======
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User?     @relation(fields: [userId], references: [id])
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
   transactions    Transaction[]
 }
 
 model Campaign {
+<<<<<<< HEAD
   id          String    @id @default(cuid())
   code        String    @unique
   name        String
@@ -130,6 +142,24 @@ model Campaign {
   updatedAt   DateTime  @updatedAt
 }
 
+=======
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  type        String   // 'PERCENT' | 'AMOUNT'
+  value       Int
+  used        Int      @default(0)
+  limit       Int      @default(0) // 0 means unlimited
+  status      String   @default("ACTIVE")
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
 model Faq {
   id        Int     @id @default(autoincrement())
   question  String
@@ -209,6 +239,7 @@ model Post {
   updatedAt   DateTime  @updatedAt
 }
 
+<<<<<<< HEAD
 model LandingPageSettings {
   id                 Int      @id @default(1)
   title              String   @default("Dòng Chảy Di Sản Bế Mạc Festival Ninh Bình")
@@ -296,6 +327,8 @@ model CommunityPost {
   updatedAt DateTime @updatedAt
 }
 
+=======
+>>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
 enum Role {
   USER
   ADMIN

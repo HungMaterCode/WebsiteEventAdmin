@@ -2,46 +2,6 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 
-// Auto-transition campaign statuses based on dates and usage
-async function autoTransitionStatuses() {
-  const now = new Date();
-
-  // 1. SCHEDULED → ACTIVE
-  await prisma.campaign.updateMany({
-    where: {
-      status: 'SCHEDULED',
-      startDate: { not: null, lte: now },
-    },
-    data: { status: 'ACTIVE' },
-  });
-
-  // 2. ACTIVE → EXPIRED
-  await prisma.campaign.updateMany({
-    where: {
-      status: 'ACTIVE',
-      endDate: { not: null, lt: now },
-    },
-    data: { status: 'EXPIRED' },
-  });
-
-  // 3. ACTIVE → USED_UP
-  const activeLimitCampaigns = await prisma.campaign.findMany({
-    where: {
-      status: 'ACTIVE',
-      limit: { gt: 0 },
-    },
-  });
-
-  for (const c of activeLimitCampaigns) {
-    if (c.used >= c.limit) {
-      await prisma.campaign.update({
-        where: { id: c.id },
-        data: { status: 'USED_UP' },
-      });
-    }
-  }
-}
-
 // Determine initial status based on startDate
 function determineStatus(startDate: string | null | undefined): string {
   if (!startDate) return 'ACTIVE';
@@ -50,29 +10,14 @@ function determineStatus(startDate: string | null | undefined): string {
   return start > now ? 'SCHEDULED' : 'ACTIVE';
 }
 
-export async function GET(req: Request) {
-  try {
-    await autoTransitionStatuses();
-    const { searchParams } = new URL(req.url);
-    const status = searchParams.get('status');
-    const campaigns = await prisma.campaign.findMany({
-      where: status && status !== 'ALL' ? { status } : undefined,
-      orderBy: { createdAt: 'desc' },
-    });
-    return NextResponse.json(campaigns);
-  } catch (error) {
-    console.error('Failed to fetch campaigns:', error);
-    return NextResponse.json({ error: 'Failed to fetch campaigns' }, { status: 500 });
-  }
-}
-
-export async function POST(req: Request) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     if (!session || (session.user as { role?: string })?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await req.json();
     const value = parseInt(body.value?.toString() || '0');
     const limit = parseInt(body.limit?.toString() || '0');
@@ -95,9 +40,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Mức giảm phần trăm không được phép từ 100% trở lên.' }, { status: 400 });
     }
 
-    const status = determineStatus(body.startDate);
+    const existing = await prisma.campaign.findUnique({ where: { id } });
+    if (!existing) return NextResponse.json({ error: 'Không tìm thấy chiến dịch' }, { status: 404 });
 
-    const campaign = await prisma.campaign.create({
+    let newStatus = existing.status;
+    if (existing.status === 'SCHEDULED' || existing.status === 'ACTIVE') {
+      newStatus = determineStatus(body.startDate);
+    }
+
+    const campaign = await prisma.campaign.update({
+      where: { id },
       data: {
         code: body.code.toUpperCase().trim(),
         name: body.name.trim(),
@@ -105,16 +57,42 @@ export async function POST(req: Request) {
         type: body.type,
         value,
         limit,
-        status,
+        status: newStatus,
         startDate: new Date(body.startDate),
         endDate: new Date(body.endDate),
       },
     });
 
-    return NextResponse.json(campaign, { status: 201 });
+    return NextResponse.json(campaign);
   } catch (error: any) {
     if (error?.code === 'P2002') return NextResponse.json({ error: 'Mã giảm giá đã tồn tại' }, { status: 400 });
-    console.error('Failed to create campaign:', error);
-    return NextResponse.json({ error: 'Failed to create campaign' }, { status: 500 });
+    console.error('Failed to update campaign:', error);
+    return NextResponse.json({ error: 'Failed to update campaign' }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await auth();
+    if (!session || (session.user as { role?: string })?.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const existing = await prisma.campaign.findUnique({ where: { id } });
+    if (!existing) return NextResponse.json({ error: 'Chiến dịch không tồn tại' }, { status: 404 });
+    
+    if (existing.limit > 0) return NextResponse.json({ error: 'Chỉ có thể ngừng áp dụng chiến dịch không giới hạn lượt dùng.' }, { status: 400 });
+    if (existing.status === 'INACTIVE') return NextResponse.json({ error: 'Chiến dịch này đã ngừng áp dụng.' }, { status: 400 });
+
+    const campaign = await prisma.campaign.update({
+      where: { id },
+      data: { status: 'INACTIVE' },
+    });
+
+    return NextResponse.json(campaign);
+  } catch (error) {
+    console.error('Failed to deactivate campaign:', error);
+    return NextResponse.json({ error: 'Failed to deactivate campaign' }, { status: 500 });
   }
 }
