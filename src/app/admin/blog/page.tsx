@@ -1,15 +1,24 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Edit2, Trash2, Search, Filter, 
-  CheckCircle2, XCircle, Clock, Save, Image as ImageIcon,
-  Tag, X, Newspaper, Eye
+  CheckCircle2, Clock, Save,
+  Tag, X, Newspaper, Eye, AlertTriangle
 } from 'lucide-react';
+import Toast from '@/components/ui/Toast';
+import SEOEditor from '@/components/ui/SEOEditor';
+import { PostStatus, Post } from '@/types/blog';
+
+const FILTER_OPTIONS: { id: PostStatus; label: string; icon: React.ReactNode }[] = [
+  { id: 'all', label: 'Tất Cả Trạng Thái', icon: <Filter className="w-4 h-4" /> },
+  { id: 'published', label: 'Đã Xuất Bản', icon: <CheckCircle2 className="w-4 h-4" /> },
+  { id: 'draft', label: 'Bản Nháp', icon: <Clock className="w-4 h-4" /> },
+];
 
 export default function AdminBlogPage() {
-  const [posts, setPosts] = React.useState<any[]>([]);
+  const [posts, setPosts] = React.useState<Post[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
@@ -20,7 +29,26 @@ export default function AdminBlogPage() {
     tags: '', seoTitle: '', seoDesc: '', seoKeywords: '', published: false
   });
 
-  const fetchPosts = async () => {
+  // Toast State
+  const [toast, setToast] = React.useState({
+    isVisible: false,
+    message: '',
+    type: 'success' as 'success' | 'error' | 'warning' | 'info'
+  });
+
+  // Delete Confirmation State
+  const [deleteConfirm, setDeleteConfirm] = React.useState({
+    isOpen: false,
+    postId: '',
+    postTitle: ''
+  });
+
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState<PostStatus>('all');
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
+
+  const fetchPosts = React.useCallback(async () => {
     try {
       const res = await fetch('/api/posts');
       if (res.ok) {
@@ -29,16 +57,21 @@ export default function AdminBlogPage() {
       }
     } catch (e) {
       console.error(e);
+      showToast('Không thể tải danh sách bài viết', 'error');
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'success') => {
+    setToast({ isVisible: true, message, type });
   };
 
   React.useEffect(() => {
     fetchPosts();
   }, []);
 
-  const handleOpenModal = (post: any = null) => {
+  const handleOpenModal = (post: Post | null = null) => {
     if (post) {
       setFormData({
         id: post.id,
@@ -83,21 +116,59 @@ export default function AdminBlogPage() {
       
       if (res.ok) {
         setIsModalOpen(false);
+        showToast(editMode ? 'Cập nhật bài viết thành công' : 'Đã tạo bài viết mới', 'success');
         fetchPosts();
+      } else {
+        showToast('Có lỗi xảy ra khi lưu bài viết', 'error');
       }
     } catch (error) {
       console.error('Save failed:', error);
+      showToast('Lỗi kết nối máy chủ', 'error');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa bài viết này không?')) return;
+  const requestDelete = (post: Post) => {
+    setDeleteConfirm({
+      isOpen: true,
+      postId: post.id,
+      postTitle: post.title
+    });
+  };
+
+  const confirmDelete = async () => {
+    const { postId } = deleteConfirm;
+    setDeleteConfirm({ ...deleteConfirm, isOpen: false });
+    
     try {
-      await fetch(`/api/posts/${id}`, { method: 'DELETE' });
-      fetchPosts();
+      const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast('Đã xóa bài viết thành công', 'success');
+        fetchPosts();
+      } else {
+        showToast('Không thể xóa bài viết', 'error');
+      }
     } catch (e) {
       console.error(e);
+      showToast('Lỗi kết nối khi xóa', 'error');
     }
+  };
+
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         post.seoTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+                         
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'published' && post.published) || 
+                         (statusFilter === 'draft' && !post.published);
+                         
+    return matchesSearch && matchesStatus;
+  });
+
+  const getStatusLabel = () => {
+    if (statusFilter === 'published') return 'Đã Xuất Bản';
+    if (statusFilter === 'draft') return 'Bản Nháp';
+    return 'Tất Cả Trạng Thái';
   };
 
   return (
@@ -115,19 +186,68 @@ export default function AdminBlogPage() {
         </button>
       </div>
 
-      <div className="glass-card rounded-[2rem] bg-admin-panel/80 backdrop-blur-md border border-admin-border overflow-hidden">
+      <div className="glass-card rounded-[2rem] bg-admin-panel/80 backdrop-blur-md border border-admin-border overflow-hidden shadow-2xl">
         <div className="p-6 border-b border-admin-border flex flex-col md:flex-row gap-4 justify-between items-center bg-admin-bg/5">
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-admin-text-muted" />
             <input 
               type="text" 
               placeholder="Tìm kiếm bài viết..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-3 rounded-xl border border-admin-border text-admin-text-muted hover:text-admin-text hover:bg-admin-bg/20 transition-all w-full md:w-auto justify-center">
-            <Filter className="w-5 h-5" /> Lọc Theo Trạng Thái
-          </button>
+          <div className="relative w-full md:w-auto">
+            <button 
+              onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all w-full md:w-auto justify-center ${
+                statusFilter !== 'all' ? 'border-cyan text-cyan bg-cyan/5' : 'border-admin-border text-admin-text-muted hover:text-admin-text hover:bg-admin-bg/20'
+              }`}
+            >
+              <Filter className={`w-5 h-5 ${statusFilter !== 'all' ? 'animate-pulse' : ''}`} /> {getStatusLabel()}
+            </button>
+
+            <AnimatePresence>
+              {isFilterDropdownOpen && (
+                <>
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }} 
+                    onClick={() => setIsFilterDropdownOpen(false)}
+                    className="fixed inset-0 z-10"
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-2 w-full md:w-56 bg-admin-panel border border-admin-border rounded-2xl shadow-2xl p-2 z-20 overflow-hidden"
+                  >
+                    {FILTER_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => {
+                          setStatusFilter(opt.id);
+                          setIsFilterDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                          statusFilter === opt.id 
+                            ? 'bg-cyan/10 text-cyan' 
+                            : 'text-admin-text-muted hover:bg-admin-bg/20 hover:text-admin-text'
+                        }`} 
+                      >
+                        <span className={statusFilter === opt.id ? 'text-cyan' : 'text-admin-border'}>
+                          {opt.icon}
+                        </span>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -144,9 +264,9 @@ export default function AdminBlogPage() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={5} className="p-8 text-center text-admin-text-muted">Đang tải dữ liệu...</td></tr>
-              ) : posts.length === 0 ? (
-                <tr><td colSpan={5} className="p-8 text-center text-admin-text-muted">Chưa có bài viết nào.</td></tr>
-              ) : posts.map((post) => (
+              ) : filteredPosts.length === 0 ? (
+                <tr><td colSpan={5} className="p-8 text-center text-admin-text-muted">Không tìm thấy bài viết phù hợp.</td></tr>
+              ) : filteredPosts.map((post) => (
                 <tr key={post.id} className="border-b border-admin-border hover:bg-admin-bg/5 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-4">
@@ -179,7 +299,7 @@ export default function AdminBlogPage() {
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button onClick={() => handleOpenModal(post)} className="p-2 rounded-lg bg-cyan/10 text-cyan border border-cyan/20 hover:bg-cyan hover:text-midnight transition-colors"><Edit2 className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(post.id)} className="p-2 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-admin-text transition-colors"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => requestDelete(post)} className="p-2 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-colors"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>
@@ -218,8 +338,12 @@ export default function AdminBlogPage() {
                       <input type="text" value={formData.coverImage} onChange={e => setFormData({...formData, coverImage: e.target.value})} placeholder="https://..." className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan" />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block mb-2">Nội dung chi tiết (HTML/MD hỗ trợ bởi DB) *</label>
-                      <textarea required rows={8} value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan font-mono text-sm" />
+                      <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block mb-2">Nội dung chi tiết (Trình soạn thảo chuẩn SEO) *</label>
+                      <SEOEditor 
+                        content={formData.content} 
+                        onChange={(html) => setFormData({ ...formData, content: html })} 
+                        placeholder="Hãy kể câu chuyện về sự kiện của bạn tại đây..."
+                      />
                     </div>
                     <div>
                       <label className="flex items-center gap-3 cursor-pointer p-4 border border-admin-border rounded-xl bg-admin-bg">
@@ -269,7 +393,7 @@ export default function AdminBlogPage() {
 
                 <div className="sticky bottom-0 bg-admin-panel pt-4 border-t border-admin-border flex justify-end gap-4 mt-8 pb-2">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-3 rounded-xl border border-admin-border text-admin-text-muted font-bold hover:text-admin-text transition-colors">Hủy</button>
-                  <button type="submit" className="px-8 py-3 rounded-xl bg-gradient-brand text-admin-text font-bold flex items-center gap-2 hover:scale-[1.02] transition-transform glow-magenta">
+                  <button type="submit" className="px-8 py-3 rounded-xl bg-magenta hover:bg-magenta/80 text-admin-text font-bold flex items-center gap-2 hover:scale-[1.02] transition-transform glow-magenta">
                     <Save className="w-5 h-5" /> Lưu Bài Viết
                   </button>
                 </div>
@@ -278,6 +402,47 @@ export default function AdminBlogPage() {
           </div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {deleteConfirm.isOpen && (
+          <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-md" />
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full max-w-sm bg-admin-panel border border-red-500/30 rounded-[2rem] shadow-2xl p-8 text-center overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-transparent"></div>
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                  <AlertTriangle className="w-8 h-8" />
+                </div>
+              </div>
+              <h3 className="text-xl font-display font-black text-admin-text uppercase mb-4 tracking-wider">Xác Nhận Xóa</h3>
+              <p className="text-admin-text-muted text-sm mb-8 leading-relaxed">
+                Bạn có chắc chắn muốn xóa bài viết <span className="text-admin-text font-bold italic">&quot;{deleteConfirm.postTitle}&quot;</span>? Thao tác này không thể hoàn tác.
+              </p>
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={confirmDelete}
+                  className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-red-500/20"
+                >
+                  Xác nhận xóa ngay
+                </button>
+                <button 
+                  onClick={() => setDeleteConfirm({ ...deleteConfirm, isOpen: false })}
+                  className="w-full py-3 bg-transparent border border-admin-border text-admin-text-muted hover:text-admin-text hover:bg-admin-bg/20 font-bold rounded-xl transition-all"
+                >
+                  Hủy thao tác
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <Toast 
+        isVisible={toast.isVisible} 
+        message={toast.message} 
+        type={toast.type} 
+        onClose={() => setToast({ ...toast, isVisible: false })} 
+      />
     </div>
   );
 }

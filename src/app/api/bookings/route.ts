@@ -31,10 +31,9 @@ export async function POST(req: Request) {
 
     const bookingCode = generateBookingCode();
     
-    // Create the booking record and transaction in a single database transaction if possible, 
-    // or just sequentially for simplicity here since we want to capture the payment method.
-    const result = await prisma.$transaction(async (tx) => {
-      const booking = await tx.booking.create({
+    // Create the booking record and transaction in a single database transaction
+    const booking = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.create({
         data: {
           bookingCode,
           userId: (session?.user as any)?.id || null,
@@ -43,29 +42,39 @@ export async function POST(req: Request) {
           phone: body.phone || '',
           ticketType: body.ticketType || 'GA',
           quantity: parseInt(body.quantity?.toString() || '1'),
-          totalPrice: parseInt(body.totalPrice?.toString() || '0'),
-          ticketStatus: 'SUCCESS', // Set to SUCCESS directly for now as per user request (no pending/failure handled yet)
+          totalPrice: parseFloat(body.totalPrice?.toString() || '0'),
+          discountCode: body.discountCode || null,
+          discountAmount: parseFloat(body.discountAmount?.toString() || '0'),
+          ticketStatus: 'SUCCESS',
           accessories: body.accessories || [],
+          status: 'PENDING',
         },
       });
 
-      // Create a transaction record linked to this booking
+      // 1. Increment campaign usage if a code was applied
+      if (body.discountCode) {
+        await tx.campaign.update({
+          where: { code: body.discountCode.toUpperCase() },
+          data: { used: { increment: 1 } },
+        });
+      }
+
+      // 2. Create a transaction record linked to this booking
       await tx.transaction.create({
         data: {
           method: body.paymentMethod || 'UNKNOWN',
-          amount: booking.totalPrice,
+          amount: b.totalPrice,
           status: 'Thành công',
-          bookingId: booking.id,
+          bookingId: b.id,
         }
       });
 
-      return booking;
+      return b;
     });
 
-    const booking = result;
     console.log('--- BOOKING & TRANSACTION CREATED ---', booking.bookingCode);
 
-    // Send confirmation email - AWAIT this to ensure Vercel doesn't kill the process
+    // Send confirmation email
     let emailStatus = { sent: false, error: null as any };
     try {
       const emailResult = await sendTicketEmail({
@@ -99,7 +108,6 @@ export async function POST(req: Request) {
     }, { status: 201 });
   } catch (error: any) {
     console.error('--- BOOKING ERROR ---', error.message || error);
-    // Explicitly return JSON even on severe errors
     return new Response(JSON.stringify({ error: error.message || 'Failed to create booking' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

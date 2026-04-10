@@ -12,8 +12,14 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
   const [step, setStep] = React.useState<Step>('select');
   const [formData, setFormData] = React.useState({ name: '', email: '', phone: '', quantity: 1, accessories: [] as string[] });
   const [paymentMethod, setPaymentMethod] = React.useState<string | null>(null);
-  const [bookingResult, setBookingResult] = React.useState<any>(null);
+  const [bookingResult, setBookingResult] = React.useState<{ bookingCode: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  
+  // Discount State
+  const [discountCode, setDiscountCode] = React.useState('');
+  const [isValidating, setIsValidating] = React.useState(false);
+  const [appliedDiscount, setAppliedDiscount] = React.useState<{ code: string, type: string, value: number, name: string } | null>(null);
+  const [discountError, setDiscountError] = React.useState('');
 
   React.useEffect(() => {
     if (isOpen) {
@@ -36,7 +42,43 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
   }, [session, isOpen, selectedType]);
 
   const ticketPrice = internalSelectedType === 'VIP' ? 1500000 : 500000;
-  const total = ticketPrice * formData.quantity;
+  const subtotal = ticketPrice * formData.quantity;
+  
+  let discountAmount = 0;
+  if (appliedDiscount) {
+    if (appliedDiscount.type === 'PERCENT') {
+      discountAmount = (subtotal * appliedDiscount.value) / 100;
+    } else {
+      discountAmount = appliedDiscount.value;
+    }
+  }
+  
+  const total = Math.max(0, subtotal - discountAmount);
+
+  const handleApplyDiscount = async () => {
+    if (!discountCode) return;
+    setIsValidating(true);
+    setDiscountError('');
+    try {
+      const res = await fetch('/api/marketing/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: discountCode }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAppliedDiscount(data);
+        setDiscountError('');
+      } else {
+        setDiscountError(data.error || 'Mã không hợp lệ');
+        setAppliedDiscount(null);
+      }
+    } catch (e) {
+      setDiscountError('Lỗi kết nối');
+    } finally {
+      setIsValidating(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!paymentMethod || !internalSelectedType) return;
@@ -54,7 +96,12 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({
+          ...formData,
+          ticketType: internalSelectedType,
+          totalPrice: total,
+          paymentMethod,
+        }),
       });
 
       if (!res.ok) {
@@ -168,9 +215,41 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
                   <button type="button" onClick={() => setFormData({...formData, quantity: Math.min(10, formData.quantity + 1)})} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white flex items-center justify-center hover:bg-white/10 hover:border-cyan/30 transition-all">+</button>
                 </div>
               </div>
+
+              {/* Discount Code Section */}
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input 
+                    value={discountCode} 
+                    onChange={e => setDiscountCode(e.target.value.toUpperCase())} 
+                    placeholder="Mã giảm giá" 
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan/50 text-xs" 
+                    disabled={!!appliedDiscount}
+                  />
+                  {appliedDiscount ? (
+                    <button onClick={() => { setAppliedDiscount(null); setDiscountCode(''); }} className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] font-bold uppercase transition-all">Gỡ mã</button>
+                  ) : (
+                    <button onClick={handleApplyDiscount} disabled={!discountCode || isValidating} className="px-4 py-3 rounded-xl bg-cyan/10 border border-cyan/30 text-cyan text-[10px] font-bold uppercase hover:bg-cyan/20 transition-all disabled:opacity-50">
+                      {isValidating ? '...' : 'Áp dụng'}
+                    </button>
+                  )}
+                </div>
+                {discountError && <p className="text-red-500 text-[10px] pl-2">{discountError}</p>}
+                {appliedDiscount && <p className="text-teal text-[10px] pl-2">✓ Đã áp dụng: <b>{appliedDiscount.name}</b></p>}
+              </div>
             </div>
             
-            <div className="pt-4 border-t border-white/10">
+            <div className="pt-4 border-t border-white/10 space-y-2">
+              <div className="flex justify-between text-xs text-gray-500 px-2">
+                <span>Tạm tính:</span>
+                <span>{subtotal.toLocaleString()} VNĐ</span>
+              </div>
+              {appliedDiscount && (
+                <div className="flex justify-between text-xs text-teal px-2 italic font-medium">
+                  <span>Giảm giá:</span>
+                  <span>-{discountAmount.toLocaleString()} VNĐ</span>
+                </div>
+              )}
               <div className="flex justify-between items-center bg-[#00FFFF]/5 p-4 rounded-xl border border-[#00FFFF]/20">
                 <span className="text-sm font-bold text-gray-400">TỔNG THANH TOÁN:</span>
                 <span className="text-xl font-display font-black text-cyan">{total.toLocaleString()} VNĐ</span>

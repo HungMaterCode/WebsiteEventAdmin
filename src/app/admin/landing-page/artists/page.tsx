@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, Plus, Edit2, Trash2, Search, X, Save, 
+import {
+  Users, Plus, Edit2, Trash2, Search, X, Save,
   ImageIcon, Star, Clock, ListOrdered, ChevronUp, ChevronDown, Upload
 } from 'lucide-react';
 import { CldUploadWidget } from 'next-cloudinary';
@@ -63,7 +63,7 @@ export default function ArtistManagement() {
     try {
       const url = editArtist ? `/api/artists/${editArtist.id}` : '/api/artists';
       const method = editArtist ? 'PUT' : 'POST';
-      
+
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -91,7 +91,7 @@ export default function ArtistManagement() {
     }
   };
 
-  const filteredArtists = artists.filter(a => 
+  const filteredArtists = artists.filter(a =>
     a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     a.genre.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -111,7 +111,7 @@ export default function ArtistManagement() {
           <h2 className="text-3xl font-display font-black uppercase text-admin-text">Dàn Nghệ Sĩ Tham Gia</h2>
           <p className="text-admin-text-muted text-sm mt-1">Quản lý danh sách các nghệ sĩ biểu diễn tại sự kiện</p>
         </div>
-        <button 
+        <button
           onClick={() => handleOpenModal()}
           className="px-6 py-3 bg-magenta hover:bg-magenta/80 text-white font-bold rounded-xl flex items-center gap-2 transition-all glow-magenta"
         >
@@ -124,12 +124,12 @@ export default function ArtistManagement() {
         <div className="p-6 border-b border-admin-border bg-admin-bg/50">
           <div className="relative max-w-md w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-admin-text-muted" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Tìm kiếm nghệ sĩ theo tên hoặc thể loại..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
+              className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all"
             />
           </div>
         </div>
@@ -148,43 +148,43 @@ export default function ArtistManagement() {
             </thead>
             <tbody>
               {filteredArtists.map((artist, index) => (
-                <motion.tr 
-                  key={artist.id} 
+                <motion.tr
+                  key={artist.id}
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}
                   className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors group"
                 >
-                <td className="p-4 text-center font-mono text-gold">{artist.sortOrder}</td>
-                <td className="p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-admin-bg/50 border border-admin-border flex items-center justify-center shrink-0 overflow-hidden">
-                      {artist.image ? (
-                        <img src={artist.image} alt={artist.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <ImageIcon className="w-5 h-5 text-admin-text-muted" />
-                      )}
+                  <td className="p-4 text-center font-mono text-gold">{artist.sortOrder}</td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-admin-bg/50 border border-admin-border flex items-center justify-center shrink-0 overflow-hidden">
+                        {artist.image ? (
+                          <img src={artist.image} alt={artist.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <ImageIcon className="w-5 h-5 text-admin-text-muted" />
+                        )}
+                      </div>
+                      <div className="font-bold text-admin-text text-sm group-hover:text-cyan transition-colors">{artist.name}</div>
                     </div>
-                    <div className="font-bold text-admin-text text-sm group-hover:text-cyan transition-colors">{artist.name}</div>
-                  </div>
-                </td>
-                <td className="p-4">
-                  <span className="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border bg-magenta/10 text-magenta border-magenta/30">
-                    {artist.genre}
-                  </span>
-                </td>
-                <td className="p-4 text-center">
-                  <div className="flex items-center justify-center gap-2 text-admin-text-muted text-xs">
-                    <Clock className="w-3 h-3" /> {artist.performanceTime || '--:--'}
-                  </div>
-                </td>
+                  </td>
+                  <td className="p-4">
+                    <span className="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border bg-magenta/10 text-magenta border-magenta/30">
+                      {artist.genre}
+                    </span>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center gap-2 text-admin-text-muted text-xs">
+                      <Clock className="w-3 h-3" /> {artist.performanceTime || '--:--'}
+                    </div>
+                  </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button 
+                      <button
                         onClick={() => handleOpenModal(artist)}
                         className="p-2 rounded-lg bg-admin-bg/50 text-admin-text-muted hover:text-cyan hover:bg-cyan/10 transition-all font-display"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(artist.id)}
                         className="p-2 rounded-lg bg-admin-bg/50 text-admin-text-muted hover:text-red-500 hover:bg-red-500/10 transition-all font-display"
                       >
@@ -206,11 +206,11 @@ export default function ArtistManagement() {
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-md" 
+              onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-md"
             />
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="relative w-full max-w-2xl bg-admin-panel border border-admin-border rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
@@ -232,22 +232,22 @@ export default function ArtistManagement() {
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-2 col-span-2 md:col-span-1">
                     <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Tên Nghệ Sĩ *</label>
-                    <input 
-                      type="text" 
-                      value={form.name} 
+                    <input
+                      type="text"
+                      value={form.name}
                       onChange={e => setForm({ ...form, name: e.target.value })}
-                      placeholder="VD: Hồ Ngọc Hà..." 
-                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
+                      placeholder="VD: Hồ Ngọc Hà..."
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all"
                     />
                   </div>
                   <div className="space-y-2 col-span-2 md:col-span-1">
                     <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Thể Loại *</label>
-                    <input 
-                      type="text" 
-                      value={form.genre} 
+                    <input
+                      type="text"
+                      value={form.genre}
                       onChange={e => setForm({ ...form, genre: e.target.value })}
-                      placeholder="VD: Pop / Dance..." 
-                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
+                      placeholder="VD: Pop / Dance..."
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all"
                     />
                   </div>
                 </div>
@@ -255,23 +255,23 @@ export default function ArtistManagement() {
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Thời Gian Biểu Diễn</label>
-                    <input 
-                      type="text" 
-                      value={form.performanceTime} 
+                    <input
+                      type="text"
+                      value={form.performanceTime}
                       onChange={e => setForm({ ...form, performanceTime: e.target.value })}
-                      placeholder="VD: 22:30 - 23:15" 
-                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
+                      placeholder="VD: 22:30 - 23:15"
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Thứ tự (Sort Order)</label>
                     <div className="relative">
-                      <input 
-                        type="number" 
-                        value={form.sortOrder} 
+                      <input
+                        type="number"
+                        value={form.sortOrder}
                         onChange={e => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
-                        placeholder="0" 
-                        className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
+                        placeholder="0"
+                        className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all"
                       />
                       <ListOrdered className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                     </div>
@@ -303,17 +303,17 @@ export default function ArtistManagement() {
                   <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">URL Hình Ảnh Nghệ Sĩ</label>
                   <div className="flex gap-3">
                     <div className="relative flex-1">
-                      <input 
-                        type="text" 
-                        value={form.image} 
+                      <input
+                        type="text"
+                        value={form.image}
                         onChange={e => setForm({ ...form, image: e.target.value })}
-                        placeholder="https://..." 
-                        className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all font-medium" 
+                        placeholder="https://..."
+                        className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all font-medium"
                       />
                       <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                     </div>
-                    
-                    <CldUploadWidget 
+
+                    <CldUploadWidget
                       uploadPreset="ml_default"
                       onSuccess={(result: any) => {
                         if (result?.info && typeof result.info !== 'string') {
@@ -323,7 +323,7 @@ export default function ArtistManagement() {
                       }}
                     >
                       {({ open }) => (
-                        <button 
+                        <button
                           type="button"
                           onClick={() => open()}
                           className="px-4 py-3 bg-[#4F1F76]/30 border border-[#4F1F76]/50 rounded-xl text-cyan hover:bg-[#00FFFF]/10 transition-all flex items-center gap-2 group"
@@ -338,23 +338,23 @@ export default function ArtistManagement() {
 
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Tiểu Sử / Thông Tin Thêm</label>
-                  <textarea 
-                    value={form.bio} 
+                  <textarea
+                    value={form.bio}
                     onChange={e => setForm({ ...form, bio: e.target.value })}
-                    placeholder="Giới thiệu ngắn gọn về nghệ sĩ..." 
-                    className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan min-h-[120px] resize-none transition-all font-medium" 
+                    placeholder="Giới thiệu ngắn gọn về nghệ sĩ..."
+                    className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan min-h-[120px] resize-none transition-all font-medium"
                   />
                 </div>
               </div>
 
               <div className="p-6 border-t border-admin-border flex justify-end gap-4 shrink-0 bg-admin-bg/50">
-                <button 
-                  onClick={() => setIsModalOpen(false)} 
+                <button
+                  onClick={() => setIsModalOpen(false)}
                   className="px-6 py-3 rounded-xl border border-admin-border text-admin-text-muted font-bold hover:text-admin-text transition-colors"
                 >
                   Hủy
                 </button>
-                <button 
+                <button
                   onClick={handleSave}
                   disabled={saving || !form.name || !form.genre}
                   className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#4F1F76] text-[#000000] font-bold flex items-center gap-2 hover:scale-[1.02] transition-transform glow-cyan shadow-[0_0_20px_rgba(0,255,255,0.3)] disabled:opacity-50"

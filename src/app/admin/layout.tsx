@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { 
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
   CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, ListTodo, 
-  Newspaper, Lock, BarChart3, Settings,
+  Newspaper, Lock, BarChart3, Settings, Star,
   ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu, MessageSquare
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
@@ -41,7 +41,7 @@ const MENU_ITEMS = [
   { id: 'checkin', label: 'Hệ thống Check-in', icon: <QrCode />, role: ['ADMIN', 'CHECKIN'], path: '/admin/checkin' },
   { id: 'loto', label: 'Trò chơi (Loto)', icon: <Gamepad2 />, role: ['ADMIN', 'CHECKIN'], path: '/admin/loto' },
   { id: 'marketing', label: 'Marketing & Khuyến mãi', icon: <Megaphone />, role: ['ADMIN'], path: '/admin/marketing' },
-  { id: 'reviews', label: 'Quản lý Câu hỏi', icon: <ListTodo />, role: ['ADMIN', 'ANALYST'], path: '/admin/reviews' },
+  { id: 'reviews', label: 'Quản lý Đánh giá', icon: <Star />, role: ['ADMIN', 'ANALYST'], path: '/admin/reviews' },
   { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/blog' },
   { id: 'roles', label: 'Vai trò & Quyền hạn', icon: <Lock />, role: ['ADMIN'], path: '/admin/roles' },
   { 
