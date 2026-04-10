@@ -8,8 +8,9 @@ interface Message {
   id: string;
   name: string;
   email: string;
-  phone: string;
-  content: string;
+  phone: string | null;
+  subject?: string | null;
+  message?: string | null;
   createdAt: string;
 }
 
@@ -96,7 +97,7 @@ export default function MessageDetailModal({ message, isOpen, onClose }: Message
                 <div className="space-y-3">
                   <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nội dung tin nhắn</div>
                   <div className="p-6 rounded-2xl bg-white/5 border border-white/5 text-gray-300 leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto custom-scrollbar">
-                    {message.content}
+                    {message.message}
                   </div>
                 </div>
               </div>

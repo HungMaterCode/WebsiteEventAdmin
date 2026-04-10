@@ -2,10 +2,12 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { Send, CheckCircle2, Mail, Phone, MapPin } from 'lucide-react';
+import { Send, CheckCircle2, Mail, Phone, MapPin, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSession, signIn } from 'next-auth/react';
 
 export default function ContactSection() {
+  const { data: session, status } = useSession();
   const [submitted, setSubmitted] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -15,6 +17,9 @@ export default function ContactSection() {
   }, []);
 
   if (!mounted) return null;
+
+  const isAuthenticated = status === 'authenticated';
+  const isAuthLoading = status === 'loading';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,7 +33,8 @@ export default function ContactSection() {
           name: formData.get('name'),
           email: formData.get('email'),
           phone: formData.get('phone'),
-          content: formData.get('message'),
+          message: formData.get('message'),
+          subject: 'Liên hệ từ Website',
         }),
       });
 
@@ -88,7 +94,26 @@ export default function ContactSection() {
                   <button onClick={() => setSubmitted(false)} className="text-cyan font-bold uppercase tracking-widest text-sm hover:underline">Gửi tin nhắn khác</button>
                 </motion.div>
               ) : (
-                <form className="space-y-6" onSubmit={handleSubmit}>
+                <form className="relative space-y-6" onSubmit={handleSubmit}>
+                  {/* Overlay for unauthenticated users */}
+                  {!isAuthenticated && !isAuthLoading && (
+                    <div className="absolute inset-0 z-10 backdrop-blur-[2px] bg-midnight/40 rounded-[1.5rem] flex items-center justify-center p-6 text-center">
+                      <div className="space-y-4 max-w-xs scale-in">
+                        <div className="w-12 h-12 rounded-full bg-magenta/20 flex items-center justify-center mx-auto border border-magenta/30">
+                          <Lock className="w-6 h-6 text-magenta" />
+                        </div>
+                        <p className="text-sm font-bold text-silver uppercase tracking-wider">Vui lòng đăng nhập để gửi tin nhắn hỗ trợ</p>
+                        <button 
+                          type="button"
+                          onClick={() => signIn('google')}
+                          className="px-6 py-2 bg-magenta text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-magenta/80 transition-all glow-magenta"
+                        >
+                          Đăng nhập bằng Google
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Họ và Tên</label>
@@ -97,7 +122,9 @@ export default function ContactSection() {
                         name="name"
                         required
                         type="text"
-                        className="w-full px-5 py-3 rounded-xl bg-midnight border border-royal/30 text-silver focus:border-cyan outline-none transition-all"
+                        defaultValue={session?.user?.name || ''}
+                        readOnly={isAuthenticated}
+                        className={`w-full px-5 py-3 rounded-xl bg-midnight border border-royal/30 text-silver focus:border-cyan outline-none transition-all ${isAuthenticated ? 'opacity-60 cursor-not-allowed bg-royal/10' : ''}`}
                         placeholder="Nguyễn Văn A"
                       />
                     </div>
@@ -108,7 +135,9 @@ export default function ContactSection() {
                         name="email"
                         required
                         type="email"
-                        className="w-full px-5 py-3 rounded-xl bg-midnight border border-royal/30 text-silver focus:border-cyan outline-none transition-all"
+                        defaultValue={session?.user?.email || ''}
+                        readOnly={isAuthenticated}
+                        className={`w-full px-5 py-3 rounded-xl bg-midnight border border-royal/30 text-silver focus:border-cyan outline-none transition-all ${isAuthenticated ? 'opacity-60 cursor-not-allowed bg-royal/10' : ''}`}
                         placeholder="email@example.com"
                       />
                     </div>
@@ -120,8 +149,12 @@ export default function ContactSection() {
                       name="phone"
                       required
                       type="tel"
+                      pattern="^0[0-9]{9}$"
+                      minLength={10}
+                      maxLength={10}
+                      title="Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0"
                       className="w-full px-5 py-3 rounded-xl bg-midnight border border-royal/30 text-silver focus:border-cyan outline-none transition-all"
-                      placeholder="0123 456 789"
+                      placeholder="Ví dụ: 0912345678"
                     />
                   </div>
                   <div className="space-y-2">
@@ -131,7 +164,7 @@ export default function ContactSection() {
                   <button
                     suppressHydrationWarning
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !isAuthenticated}
                     className="w-full py-4 bg-gradient-primary rounded-xl font-bold uppercase tracking-widest text-white glow-magenta hover:scale-[1.02] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                   >
                     {isSubmitting ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><Send className="w-5 h-5" />Gửi Tin Nhắn</>}

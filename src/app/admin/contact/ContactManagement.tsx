@@ -6,14 +6,17 @@ import {
   MessageSquare, Search, Filter, Eye, ChevronLeft, ChevronRight,
   Download, RefreshCw, Trash2
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import MessageDetailModal from '@/components/modals/MessageDetailModal';
 
 interface Message {
   id: string;
   name: string;
   email: string;
-  phone: string;
-  content: string;
+  phone: string | null;
+  subject?: string | null;
+  message?: string | null;
   createdAt: string;
 }
 
@@ -22,16 +25,109 @@ export default function ContactManagement({ initialMessages }: { initialMessages
   const [selectedMessage, setSelectedMessage] = React.useState<Message | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [filterDate, setFilterDate] = React.useState('ALL');
+  const [sortOrder, setSortOrder] = React.useState('desc');
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const pageSize = 10;
+  const router = useRouter();
 
-  const filteredMessages = messages.filter(msg => 
-    msg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    msg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    msg.phone.includes(searchTerm)
+  const filteredMessages = React.useMemo(() => {
+    let result = messages.filter(msg => {
+      const emailLocal = msg.email.split('@')[0];
+      const matchesSearch = 
+        msg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emailLocal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (msg.phone && msg.phone.includes(searchTerm));
+      
+      if (!matchesSearch) return false;
+
+      if (filterDate === 'ALL') return true;
+
+      const msgDate = new Date(msg.createdAt);
+      const now = new Date();
+      
+      if (filterDate === 'TODAY') {
+        return msgDate.toDateString() === now.toDateString();
+      }
+      
+      if (filterDate === 'WEEK') {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(now.getDate() - 7);
+        return msgDate >= oneWeekAgo;
+      }
+
+      return true;
+    });
+
+    // Sắp xếp
+    return result.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  }, [messages, searchTerm, filterDate, sortOrder]);
+
+  // Phân trang
+  const totalPages = Math.ceil(filteredMessages.length / pageSize);
+  const paginatedMessages = filteredMessages.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
+
+  // Reset trang khi lọc hoặc tìm kiếm
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterDate, sortOrder]);
 
   const handleOpenDetail = (message: Message) => {
     setSelectedMessage(message);
     setIsModalOpen(true);
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    router.refresh();
+    toast.success('Đã làm mới dữ liệu!');
+    setTimeout(() => setIsRefreshing(false), 800);
+  };
+
+  const handleExportCSV = () => {
+    try {
+      if (filteredMessages.length === 0) {
+        toast.error('Không có dữ liệu để xuất!');
+        return;
+      }
+
+      // Headers
+      const headers = ['Tên khách hàng', 'Email', 'Số điện thoại', 'Ngày gửi', 'Nội dung'];
+      
+      // Rows data
+      const rows = filteredMessages.map(msg => [
+        `"${msg.name.replace(/"/g, '""')}"`,
+        `"${msg.email}"`,
+        `"${msg.phone}"`,
+        `"${new Date(msg.createdAt).toLocaleString('vi-VN')}"`,
+        `"${(msg.message || '').replace(/"/g, '""')}"`
+      ]);
+
+      // Combine into CSV string with UTF-8 BOM for Excel
+      const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `LienHe_XuatFile_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success('Đã xuất file thành công!');
+    } catch (err) {
+      console.error('Export error:', err);
+      toast.error('Có lỗi xảy ra khi xuất file.');
+    }
   };
 
   return (
@@ -49,11 +145,20 @@ export default function ContactManagement({ initialMessages }: { initialMessages
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="p-3 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-all">
-            <Download className="w-5 h-5" />
+          <button 
+            onClick={handleExportCSV}
+            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-cyan hover:border-cyan/30 transition-all group"
+            title="Tải xuống CSV"
+          >
+            <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
           </button>
-          <button className="p-3 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-all">
-            <RefreshCw className="w-5 h-5" />
+          <button 
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-magenta hover:border-magenta/30 transition-all group disabled:opacity-50"
+            title="Làm mới dữ liệu"
+          >
+            <RefreshCw className={`w-5 h-5 group-hover:scale-110 transition-all ${isRefreshing ? 'animate-spin text-magenta' : ''}`} />
           </button>
         </div>
       </div>
@@ -70,9 +175,24 @@ export default function ContactManagement({ initialMessages }: { initialMessages
             className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-gray-500 focus:border-cyan/50 focus:bg-white/10 outline-none transition-all"
           />
         </div>
-        <button className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all font-bold uppercase tracking-widest text-xs">
-          <Filter className="w-4 h-4" /> Lọc
-        </button>
+        <div className="flex gap-2">
+          <select 
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            className="px-4 py-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-all font-bold uppercase tracking-widest text-[10px] outline-none cursor-pointer focus:border-cyan/50"
+          >
+            <option value="ALL" className="bg-[#0a0510] text-white">TẤT CẢ THỜI GIAN</option>
+            <option value="TODAY" className="bg-[#0a0510] text-white">HÔM NAY</option>
+            <option value="WEEK" className="bg-[#0a0510] text-white">7 NGÀY QUA</option>
+          </select>
+
+          <button 
+            onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+            className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all font-bold uppercase tracking-widest text-[10px]"
+          >
+            {sortOrder === 'desc' ? 'MỚI NHẤT' : 'CŨ NHẤT'}
+          </button>
+        </div>
       </div>
 
       {/* Table Container */}
@@ -89,8 +209,8 @@ export default function ContactManagement({ initialMessages }: { initialMessages
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {filteredMessages.length > 0 ? (
-                filteredMessages.map((msg, i) => (
+              {paginatedMessages.length > 0 ? (
+                paginatedMessages.map((msg, i) => (
                   <motion.tr 
                     key={msg.id}
                     initial={{ opacity: 0, x: -10 }}
@@ -108,9 +228,7 @@ export default function ContactManagement({ initialMessages }: { initialMessages
                     </td>
                     <td className="px-8 py-6 text-sm text-gray-400 font-medium">{msg.email}</td>
                     <td className="px-8 py-6 text-sm text-gray-400 font-medium">
-                      <span className="px-3 py-1.5 rounded-xl bg-magenta/10 border border-magenta/20 text-magenta text-xs font-bold">
-                        {msg.phone}
-                      </span>
+                      <span className="text-magenta font-bold">{msg.phone}</span>
                     </td>
                     <td className="px-8 py-6 text-sm text-gray-500">
                       {new Date(msg.createdAt).toLocaleDateString('vi-VN')}
@@ -151,13 +269,38 @@ export default function ContactManagement({ initialMessages }: { initialMessages
         {/* Pagination */}
         <div className="px-8 py-6 border-t border-white/5 bg-white/[0.02] flex items-center justify-between">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-            Hiển thị {filteredMessages.length} tin nhắn
+            Trang {currentPage} / {totalPages || 1} — Hiển thị {paginatedMessages.length} / {filteredMessages.length} tin nhắn
           </p>
           <div className="flex items-center gap-2">
-            <button className="p-2 rounded-lg bg-white/5 text-gray-500 hover:text-white transition-all disabled:opacity-20" disabled>
+            <button 
+              onClick={() => setCurrentPage(curr => Math.max(1, curr - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-lg bg-white/5 text-gray-500 hover:text-white transition-all disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+            >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <button className="p-2 rounded-lg bg-white/5 text-gray-500 hover:text-white transition-all disabled:opacity-20" disabled>
+            
+            <div className="flex items-center gap-1">
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i + 1}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`w-8 h-8 rounded-lg text-[10px] font-black transition-all ${
+                    currentPage === i + 1 
+                      ? 'bg-cyan text-midnight glow-cyan' 
+                      : 'bg-white/5 text-gray-500 hover:bg-white/10'
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              )).slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))}
+            </div>
+
+            <button 
+              onClick={() => setCurrentPage(curr => Math.min(totalPages, curr + 1))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="p-2 rounded-lg bg-white/5 text-gray-500 hover:text-white transition-all disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+            >
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>

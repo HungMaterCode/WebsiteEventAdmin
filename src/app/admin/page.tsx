@@ -153,13 +153,7 @@ export default function AdminDashboardPage() {
                 </LineChart>
               </ResponsiveContainer>
             )}
-                  dot={{ r: 4, fill: 'var(--magenta)', strokeWidth: 0 }}
-                  activeDot={{ r: 8, fill: 'var(--magenta)', stroke: 'var(--admin-border)', strokeWidth: 10 }}
-                  animationDuration={2000}
-                />
-              </LineChart>
-            </ResponsiveContainer>
->>>>>>> eec59db552aca5900df2614c9a50769691f10aaf
+
           </div>
         </div>
       </div>
