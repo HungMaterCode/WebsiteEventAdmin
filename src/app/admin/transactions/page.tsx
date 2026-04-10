@@ -13,9 +13,10 @@ export default function AdminTransactionsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('ALL');
-
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetch('/api/admin/transactions')
       .then(res => res.json())
       .then(d => {
@@ -39,6 +40,13 @@ export default function AdminTransactionsPage() {
     
     return matchesSearch && matchesType;
   });
+
+  const chartData = [
+    { time: '08:00', value: 0 }, 
+    { time: '12:00', value: data.stats.revenueToday / 2000000 }, 
+    { time: '16:00', value: data.stats.revenueToday / 1500000 }, 
+    { time: '20:00', value: data.stats.revenueToday / 1000000 }
+  ];
 
   const getStatusStyle = (s: string) => {
     if (s === 'Thành công') return 'bg-emerald/10 text-emerald border-emerald/30';
@@ -94,23 +102,24 @@ export default function AdminTransactionsPage() {
           </div>
         </div>
         <div className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={[
-              { time: '08:00', value: 0 }, { time: '12:00', value: data.stats.revenueToday / 2000000 }, { time: '16:00', value: data.stats.revenueToday / 1500000 }, { time: '20:00', value: data.stats.revenueToday / 1000000 }
-            ]}>
-              <defs>
-                <linearGradient id="txnGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--cyan)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="var(--cyan)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" strokeOpacity={0.1} vertical={false} />
-              <XAxis dataKey="time" stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dy={10} />
-              <YAxis stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dx={-10} tickFormatter={v => `${v}M`} />
-              <Tooltip contentStyle={{ backgroundColor: 'var(--admin-panel)', border: '1px solid var(--admin-border)', borderRadius: '16px', padding: '12px' }} itemStyle={{ color: 'var(--cyan)', fontSize: '12px', fontWeight: 'bold' }} />
-              <Area type="monotone" dataKey="value" stroke="var(--cyan)" strokeWidth={3} fillOpacity={1} fill="url(#txnGrad)" animationDuration={1500} />
-            </AreaChart>
-          </ResponsiveContainer>
+          {mounted && (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="txnGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--cyan)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--cyan)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" strokeOpacity={0.1} vertical={false} />
+                <XAxis dataKey="time" stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dy={10} />
+                <YAxis stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dx={-10} tickFormatter={v => `${v}M`} />
+                <Tooltip contentStyle={{ backgroundColor: 'var(--admin-panel)', border: '1px solid var(--admin-border)', borderRadius: '16px', padding: '12px' }} itemStyle={{ color: 'var(--cyan)', fontSize: '12px', fontWeight: 'bold' }} />
+                <Area type="monotone" dataKey="value" stroke="var(--cyan)" strokeWidth={3} fillOpacity={1} fill="url(#txnGrad)" animationDuration={1500} />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
+
         </div>
       </div>
 

@@ -130,6 +130,8 @@ model Campaign {
   updatedAt   DateTime  @updatedAt
 }
 
+
+
 model Faq {
   id        Int     @id @default(autoincrement())
   question  String
@@ -178,8 +180,9 @@ model Message {
   name      String
   email     String
   subject   String?
-  message   String
+  message   String?
   phone     String?
+
   createdAt DateTime @default(now())
 }
 

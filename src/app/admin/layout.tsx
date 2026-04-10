@@ -7,7 +7,7 @@ import {
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
   CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, ListTodo, 
   Newspaper, Lock, BarChart3, Settings,
-  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu
+  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu, MessageSquare
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 
@@ -59,6 +59,8 @@ const MENU_ITEMS = [
       { id: 'analytics-export', label: 'Xuất Excel', path: '/admin/analytics/export' },
     ]
   },
+  { id: 'contact', label: 'Quản lý Liên hệ', icon: <MessageSquare />, role: ['ADMIN'], path: '/admin/contact' },
+
   { id: 'settings', label: 'Cài đặt (Nhật ký)', icon: <Settings />, role: ['ADMIN'], path: '/admin/settings' },
 ];
 

@@ -28,6 +28,12 @@ const mockChartData = [
 ];
 
 export default function AdminDashboardPage() {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const stats = [
     { label: 'Tổng số vé', value: 1250, icon: Ticket, color: 'text-cyan', glow: 'glow-cyan', bg: 'bg-cyan/10 border-cyan/20' },
     { label: 'Tổng doanh thu', value: `3.5B VNĐ`, icon: DollarSign, color: 'text-magenta', glow: 'glow-magenta', bg: 'bg-magenta/10 border-magenta/20' },
@@ -88,24 +94,27 @@ export default function AdminDashboardPage() {
           </div>
           
           <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={mockChartData}>
-                <defs>
-                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--cyan)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="var(--cyan)" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" strokeOpacity={0.1} vertical={false} />
-                <XAxis dataKey="name" stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dx={-10} tickFormatter={(v) => `${v}k`} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'var(--admin-panel)', border: '1px solid var(--admin-border)', borderRadius: '20px', padding: '15px' }}
-                  itemStyle={{ color: 'var(--cyan)', fontSize: '12px', fontWeight: 'bold' }}
-                />
-                <Area type="monotone" dataKey="value" stroke="var(--cyan)" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" animationDuration={2000} />
-              </AreaChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={mockChartData}>
+                  <defs>
+                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--cyan)" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="var(--cyan)" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" strokeOpacity={0.1} vertical={false} />
+                  <XAxis dataKey="name" stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dy={10} />
+                  <YAxis stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dx={-10} tickFormatter={(v) => `${v}k`} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: 'var(--admin-panel)', border: '1px solid var(--admin-border)', borderRadius: '20px', padding: '15px' }}
+                    itemStyle={{ color: 'var(--cyan)', fontSize: '12px', fontWeight: 'bold' }}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="var(--cyan)" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" animationDuration={2000} />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
+
           </div>
         </div>
 
@@ -122,26 +131,29 @@ export default function AdminDashboardPage() {
           </div>
           
           <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={mockChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" strokeOpacity={0.1} vertical={false} />
-                <XAxis dataKey="name" stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dx={-10} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'var(--admin-panel)', border: '1px solid var(--admin-border)', borderRadius: '20px', padding: '15px' }}
-                  itemStyle={{ color: 'var(--magenta)', fontSize: '12px', fontWeight: 'bold' }}
-                />
-                <Line 
-                  type="step" 
-                  dataKey="quantity" 
-                  stroke="var(--magenta)" 
-                  strokeWidth={4} 
-                  dot={{ r: 4, fill: 'var(--magenta)', strokeWidth: 0 }}
-                  activeDot={{ r: 8, fill: 'var(--magenta)', stroke: 'var(--admin-border)', strokeWidth: 10 }}
-                  animationDuration={2000}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={mockChartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--admin-border)" strokeOpacity={0.1} vertical={false} />
+                  <XAxis dataKey="name" stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dy={10} />
+                  <YAxis stroke="var(--admin-border)" tick={{ fontSize: 10, fill: 'var(--admin-text-muted)' }} tickLine={false} axisLine={false} dx={-10} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: 'var(--admin-panel)', border: '1px solid var(--admin-border)', borderRadius: '20px', padding: '15px' }}
+                    itemStyle={{ color: 'var(--magenta)', fontSize: '12px', fontWeight: 'bold' }}
+                  />
+                  <Line 
+                    type="step" 
+                    dataKey="quantity" 
+                    stroke="var(--magenta)" 
+                    strokeWidth={4} 
+                    dot={{ r: 4, fill: 'var(--magenta)', strokeWidth: 0 }}
+                    activeDot={{ r: 8, fill: 'var(--magenta)', stroke: 'var(--admin-border)', strokeWidth: 10 }}
+                    animationDuration={2000}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+
           </div>
         </div>
       </div>
