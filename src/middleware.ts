@@ -78,9 +78,8 @@ async function proxyHandler(req: any) {
   return NextResponse.next();
 }
 
-// Next.js 16 yêu cầu export tường minh hàm proxy. 
-// Sử dụng hàm bọc để đảm bảo tương thích với adapterFn của Next.js
-export const proxy = auth(proxyHandler);
+// Export default middleware with auth wrapper
+export default auth(proxyHandler);
 
 export const config = {
   matcher: ['/((?!api/auth|_next/static|_next/image|favicon.ico).*)'],
