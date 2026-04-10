@@ -31,7 +31,9 @@ export async function GET() {
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const bookings = await prisma.booking.findMany();
+    const bookings = await prisma.booking.findMany({
+      where: { status: 'SUCCESS' }
+    });
     
     const revenueToday = bookings
       .filter(b => new Date(b.createdAt) >= startOfToday)

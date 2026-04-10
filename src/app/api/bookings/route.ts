@@ -47,7 +47,7 @@ export async function POST(req: Request) {
           discountAmount: parseFloat(body.discountAmount?.toString() || '0'),
           ticketStatus: 'SUCCESS',
           accessories: body.accessories || [],
-          status: 'PENDING',
+          status: 'SUCCESS',
         },
       });
 
