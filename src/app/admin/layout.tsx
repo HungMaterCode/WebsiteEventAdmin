@@ -42,7 +42,7 @@ const MENU_ITEMS = [
   { id: 'loto', label: 'Trò chơi (Loto)', icon: <Gamepad2 />, role: ['ADMIN', 'CHECKIN'], path: '/admin/loto' },
   { id: 'marketing', label: 'Marketing & Khuyến mãi', icon: <Megaphone />, role: ['ADMIN'], path: '/admin/marketing' },
   { id: 'reviews', label: 'Quản lý Câu hỏi', icon: <ListTodo />, role: ['ADMIN', 'ANALYST'], path: '/admin/reviews' },
-  { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/news' },
+  { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/blog' },
   { id: 'roles', label: 'Vai trò & Quyền hạn', icon: <Lock />, role: ['ADMIN'], path: '/admin/roles' },
   { 
     id: 'analytics', 
@@ -88,11 +88,72 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const roles = ['ADMIN']; 
   const allowedMenuItems = MENU_ITEMS.filter(m => roles.some(r => m.role.includes(r as any)));
 
+  const { data: session } = useSession();
+
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/', redirect: true });
   };
 
-  if (pathname === '/admin/login') {
+  // Idle Timeout logic
+  React.useEffect(() => {
+    if (!mounted || !session?.user || pathname === '/admin/login' || pathname === '/admin/verify-otp') return;
+
+    let timeoutId: NodeJS.Timeout;
+    let timeoutMs = 24 * 60 * 60 * 1000; // Default 24h
+    
+    const fetchSettingsAndSetupTimer = async () => {
+      try {
+        const resp = await fetch('/api/settings/system');
+        const data = await resp.json();
+        const timeoutStr = data?.sessionTimeout || '24h';
+        
+        let calculatedMs = 24 * 60 * 60 * 1000;
+        const value = parseInt(timeoutStr);
+        if (timeoutStr.endsWith('h')) calculatedMs = value * 60 * 60 * 1000;
+        else if (timeoutStr.endsWith('d')) calculatedMs = value * 24 * 60 * 60 * 1000;
+        else if (timeoutStr.endsWith('m')) calculatedMs = value * 60 * 1000;
+        else if (timeoutStr.endsWith('s')) calculatedMs = value * 1000;
+        
+        timeoutMs = calculatedMs;
+        console.log(`[AUTH] Idle timeout set to: ${timeoutStr} (${timeoutMs}ms)`);
+        
+        // Bắt đầu đếm ngược sau khi đã có cấu hình
+        resetTimer();
+      } catch (err) {
+        console.error('Failed to fetch session timeout:', err);
+        resetTimer(); // Vẫn bắt đầu timer với mặc định nếu lỗi
+      }
+    };
+
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      
+      // Log để debug (có thể xóa sau khi xong)
+      if (timeoutMs < 3600000) { // Chỉ log nếu thời gian chờ ngắn để tránh spam console
+        console.log(`[IDLE TIMER] Resetting idle timer to ${timeoutMs}ms...`);
+      }
+
+      timeoutId = setTimeout(() => {
+        console.log('[AUTH] Session idle timeout reached. Signing out...');
+        handleSignOut();
+      }, timeoutMs);
+    };
+
+    const events = ['mousemove', 'keydown', 'mousedown', 'touchstart', 'scroll'];
+    const handler = () => resetTimer();
+    
+    events.forEach(event => window.addEventListener(event, handler));
+    
+    // Khởi tạo lấy dữ liệu và chạy timer
+    fetchSettingsAndSetupTimer();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      events.forEach(event => window.removeEventListener(event, handler));
+    };
+  }, [mounted, session, pathname]);
+
+  if (pathname === '/admin/login' || pathname === '/admin/verify-otp') {
     return <>{children}</>;
   }
 
@@ -105,7 +166,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#060010]/80 backdrop-blur-sm z-40 lg:hidden" 
+            className="fixed inset-0 bg-admin-bg/80 backdrop-blur-sm z-40 lg:hidden" 
             onClick={() => setIsMobileSidebarOpen(false)}
           />
         )}
@@ -121,13 +182,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             : 0
         }}
         transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-        className="fixed lg:relative z-50 h-screen bg-[#0D0716] border-r border-[#4F1F76]/30 flex flex-col pt-6 shrink-0"
+        className="fixed lg:relative z-50 h-screen bg-admin-panel border-r border-admin-border flex flex-col pt-6 shrink-0"
       >
         <div className="px-6 mb-8 flex items-center justify-between">
           <Link href="/" className={`font-display font-black uppercase tracking-widest ${isSidebarCollapsed ? 'hidden' : 'block'}`}>
-            <span className="text-[#FF0088]">Cyber</span><br/><span className="text-[#00FFFF]">Admin</span>
+            <span className="text-magenta">Cyber</span><br/><span className="text-cyan">Admin</span>
           </Link>
-          {isSidebarCollapsed && <span className="text-[#E6C753] font-display font-black text-xl mx-auto">CA</span>}
+          {isSidebarCollapsed && <span className="text-gold font-display font-black text-xl mx-auto">CA</span>}
         </div>
 
         <nav className="flex-1 overflow-y-auto px-4 space-y-2 pb-6 custom-scrollbar">
@@ -142,16 +203,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <button
                     onClick={() => toggleMenu(item.id)}
                     className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group w-full
-                      ${isExpanded ? 'bg-[#4F1F76]/10 text-[#FFFFFF]' : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-[#FFFFFF]'}`}
+                      ${isExpanded ? 'bg-admin-bg/50 text-admin-text' : 'text-admin-text-muted hover:bg-admin-bg/80 hover:text-admin-text'}`}
                   >
-                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isExpanded ? 'text-[#FF0088]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
+                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isExpanded ? 'text-magenta' : 'text-admin-text-muted group-hover:text-magenta'}`}>
                       {item.icon}
                     </div>
                     {!isSidebarCollapsed && (
                       <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
                     )}
                     {!isSidebarCollapsed && (
-                      <ChevronDown className={`ml-auto w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-[#00FFFF]' : 'text-[#8A8F98]'}`} />
+                      <ChevronDown className={`ml-auto w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-cyan' : 'text-admin-text-muted'}`} />
                     )}
                   </button>
                   
@@ -162,7 +223,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="overflow-hidden flex flex-col gap-1 ml-4 pl-4 border-l border-[#4F1F76]/30"
+                        className="overflow-hidden flex flex-col gap-1 ml-4 pl-4 border-l border-admin-border"
                       >
                         {item.children.map((child: any) => {
                           const isChildActive = pathname === child.path;
@@ -170,12 +231,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <Link
                               key={child.id}
                               href={child.path}
+                              onClick={() => {
+                                if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                                  setIsMobileSidebarOpen(false);
+                                }
+                              }}
                               className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all duration-300
                                 ${isChildActive 
-                                  ? 'text-[#00FFFF] font-bold bg-[#00FFFF]/10' 
-                                  : 'text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20'}`}
+                                  ? 'text-cyan font-bold bg-cyan/10' 
+                                  : 'text-admin-text-muted hover:text-admin-text hover:bg-admin-bg/50'}`}
                             >
-                              <div className={`w-1.5 h-1.5 rounded-full ${isChildActive ? 'bg-[#00FFFF] glow-cyan' : 'bg-[#4F1F76]'}`}></div>
+                              <div className={`w-1.5 h-1.5 rounded-full ${isChildActive ? 'bg-cyan glow-cyan' : 'bg-admin-bg'}`}></div>
                               {child.label}
                             </Link>
                           );
@@ -186,97 +252,44 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
               );
             }
-                </div>
-              );
-            }
 
             return (
-              <div key={item.id} className="space-y-1">
-                {hasChildren ? (
-                  <button
-                    onClick={() => toggleMenu(item.id)}
-                    className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
-                      ${isActive 
-                        ? 'bg-[#4F1F76]/20 text-[#00FFFF]' 
-                        : 'text-[#8A8F98] hover:bg-[#4F1F76]/10 hover:text-[#FFFFFF]'
-                      }`}
-                  >
-                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
-                      {item.icon}
-                    </div>
-                    {!isSidebarCollapsed && (
-                      <>
-                        <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
-                        <ChevronDown className={`ml-auto w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <Link
-                    href={item.path}
-                    onClick={() => {
-                      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-                        setIsMobileSidebarOpen(false);
-                      }
-                    }}
-                    className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
-                      ${isActive 
-                        ? 'bg-gradient-to-r from-[#00FFFF]/20 to-transparent border-l-4 border-[#00FFFF] text-[#00FFFF]' 
-                        : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-[#FFFFFF]'
-                      }`}
-                    title={item.label}
-                  >
-                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
-                      {item.icon}
-                    </div>
-                    {!isSidebarCollapsed && (
-                      <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
-                    )}
-                    {isActive && !isSidebarCollapsed && (
-                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#E6C753] glow-gold shadow-[0_0_10px_#E6C753]"></div>
-                    )}
-                  </Link>
+              <Link
+                key={item.id}
+                href={item.path}
+                onClick={() => {
+                  if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                    setIsMobileSidebarOpen(false);
+                  }
+                }}
+                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
+                  ${isActive 
+                    ? 'bg-gradient-to-r from-cyan/10 to-transparent border-l-4 border-cyan text-cyan' 
+                    : 'text-admin-text-muted hover:bg-admin-bg/50 hover:text-admin-text'}`}
+                title={item.label}
+              >
+                <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-cyan' : 'text-admin-text-muted group-hover:text-magenta'}`}>
+                  {item.icon}
+                </div>
+                {!isSidebarCollapsed && (
+                  <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
                 )}
-
-                {hasChildren && isExpanded && !isSidebarCollapsed && (
-                  <div className="ml-9 border-l border-[#4F1F76]/30 space-y-1 py-1">
-                    {item.children?.map((child: any) => {
-                      const isChildActive = pathname === child.path;
-                      return (
-                        <Link
-                          key={child.id}
-                          href={child.path}
-                          onClick={() => {
-                            if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-                              setIsMobileSidebarOpen(false);
-                            }
-                          }}
-                          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all duration-200
-                            ${isChildActive 
-                              ? 'text-[#00FFFF] font-bold' 
-                              : 'text-[#8A8F98] hover:text-white hover:bg-white/5'
-                            }`}
-                        >
-                          <div className={`w-1.5 h-1.5 rounded-full ${isChildActive ? 'bg-[#00FFFF] glow-cyan' : 'bg-transparent border border-[#8A8F98]'}`} />
-                          {child.label}
-                        </Link>
-                      );
-                    })}
-                  </div>
+                {isActive && !isSidebarCollapsed && (
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-gold glow-gold"></div>
                 )}
-              </div>
+              </Link>
             );
           })}
         </nav>
 
         <div className="p-4 border-t border-admin-border mt-auto">
           {!isSidebarCollapsed && (
-            <div className="px-4 py-3 bg-[#4F1F76]/10 rounded-xl border border-admin-border mb-4 flex items-center justify-between">
+            <div className="px-4 py-3 bg-admin-bg/50 rounded-xl border border-admin-border mb-4 flex items-center justify-between">
               <div>
                 <div className="text-xs text-admin-text-muted">Quyền hạn</div>
-                <div className="text-sm font-bold text-[#E6C753]">ADMIN</div>
+                <div className="text-sm font-bold text-gold">ADMIN</div>
               </div>
-              <CheckCircle2 className="w-5 h-5 text-[#00FFFF]" />
+              <CheckCircle2 className="w-5 h-5 text-cyan" />
             </div>
           )}
           <button 
@@ -296,28 +309,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-[#8A8F98] hover:text-white transition-all"
+              className="lg:hidden p-2 rounded-xl bg-admin-bg/50 border border-admin-border text-admin-text-muted hover:text-admin-text transition-all"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-xl md:text-2xl font-display font-bold uppercase tracking-widest text-[#FFFFFF]">Quản Trị Hệ Thống</h1>
+            <h1 className="text-xl md:text-2xl font-display font-bold uppercase tracking-widest text-admin-text">Quản Trị Hệ Thống</h1>
           </div>
 
           <div className="flex items-center gap-6 relative">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00FFFF]/10 border border-[#00FFFF]/30">
-              <div className="w-2 h-2 rounded-full bg-[#00FFFF] animate-pulse glow-cyan"></div>
-              <span className="text-xs font-bold text-[#00FFFF] tracking-widest uppercase">Live Network</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan/10 border border-cyan/30">
+              <div className="w-2 h-2 rounded-full bg-cyan animate-pulse glow-cyan"></div>
+              <span className="text-xs font-bold text-cyan tracking-widest uppercase">Live Network</span>
             </div>
             
-            <div className="w-px h-8 bg-[#4F1F76]/50"></div>
+            <div className="w-px h-8 bg-admin-border/50"></div>
             
             <div className="relative">
               <button 
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-3 hover:bg-black/5 dark:hover:bg-white/10 py-2 px-3 rounded-xl transition-colors"
+                className="flex items-center gap-3 hover:bg-admin-bg/50 py-2 px-3 rounded-xl transition-colors"
               >
-                <div className="w-10 h-10 rounded-full border-2 border-[#E6C753] p-0.5 glow-gold shadow-[0_0_10px_rgba(230,199,83,0.3)] shrink-0">
-                  <div className="w-full h-full rounded-full bg-[#4F1F76]/50 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full border-2 border-gold p-0.5 glow-gold shadow-[0_0_10px_rgba(230,199,83,0.3)] shrink-0">
+                  <div className="w-full h-full rounded-full bg-admin-bg/50 flex items-center justify-center">
                     <span className="text-admin-text font-bold text-sm">TVH</span>
                   </div>
                 </div>
@@ -334,8 +347,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
                     className="absolute right-0 mt-2 w-56 bg-admin-panel border border-admin-border rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden z-50"
                   >
-                    <div className="p-4 border-b border-admin-border bg-gradient-to-br from-black/5 dark:from-[#4F1F76]/20 to-transparent">
-                      <div className="font-bold text-[#E6C753] mb-1">Phiên bản: 1.0.0</div>
+                    <div className="p-4 border-b border-admin-border bg-gradient-to-br from-admin-bg/20 to-transparent">
+                      <div className="font-bold text-gold mb-1">Phiên bản: 1.0.0</div>
                       <div className="text-xs text-admin-text-muted">Bản quyền thuộc Neon Heritage</div>
                     </div>
                     <button 

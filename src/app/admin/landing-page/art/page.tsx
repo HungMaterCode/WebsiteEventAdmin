@@ -98,15 +98,15 @@ export default function ArtManagement() {
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-white tracking-tight italic">Quản Lý Nghệ Thuật</h2>
-          <p className="text-[#8A8F98] text-sm mt-1">Cấu hình phần giới thiệu nghệ thuật di sản trên trang chủ</p>
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text tracking-tight italic">Quản Lý Nghệ Thuật</h2>
+          <p className="text-admin-text-muted text-sm mt-1">Cấu hình phần giới thiệu nghệ thuật di sản trên trang chủ</p>
         </div>
       </div>
 
       <form onSubmit={handleSave} className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* Left Column: General Section Settings */}
         <div className="xl:col-span-1 space-y-6">
-          <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 shadow-2xl relative overflow-hidden">
+          <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-admin-panel backdrop-blur-md border border-admin-border shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-cyan/5 rounded-full blur-[80px] -mr-16 -mt-16" />
             
             <div className="space-y-6 relative z-10">
@@ -114,48 +114,48 @@ export default function ArtManagement() {
                 <div className="p-2 rounded-xl bg-cyan/10 border border-cyan/30">
                   <Layout className="w-5 h-5 text-cyan" />
                 </div>
-                <h3 className="text-lg font-display font-bold text-white uppercase tracking-wider">Thông tin chung</h3>
+                <h3 className="text-lg font-display font-bold text-admin-text uppercase tracking-wider">Thông tin chung</h3>
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Tiêu đề (VD: Nghệ Thuật)</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Tiêu đề (VD: Nghệ Thuật)</label>
                   <input 
                     type="text" 
                     value={form.artTitle} 
                     onChange={e => setForm({ ...form, artTitle: e.target.value })}
-                    className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan transition-all" 
+                    className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Nổi bật (VD: Di Sản Cyber)</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Nổi bật (VD: Di Sản Cyber)</label>
                   <input 
                     type="text" 
                     value={form.artSubtitle} 
                     onChange={e => setForm({ ...form, artSubtitle: e.target.value })}
-                    className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan transition-all" 
+                    className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Mô tả văn bản</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Mô tả văn bản</label>
                   <textarea 
                     value={form.artDescription} 
                     onChange={e => setForm({ ...form, artDescription: e.target.value })}
                     rows={4}
-                    className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan transition-all resize-none text-sm leading-relaxed" 
+                    className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all resize-none text-sm leading-relaxed" 
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Hình ảnh đại diện (Vòng tròn)</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Hình ảnh đại diện (Vòng tròn)</label>
                   <div className="flex gap-2">
                     <input 
                       type="text" 
                       value={form.artImage} 
                       onChange={e => setForm({ ...form, artImage: e.target.value })}
-                      className="flex-1 bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan transition-all text-xs" 
+                      className="flex-1 bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all text-xs" 
                     />
                     <CldUploadWidget 
                       uploadPreset="ml_default"
@@ -186,7 +186,7 @@ export default function ArtManagement() {
 
         {/* Right Column: 3 Items Management */}
         <div className="xl:col-span-2 space-y-6">
-          <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 shadow-2xl relative overflow-hidden">
+          <div className="glass-card p-6 md:p-8 rounded-[2rem] bg-admin-panel backdrop-blur-md border border-admin-border shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-[120px] -mr-32 -mt-32" />
             
             <div className="space-y-8 relative z-10">
@@ -194,23 +194,23 @@ export default function ArtManagement() {
                 <div className="p-2 rounded-xl bg-gold/10 border border-gold/30">
                   <Sparkles className="w-5 h-5 text-gold" />
                 </div>
-                <h3 className="text-lg font-display font-bold text-white uppercase tracking-wider">Chi tiết 3 mục nghệ thuật</h3>
+                <h3 className="text-lg font-display font-bold text-admin-text uppercase tracking-wider">Chi tiết 3 mục nghệ thuật</h3>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {form.artItems.map((item, index) => (
-                  <div key={index} className="p-6 rounded-2xl bg-[#060010]/80 border border-[#4F1F76]/30 space-y-6 hover:border-gold/40 transition-all group relative">
+                  <div key={index} className="p-6 rounded-2xl bg-admin-bg border border-admin-border space-y-6 hover:border-gold/40 transition-all group relative">
                     <div className="absolute -top-3 left-6 px-3 py-1 bg-gold text-midnight text-[10px] font-black uppercase rounded-full shadow-[0_0_15px_rgba(230,199,83,0.4)]">Mục #{index + 1}</div>
                     
                     <div className="pt-2">
-                      <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block mb-3">Biểu tượng</label>
+                      <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block mb-3">Biểu tượng</label>
                       <div className="flex flex-wrap gap-2">
                         {Object.entries(AVAILABLE_ICONS).map(([iconName, iconNode]) => (
                           <button 
                             key={iconName}
                             type="button"
                             onClick={() => updateItem(index, 'icon', iconName)}
-                            className={`p-2.5 rounded-xl border transition-all ${item.icon === iconName ? 'bg-gold border-gold text-midnight shadow-[0_0_15px_rgba(230,199,83,0.3)] scale-110' : 'bg-transparent border-white/10 text-white/40 hover:border-white/20'}`}
+                            className={`p-2.5 rounded-xl border transition-all ${item.icon === iconName ? 'bg-gold border-gold text-midnight shadow-[0_0_15px_rgba(230,199,83,0.3)] scale-110' : 'bg-transparent border-white/10 text-admin-text-muted hover:border-white/20'}`}
                             title={iconName}
                           >
                             {iconNode}
@@ -227,7 +227,7 @@ export default function ArtManagement() {
                           value={item.name} 
                           onChange={e => updateItem(index, 'name', e.target.value)}
                           placeholder="VD: Đàn Tính..."
-                          className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-gold/50 transition-all"
+                          className="w-full bg-admin-bg/40 border border-admin-border rounded-xl px-4 py-2.5 text-admin-text text-sm focus:outline-none focus:border-gold/50 transition-all"
                         />
                       </div>
                       <div className="space-y-1">
@@ -237,7 +237,7 @@ export default function ArtManagement() {
                           onChange={e => updateItem(index, 'desc', e.target.value)}
                           placeholder="Nhập mô tả..."
                           rows={3}
-                          className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-2.5 text-white text-xs focus:outline-none focus:border-gold/50 transition-all resize-none leading-relaxed"
+                          className="w-full bg-admin-bg/40 border border-admin-border rounded-xl px-4 py-2.5 text-admin-text text-xs focus:outline-none focus:border-gold/50 transition-all resize-none leading-relaxed"
                         />
                       </div>
                     </div>
@@ -272,7 +272,7 @@ export default function ArtManagement() {
 
           <div className="p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10 flex items-start gap-3">
              <AlertCircle className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-             <p className="text-[10px] text-gray-400 italic leading-relaxed">
+             <p className="text-[10px] text-admin-text-muted italic leading-relaxed">
                <strong>Mẹo:</strong> Bạn nên chọn ảnh đại diện có độ phân giải ít nhất 800x800px và là ảnh hình vuông để hiển thị đẹp nhất trong vòng tròn. Các mô tả cho 3 mục nhạc cụ nên có độ dài tương đồng để đảm bảo sự cân đối cho giao diện.
              </p>
           </div>

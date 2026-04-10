@@ -40,7 +40,7 @@ export default function AdminLotoPage() {
           <p className="text-admin-text-muted text-sm mt-1">Điều phối sự kiện rút thăm ngẫu nhiên, trao thưởng và quản lý người chơi</p>
         </div>
         <button onClick={() => setShowWinner(true)}
-          className="px-6 py-3 bg-[#E6C753] hover:bg-[#E6C753]/80 text-[#060010] font-bold rounded-xl flex items-center gap-2 transition-all glow-gold">
+          className="px-6 py-3 bg-gold hover:bg-gold/80 text-midnight font-bold rounded-xl flex items-center gap-2 transition-all glow-gold">
           <Trophy className="w-5 h-5" /> Công Bố Trúng Thưởng
         </button>
       </div>
@@ -48,10 +48,10 @@ export default function AdminLotoPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Người Chơi', value: '248', icon: Users, color: 'text-[#00FFFF]', bg: 'bg-[#00FFFF]/10 border-[#00FFFF]/20' },
-          { label: 'Số Đã Rút', value: drawnNumbers.length.toString(), icon: Shuffle, color: 'text-[#FF0088]', bg: 'bg-[#FF0088]/10 border-[#FF0088]/20' },
-          { label: 'Số Còn Lại', value: (75 - drawnNumbers.length).toString(), icon: Zap, color: 'text-[#E6C753]', bg: 'bg-[#E6C753]/10 border-[#E6C753]/20' },
-          { label: 'Người Thắng', value: '0', icon: Trophy, color: 'text-[#00C099]', bg: 'bg-[#00C099]/10 border-[#00C099]/20' },
+          { label: 'Người Chơi', value: '248', icon: Users, color: 'text-cyan', bg: 'bg-cyan/10 border-cyan/20' },
+          { label: 'Số Đã Rút', value: drawnNumbers.length.toString(), icon: Shuffle, color: 'text-magenta', bg: 'bg-magenta/10 border-magenta/20' },
+          { label: 'Số Còn Lại', value: (75 - drawnNumbers.length).toString(), icon: Zap, color: 'text-gold', bg: 'bg-gold/10 border-gold/20' },
+          { label: 'Người Thắng', value: '0', icon: Trophy, color: 'text-emerald', bg: 'bg-emerald/10 border-emerald/20' },
         ].map((s, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className={`p-5 rounded-2xl border bg-white/5 backdrop-blur-md relative overflow-hidden group hover:scale-[1.02] transition-all ${s.bg}`}>
@@ -70,11 +70,11 @@ export default function AdminLotoPage() {
           <h3 className="text-lg font-display font-black text-admin-text uppercase tracking-wider text-center">Máy Quay Số</h3>
 
           {/* Number Display */}
-          <div className="w-40 h-40 rounded-full border-4 border-[#E6C753] bg-admin-bg flex items-center justify-center relative shadow-[0_0_40px_rgba(230,199,83,0.3)]">
-            <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,_rgba(230,199,83,0.1)_0%,_transparent_70%)]" />
+          <div className="w-40 h-40 rounded-full border-4 border-gold bg-admin-bg flex items-center justify-center relative shadow-[0_0_40px_rgba(var(--gold-rgb),0.3)]">
+            <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,_rgba(var(--gold-rgb),0.1)_0%,_transparent_70%)]" />
             <AnimatePresence mode="wait">
               <motion.span key={currentDraw} initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 1.5, opacity: 0 }}
-                className="font-display font-black text-5xl text-[#E6C753] glow-gold">
+                className="font-display font-black text-5xl text-gold glow-gold">
                 {currentDraw ?? '?'}
               </motion.span>
             </AnimatePresence>
@@ -82,7 +82,7 @@ export default function AdminLotoPage() {
 
           <div className="flex gap-3 w-full">
             <button onClick={handleDraw} disabled={isSpinning}
-              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#E6C753] to-[#FF0088] text-[#060010] font-bold flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform disabled:opacity-50 disabled:cursor-not-allowed">
+              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-gold to-magenta text-midnight font-bold flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform disabled:opacity-50 disabled:cursor-not-allowed">
               {isSpinning ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
               {isSpinning ? 'Đang quay...' : 'Rút Số'}
             </button>
@@ -94,7 +94,7 @@ export default function AdminLotoPage() {
             <div className="flex flex-wrap gap-2 justify-center">
               {drawnNumbers.map(n => (
                 <motion.div key={n} initial={{ scale: 0 }} animate={{ scale: 1 }}
-                  className="w-9 h-9 rounded-full bg-[#FF0088]/20 border border-[#FF0088]/50 flex items-center justify-center text-[#FF0088] font-bold text-sm glow-magenta">
+                  className="w-9 h-9 rounded-full bg-magenta/20 border border-magenta/50 flex items-center justify-center text-magenta font-bold text-sm glow-magenta">
                   {n}
                 </motion.div>
               ))}
@@ -117,7 +117,7 @@ export default function AdminLotoPage() {
                     <div className="font-bold text-admin-text">{player.name}</div>
                     <div className="text-xs text-admin-text-muted font-mono mt-0.5">{player.ticket}</div>
                   </div>
-                  <div className="text-[10px] font-bold text-[#00FFFF] bg-[#00FFFF]/10 border border-[#00FFFF]/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
+                  <div className="text-[10px] font-bold text-cyan bg-cyan/10 border border-cyan/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
                     {player.matched.length}/{player.card.length} Số
                   </div>
                 </div>
@@ -126,8 +126,8 @@ export default function AdminLotoPage() {
                     <div key={n}
                       className={`w-10 h-10 rounded-xl flex items-center justify-center font-display font-black text-sm transition-all ${
                         player.matched.includes(n)
-                          ? 'bg-[#E6C753] text-[#060010] shadow-[0_0_12px_rgba(230,199,83,0.5)]'
-                          : 'bg-white/5 border border-white/10 text-admin-text-muted'
+                          ? 'bg-gold text-midnight shadow-[0_0_12px_rgba(var(--gold-rgb),0.5)]'
+                          : 'bg-admin-bg/5 border border-admin-border/10 text-admin-text-muted'
                       }`}>
                       {n}
                     </div>
@@ -146,15 +146,15 @@ export default function AdminLotoPage() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowWinner(false)} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-md" />
             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }}
-              className="relative w-full max-w-md bg-admin-panel border-2 border-[#E6C753]/60 rounded-[2rem] shadow-[0_0_60px_rgba(230,199,83,0.3)] overflow-hidden text-center p-10">
+              className="relative w-full max-w-md bg-admin-panel border-2 border-gold/60 rounded-[2rem] shadow-[0_0_60px_rgba(var(--gold-rgb),0.3)] overflow-hidden text-center p-10">
               <button onClick={() => setShowWinner(false)} className="absolute top-4 right-4 text-admin-text-muted hover:text-admin-text"><X className="w-6 h-6" /></button>
               <div className="text-6xl mb-4">🏆</div>
-              <h2 className="text-3xl font-display font-black text-[#E6C753] glow-gold uppercase tracking-wider mb-2">Chúc Mừng!</h2>
+              <h2 className="text-3xl font-display font-black text-gold glow-gold uppercase tracking-wider mb-2">Chúc Mừng!</h2>
               <h3 className="text-xl font-bold text-admin-text mb-4">Lê Văn C</h3>
-              <p className="text-admin-text-muted text-sm">Hoàn thành hàng ngang đầu tiên với <span className="text-[#E6C753] font-bold">3 số khớp liên tiếp</span>.</p>
+              <p className="text-admin-text-muted text-sm">Hoàn thành hàng ngang đầu tiên với <span className="text-gold font-bold">3 số khớp liên tiếp</span>.</p>
               <div className="flex justify-center gap-2 mt-6">
                 {[22, 38, 55].map(n => (
-                  <div key={n} className="w-12 h-12 rounded-full bg-[#E6C753] text-[#060010] font-display font-black text-lg flex items-center justify-center glow-gold">
+                  <div key={n} className="w-12 h-12 rounded-full bg-gold text-midnight font-display font-black text-lg flex items-center justify-center glow-gold">
                     {n}
                   </div>
                 ))}

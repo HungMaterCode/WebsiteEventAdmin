@@ -1,5 +1,7 @@
 import React from 'react';
 import { signIn } from '@/lib/auth';
+import { AuthError } from 'next-auth';
+import { redirect } from 'next/navigation';
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const resolvedSearchParams = await searchParams;
@@ -25,11 +27,18 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <form 
             action={async (formData) => {
               'use server';
-              await signIn('credentials', { 
-                email: formData.get('email'), 
-                password: formData.get('password'),
-                redirectTo: '/admin' 
-              });
+              try {
+                await signIn('credentials', { 
+                  email: formData.get('email'), 
+                  password: formData.get('password'),
+                  redirectTo: '/admin' 
+                });
+              } catch (error) {
+                if (error instanceof AuthError) {
+                  return redirect(`/admin/login?error=${error.type}`);
+                }
+                throw error;
+              }
             }}
             className="space-y-4"
           >

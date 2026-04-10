@@ -5,9 +5,14 @@ import Link from 'next/link';
 
 export default function Footer() {
   const [mounted, setMounted] = React.useState(false);
+  const [systemSettings, setSystemSettings] = React.useState<any>(null);
 
   React.useEffect(() => {
     setMounted(true);
+    fetch('/api/settings/system')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => setSystemSettings(data))
+      .catch(() => {});
   }, []);
 
   if (!mounted) return null;
@@ -18,7 +23,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-2">
             <h3 className="text-2xl font-display font-black uppercase tracking-widest mb-4"><span className="text-gradient">Neon Heritage</span></h3>
-            <p className="text-gray-400 mb-6 max-w-sm leading-relaxed">Sự kiện âm nhạc bế mạc Festival Ninh Bình 2024. Nơi giao thoa giữa di sản văn hóa truyền thống và nghệ thuật đương đại.</p>
+            <p className="text-gray-400 mb-6 max-w-sm leading-relaxed">
+              {systemSettings?.slogan || "Sự kiện âm nhạc bế mạc Festival Ninh Bình 2024. Nơi giao thoa giữa di sản văn hóa truyền thống và nghệ thuật đương đại."}
+            </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-royal/20 flex items-center justify-center text-cyan hover:bg-cyan hover:text-midnight transition-colors border border-cyan/30"><Globe className="w-5 h-5" /></a>
               <a href="#" className="w-10 h-10 rounded-full bg-royal/20 flex items-center justify-center text-magenta hover:bg-magenta hover:text-white transition-colors border border-magenta/30"><Camera className="w-5 h-5" /></a>
@@ -49,7 +56,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-royal/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">&copy; 2024 Neon Heritage Festival. All rights reserved.</p>
+          <p className="text-gray-500 text-sm">&copy; {new Date().getFullYear()} {systemSettings?.siteName || 'Neon Heritage Festival'}. All rights reserved.</p>
           <div className="flex flex-wrap gap-6 text-sm text-gray-500 items-center justify-center md:justify-end">
             <a href="#" className="hover:text-silver transition-colors">Điều khoản</a>
             <a href="#" className="hover:text-silver transition-colors">Bảo mật</a>

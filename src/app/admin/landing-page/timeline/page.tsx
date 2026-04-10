@@ -114,7 +114,7 @@ export default function TimelineManagement() {
     <div className="space-y-8 animate-in fade-in zoom-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-white tracking-tight italic text-glow-cyan flex items-center gap-4">
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text tracking-tight italic text-glow-cyan flex items-center gap-4">
             Quản Lý Lộ Trình
             {isSyncing && (
               <span className="flex items-center gap-2 text-[10px] font-bold text-cyan animate-pulse bg-cyan/10 px-3 py-1 rounded-full border border-cyan/20 normal-case italic tracking-normal">
@@ -123,7 +123,7 @@ export default function TimelineManagement() {
               </span>
             )}
           </h2>
-          <p className="text-[#8A8F98] text-sm mt-1">Sử dụng thanh nắm kéo hoặc nút mũi tên để thay đổi thứ tự</p>
+          <p className="text-admin-text-muted text-sm mt-1">Sử dụng thanh nắm kéo hoặc nút mũi tên để thay đổi thứ tự</p>
         </div>
 
         <button
@@ -152,24 +152,24 @@ export default function TimelineManagement() {
                 damping: 35,
                 mass: 1 
               }}
-              className="glass-card p-5 md:p-6 rounded-3xl bg-[#0D0716]/90 backdrop-blur-xl border border-[#4F1F76]/40 flex flex-col md:flex-row items-start md:items-center gap-6 group hover:border-cyan/40 shadow-2xl relative overflow-hidden"
+              className="glass-card p-5 md:p-6 rounded-3xl bg-admin-panel border border-admin-border flex flex-col md:flex-row items-start md:items-center gap-6 group hover:border-cyan/40 shadow-2xl relative overflow-hidden"
             >
 
               <div className="absolute top-0 left-0 w-1 h-full bg-cyan/50 group-hover:bg-cyan transition-colors" />
 
               <div className="flex items-center gap-5 shrink-0">
-                <div className="text-gray-600 group-hover:text-cyan transition-colors cursor-grab active:cursor-grabbing p-2 hover:bg-white/5 rounded-lg">
+                <div className="text-admin-text-muted group-hover:text-cyan transition-colors cursor-grab active:cursor-grabbing p-2 hover:bg-admin-bg/5 rounded-lg">
                   <GripVertical className="w-6 h-6" />
                 </div>
                 <div className="p-3.5 rounded-2xl bg-cyan/10 border border-cyan/30 text-cyan shadow-[0_0_15px_rgba(0,255,255,0.1)]">
                   <Clock className="w-6 h-6" />
                 </div>
-                <div className="text-3xl font-display font-black text-white italic tracking-tighter text-glow-cyan">{item.time}</div>
+                <div className="text-3xl font-display font-black text-admin-text italic tracking-tighter text-glow-cyan">{item.time}</div>
               </div>
 
               <motion.div className="flex-1 min-w-0" layout="position">
-                <h4 className="text-xl font-bold text-silver uppercase tracking-widest mb-1.5 line-clamp-1 group-hover:text-cyan transition-colors">{item.title}</h4>
-                <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 pr-4">{item.description}</p>
+                <h4 className="text-xl font-bold text-admin-text uppercase tracking-widest mb-1.5 line-clamp-1 group-hover:text-cyan transition-colors">{item.title}</h4>
+                <p className="text-admin-text-muted text-sm leading-relaxed line-clamp-2 pr-4">{item.description}</p>
               </motion.div>
 
 
@@ -187,7 +187,7 @@ export default function TimelineManagement() {
         </Reorder.Group>
 
         {items.length === 0 && (
-          <div className="text-center py-24 bg-royal/5 border-2 border-dashed border-[#4F1F76]/20 rounded-[3rem] text-gray-600 italic font-medium">
+          <div className="text-center py-24 bg-admin-bg/50 border-2 border-dashed border-admin-border rounded-[3rem] text-admin-text-muted italic font-medium">
             Chưa có hoạt động nào trong lộ trình. Hãy bắt đầu xây dựng sự kiện của bạn!
           </div>
         )}
@@ -196,62 +196,62 @@ export default function TimelineManagement() {
       <AnimatePresence>
         {editingItem && (
           <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditingItem(null)} className="absolute inset-0 bg-[#060010]/95 backdrop-blur-xl" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditingItem(null)} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-xl" />
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-[#0D0716] border border-[#4F1F76]/50 rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,255,255,0.15)]"
+              className="relative w-full max-w-lg bg-admin-panel border border-admin-border rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,255,255,0.15)]"
             >
-              <div className="p-8 border-b border-[#4F1F76]/30 flex justify-between items-center bg-[#4F1F76]/10 relative overflow-hidden">
+              <div className="p-8 border-b border-admin-border flex justify-between items-center bg-admin-bg/50 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan/5 to-transparent pointer-events-none" />
                 <div className="flex items-center gap-3 relative z-10">
                   <div className="p-2 rounded-xl bg-cyan/10 border border-cyan/30">
                     <Clock className="w-5 h-5 text-cyan" />
                   </div>
-                  <h3 className="text-xl font-display font-bold text-white uppercase italic tracking-wider">{editingItem.id ? 'Sửa mốc thời gian' : 'Thêm mốc mới'}</h3>
+                  <h3 className="text-xl font-display font-bold text-admin-text uppercase italic tracking-wider">{editingItem.id ? 'Sửa mốc thời gian' : 'Thêm mốc mới'}</h3>
                 </div>
-                <button type="button" onClick={() => setEditingItem(null)} className="p-2 text-[#8A8F98] hover:text-white hover:bg-white/5 rounded-full transition-all relative z-10"><X className="w-6 h-6" /></button>
+                <button type="button" onClick={() => setEditingItem(null)} className="p-2 text-admin-text-muted hover:text-admin-text hover:bg-admin-bg/5 rounded-full transition-all relative z-10"><X className="w-6 h-6" /></button>
               </div>
 
               <form onSubmit={handleAddEdit} className="p-8 space-y-6">
                 <div className="space-y-5">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Mốc thời gian (VD: 18:00, 20:30...)</label>
-                    <input
-                      required
-                      type="text"
-                      value={editingItem.time}
-                      onChange={e => setEditingItem({ ...editingItem, time: e.target.value })}
-                      placeholder="18:00"
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-5 text-white focus:outline-none focus:border-cyan text-2xl font-black italic outline-none transition-all placeholder:opacity-10 text-glow-cyan shadow-[inset_0_0_20px_rgba(0,255,255,0.02)]"
-                    />
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Mốc thời gian (VD: 18:00, 20:30...)</label>
+                      <input
+                        required
+                        type="text"
+                        value={editingItem.time}
+                        onChange={e => setEditingItem({ ...editingItem, time: e.target.value })}
+                        placeholder="18:00"
+                        className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-5 text-admin-text focus:outline-none focus:border-cyan text-2xl font-black italic outline-none transition-all placeholder:opacity-10 text-glow-cyan shadow-[inset_0_0_20px_rgba(0,255,255,0.02)]"
+                      />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Hoạt động diễn ra</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Hoạt động diễn ra</label>
                     <input
                       required
                       type="text"
                       value={editingItem.title}
                       onChange={e => setEditingItem({ ...editingItem, title: e.target.value })}
                       placeholder="VD: Đón Khách, Đại tiệc âm nhạc..."
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan font-bold outline-none transition-all placeholder:font-normal placeholder:opacity-30"
+                      className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text font-bold outline-none transition-all placeholder:font-normal placeholder:opacity-30"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block pl-1">Phần mô tả thêm</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block pl-1">Phần mô tả thêm</label>
                     <textarea
                       value={editingItem.description}
                       onChange={e => setEditingItem({ ...editingItem, description: e.target.value })}
                       rows={4}
                       placeholder="Chi tiết về hoạt động này sẽ được hiển thị trên trang chủ..."
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-cyan text-sm leading-relaxed outline-none transition-all resize-none shadow-[inset_0_0_20px_rgba(0,255,255,0.02)]"
+                      className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text text-sm leading-relaxed outline-none transition-all resize-none shadow-[inset_0_0_20px_rgba(0,255,255,0.02)]"
                     />
                   </div>
                 </div>
 
                 <div className="flex gap-4 pt-4">
-                  <button type="button" onClick={() => setEditingItem(null)} className="flex-1 py-5 rounded-2xl border border-[#4F1F76] text-white font-black hover:bg-white/5 transition-all text-sm uppercase tracking-widest">HỦY BỎ</button>
+                  <button type="button" onClick={() => setEditingItem(null)} className="flex-1 py-5 rounded-2xl border border-admin-border text-admin-text font-black hover:bg-admin-bg/5 transition-all text-sm uppercase tracking-widest">HỦY BỎ</button>
                   <button type="submit" disabled={saving} className="flex-1 py-5 rounded-2xl bg-gradient-to-r from-cyan to-royal text-midnight font-black hover:scale-[1.02] transition-all glow-cyan text-sm uppercase tracking-widest disabled:opacity-50">
                     {saving ? 'ĐANG LƯU...' : (editingItem.id ? 'LƯU THAY ĐỔI' : 'THÊM MỐC MỚI')}
                   </button>

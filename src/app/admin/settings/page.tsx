@@ -3,14 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Globe, Lock, Smartphone, Bell, Database, Save, Loader2 
+  Globe, Lock, Smartphone, Database, Save, Loader2 
 } from 'lucide-react';
 import { getSystemSettings, updateSystemSettings } from './actions';
 
 import GeneralSettings from '@/components/admin/settings/GeneralSettings';
 import SecuritySettings from '@/components/admin/settings/SecuritySettings';
 import AppearanceSettings from '@/components/admin/settings/AppearanceSettings';
-import NotificationSettings from '@/components/admin/settings/NotificationSettings';
 import SystemSettings from '@/components/admin/settings/SystemSettings';
 
 export default function AdminSettingsPage() {
@@ -22,8 +21,7 @@ export default function AdminSettingsPage() {
   const sections = [
     { id: 'general', icon: Globe, label: 'Cấu hình chung', desc: 'Tên trang web, mô tả và ngôn ngữ hệ thống' },
     { id: 'security', icon: Lock, label: 'Bảo mật & Tài khoản', desc: 'Mật khẩu admin, xác thực 2 lớp và phiên đăng nhập' },
-    { id: 'app', icon: Smartphone, label: 'Giao diện & Trải nghiệm', desc: 'Chủ đề, màu sắc chủ đạo và logo' },
-    { id: 'notif', icon: Bell, label: 'Thông báo & Email', desc: 'Cấu hình gửi email tự động, thông báo đẩy' },
+    { id: 'app', icon: Smartphone, label: 'Giao diện & Trải nghiệm', desc: 'Chủ đề và giao diện hệ thống' },
     { id: 'system', icon: Database, label: 'Hệ thống & Dữ liệu', desc: 'Sao lưu DB, nhật ký hoạt động và dọn dẹp cache' },
   ];
 
@@ -56,8 +54,6 @@ export default function AdminSettingsPage() {
         return <SecuritySettings data={data} onChange={setData} />;
       case 'app':
         return <AppearanceSettings data={data} onChange={setData} />;
-      case 'notif':
-        return <NotificationSettings data={data} onChange={setData} />;
       case 'system':
         return <SystemSettings data={data} onChange={setData} />;
       default:
@@ -90,8 +86,8 @@ export default function AdminSettingsPage() {
           disabled={saving}
           className={`px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-transform shadow-lg ${
             saving 
-            ? 'bg-[#4F1F76]/50 text-admin-text-muted cursor-not-allowed' 
-            : 'bg-gradient-to-r from-[#00FFFF] to-[#00C099] text-[#060010] hover:scale-[1.02] glow-cyan shadow-cyan/20'
+            ? 'bg-admin-bg/50 text-admin-text-muted cursor-not-allowed border border-admin-border' 
+            : 'bg-gradient-to-r from-cyan to-teal text-[#060010] hover:scale-[1.02] glow-cyan shadow-cyan/20'
           }`}
         >
           {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
@@ -110,12 +106,12 @@ export default function AdminSettingsPage() {
                 onClick={() => setActiveTab(s.id)}
                 className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center gap-4 group ${
                   isActive 
-                  ? 'bg-cyan/10 border-cyan/40 text-cyan' 
-                  : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 text-admin-text-muted hover:bg-black/10 dark:hover:bg-white/10 hover:text-admin-text'
+                  ? 'bg-admin-accent/10 border-admin-accent/40 text-admin-accent' 
+                  : 'bg-admin-bg/5 border-admin-border text-admin-text-muted hover:bg-admin-bg/10 hover:text-admin-text'
                 }`}
               >
                 <div className={`p-2 rounded-xl transition-transform ${
-                  isActive ? 'bg-[#00FFFF]/20 scale-110' : 'bg-white/5 border border-white/10 group-hover:scale-110'
+                  isActive ? 'bg-admin-accent/20 scale-110' : 'bg-admin-bg/5 border border-admin-border group-hover:scale-110'
                 }`}>
                   <s.icon className="w-5 h-5" />
                 </div>

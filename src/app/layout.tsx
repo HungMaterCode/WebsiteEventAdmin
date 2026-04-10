@@ -16,35 +16,56 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Neon Heritage Festival | Bế Mạc Festival Ninh Bình 2024",
-    template: "%s | Neon Heritage Festival",
-  },
-  description:
-    "Sự kiện âm nhạc bế mạc Festival Ninh Bình 2024 - Dòng Chảy Di Sản. Nơi giao thoa giữa di sản văn hóa truyền thống và nghệ thuật đương đại tại Thung Nham, Ninh Bình.",
-  keywords: [
-    "Neon Heritage Festival",
-    "Festival Ninh Bình",
-    "Concert Ninh Bình",
-    "Thung Nham",
-    "Sự kiện âm nhạc",
-    "Bế mạc Festival",
-    "Countdown 2024",
-  ],
-  openGraph: {
-    type: "website",
-    locale: "vi_VN",
-    siteName: "Neon Heritage Festival",
-    title: "Neon Heritage Festival | Dòng Chảy Di Sản",
-    description:
-      "Đêm nhạc bế mạc Festival Ninh Bình 2024 tại Thung Nham. Dàn line-up đỉnh cao, 3D Mapping, pháo hoa countdown.",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+import { getSystemSettings } from "./admin/settings/actions";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSystemSettings();
+  const siteName = settings.siteName || "Neon Heritage Festival";
+  const slogan = settings.slogan || "Bế Mạc Festival Ninh Bình 2024";
+  const description = settings.seoDescription || "Sự kiện âm nhạc bế mạc Festival Ninh Bình 2024 - Dòng Chảy Di Sản.";
+  const ogImageUrl = settings.ogImageUrl || "/og-image.jpg";
+  const faviconUrl = settings.faviconUrl || "/favicon.ico";
+
+  return {
+    title: {
+      default: `${siteName} | ${slogan}`,
+      template: `%s | ${siteName}`,
+    },
+    description,
+    keywords: [
+      siteName,
+      "Festival Ninh Bình",
+      "Concert Ninh Bình",
+      "Thung Nham",
+      "Sự kiện âm nhạc",
+      "Bế mạc Festival",
+      "Countdown 2024",
+    ],
+    icons: {
+      icon: faviconUrl,
+      apple: faviconUrl,
+    },
+    openGraph: {
+      type: "website",
+      locale: "vi_VN",
+      siteName: siteName,
+      title: `${siteName} | ${slogan}`,
+      description,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: siteName,
+        },
+      ],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 export default function RootLayout({
   children,

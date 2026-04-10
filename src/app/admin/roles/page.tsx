@@ -135,14 +135,14 @@ export default function AdminUsersPage() {
           <p className="text-admin-text-muted text-sm mt-1">Quản lý tài khoản truy cập và quyền hạn trong hệ thống</p>
         </div>
         <button onClick={openAddModal}
-          className="px-6 py-3 bg-[#4F1F76] hover:bg-[#4F1F76]/80 text-admin-text font-bold rounded-xl flex items-center gap-2 transition-all border border-admin-border shadow-lg shadow-[#4F1F76]/20">
+          className="px-6 py-3 bg-admin-panel hover:bg-admin-panel/80 text-admin-text font-bold rounded-xl flex items-center gap-2 transition-all border border-admin-border shadow-lg shadow-admin-panel/20">
           <Plus className="w-5 h-5" /> Thêm Tài Khoản
         </button>
       </div>
 
       {loading ? (
         <div className="flex justify-center p-12">
-          <RefreshCw className="w-8 h-8 text-[#00FFFF] animate-spin" />
+          <RefreshCw className="w-8 h-8 text-cyan animate-spin" />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -170,11 +170,11 @@ export default function AdminUsersPage() {
                 </span>
               </div>
 
-              <div className="flex justify-end gap-2 border-t border-white/5 pt-4 relative z-10">
-                <button onClick={() => openEditModal(user)} className="px-3 py-2 rounded-lg bg-white/5 text-admin-text-muted hover:text-[#00FFFF] hover:bg-[#00FFFF]/10 transition-all text-xs font-medium flex items-center gap-1.5">
+              <div className="flex justify-end gap-2 border-t border-admin-border/10 pt-4 relative z-10">
+                <button onClick={() => openEditModal(user)} className="px-3 py-2 rounded-lg bg-admin-bg/10 text-admin-text-muted hover:text-cyan hover:bg-cyan/10 transition-all text-xs font-medium flex items-center gap-1.5">
                   <Edit2 className="w-3.5 h-3.5" /> Sửa
                 </button>
-                <button onClick={() => handleDelete(user.id)} className="px-3 py-2 rounded-lg bg-white/5 text-admin-text-muted hover:text-red-500 hover:bg-red-500/10 transition-all text-xs font-medium flex items-center gap-1.5">
+                <button onClick={() => handleDelete(user.id)} className="px-3 py-2 rounded-lg bg-admin-bg/10 text-admin-text-muted hover:text-red-500 hover:bg-red-500/10 transition-all text-xs font-medium flex items-center gap-1.5">
                   <Trash2 className="w-3.5 h-3.5" /> Xóa
                 </button>
               </div>
@@ -188,13 +188,13 @@ export default function AdminUsersPage() {
         {isModalOpen && (
           <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-admin-bg/80 backdrop-blur-sm" />
+              onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-md" />
             <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-admin-panel border border-admin-border rounded-[2rem] shadow-2xl overflow-hidden shadow-[#4F1F76]/10">
+              className="relative w-full max-w-lg bg-admin-panel border border-admin-border rounded-[2rem] shadow-2xl overflow-hidden">
               
-              <div className="flex justify-between items-center p-6 border-b border-admin-border bg-white/5">
+              <div className="flex justify-between items-center p-6 border-b border-admin-border bg-admin-bg/5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-[#4F1F76]/30 border border-admin-border"><Lock className="w-5 h-5 text-admin-text" /></div>
+                  <div className="p-2 rounded-xl bg-admin-bg/30 border border-admin-border"><Lock className="w-5 h-5 text-admin-text" /></div>
                   <h3 className="text-xl font-display font-bold text-admin-text uppercase">{editingUser ? 'Cập Nhật Tài Khoản' : 'Thêm Tài Khoản'}</h3>
                 </div>
                 <button onClick={() => setIsModalOpen(false)} className="text-admin-text-muted hover:text-admin-text"><X className="w-6 h-6" /></button>
@@ -242,7 +242,7 @@ export default function AdminUsersPage() {
                     <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block mb-2">Vai Trò</label>
                     <div className="grid grid-cols-2 gap-3">
                       {Object.keys(roleNames).map(role => (
-                        <label key={role} className={`flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${formData.role === role ? 'bg-[#4F1F76]/20 border-admin-border' : 'bg-white/5 border-white/10 hover:border-admin-border'}`}>
+                        <label key={role} className={`flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${formData.role === role ? 'bg-admin-bg/20 border-admin-border' : 'bg-admin-bg/5 border-admin-border/10 hover:border-admin-border'}`}>
                           <input type="radio" checked={formData.role === role} onChange={() => setFormData({...formData, role})} className="hidden" />
                           <Shield className="w-4 h-4" style={{ color: formData.role === role ? roleColors[role] : '#8A8F98' }} />
                           <span className={`text-xs font-bold ${formData.role === role ? 'text-admin-text' : 'text-admin-text-muted'}`}>{roleNames[role]}</span>
@@ -253,9 +253,9 @@ export default function AdminUsersPage() {
                 </div>
               </div>
               
-              <div className="p-6 border-t border-admin-border bg-white/5 flex justify-end gap-4">
+              <div className="p-6 border-t border-admin-border bg-admin-bg/5 flex justify-end gap-4">
                 <button onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-admin-text-muted font-bold hover:text-admin-text transition-colors">Hủy</button>
-                <button onClick={handleSave} disabled={saving} className="px-8 py-2.5 rounded-xl bg-[#4F1F76] hover:bg-[#4F1F76]/80 text-admin-text font-bold flex items-center gap-2 disabled:opacity-50">
+                <button onClick={handleSave} disabled={saving} className="px-8 py-2.5 rounded-xl bg-admin-panel hover:bg-admin-panel/80 text-admin-text font-bold flex items-center gap-2 disabled:opacity-50">
                   {saving ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                   Lưu Lại
                 </button>

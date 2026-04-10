@@ -11,7 +11,7 @@ export default function NotificationSettings({ data, onChange }: { data: any, on
             placeholder="smtp.gmail.com"
             value={data.smtpServer || ''} 
             onChange={(e) => onChange({...data, smtpServer: e.target.value})}
-            className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-[#00FFFF]" 
+            className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
           />
         </div>
         <div>
@@ -21,7 +21,7 @@ export default function NotificationSettings({ data, onChange }: { data: any, on
             placeholder="587"
             value={data.smtpPort || ''} 
             onChange={(e) => onChange({...data, smtpPort: e.target.value})}
-            className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-[#00FFFF]" 
+            className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
           />
         </div>
       </div>
@@ -33,7 +33,7 @@ export default function NotificationSettings({ data, onChange }: { data: any, on
             placeholder="noreply@domain.com"
             value={data.senderEmail || ''} 
             onChange={(e) => onChange({...data, senderEmail: e.target.value})}
-            className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-[#00FFFF]" 
+            className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
           />
         </div>
         <div>
@@ -41,7 +41,7 @@ export default function NotificationSettings({ data, onChange }: { data: any, on
           <select 
             value={data.notifyOnRegister ? 'yes' : 'no'} 
             onChange={(e) => onChange({...data, notifyOnRegister: e.target.value === 'yes'})}
-            className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF]"
+            className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all"
           >
             <option value="yes">Bật thông báo</option>
             <option value="no">Tắt thông báo</option>

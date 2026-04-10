@@ -77,10 +77,10 @@ export default function BannerManagement() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tighter">
-            Quản lý <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF0088] to-[#00FFFF]">Banner</span>
+          <h2 className="text-3xl md:text-4xl font-display font-black text-admin-text uppercase tracking-tighter">
+            Quản lý <span className="text-transparent bg-clip-text bg-gradient-to-r from-magenta to-cyan">Banner</span>
           </h2>
-          <p className="text-[#8A8F98] mt-2 font-medium">Tùy chỉnh thông điệp chính và đồng hồ đếm ngược trên trang chủ sự kiện.</p>
+          <p className="text-admin-text-muted mt-2 font-medium">Tùy chỉnh thông điệp chính và đồng hồ đếm ngược trên trang chủ sự kiện.</p>
         </div>
         <button
           onClick={handleSave}
@@ -121,14 +121,14 @@ export default function BannerManagement() {
         <div className="lg:col-span-2 space-y-8">
           <motion.div 
             initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-            className="bg-[#0D0716]/80 border border-[#4F1F76]/30 rounded-[2rem] p-8 shadow-xl relative overflow-hidden group"
+            className="bg-admin-panel border border-admin-border rounded-[2rem] p-8 shadow-xl relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Type className="w-24 h-24 text-[#E6C753]" />
+              <Type className="w-24 h-24 text-gold" />
             </div>
             
-            <div className="flex items-center gap-4 text-[#E6C753] mb-8">
-              <div className="p-3 bg-[#E6C753]/10 rounded-2xl border border-[#E6C753]/20">
+            <div className="flex items-center gap-4 text-gold mb-8">
+              <div className="p-3 bg-gold/10 rounded-2xl border border-gold/20">
                 <Type className="w-6 h-6" />
               </div>
               <h3 className="font-display font-bold uppercase tracking-widest text-lg">Nội dung hiển thị</h3>
@@ -136,22 +136,22 @@ export default function BannerManagement() {
 
             <div className="space-y-8">
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-[0.2em] flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#E6C753]" /> 
+                <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-[0.2em] flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-gold" /> 
                   Tiêu đề chính (Main Title)
                 </label>
                 <textarea
                   value={settings.title}
                   onChange={(e) => setSettings({ ...settings, title: e.target.value })}
-                  className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-[1.5rem] px-6 py-5 text-white text-lg focus:border-[#00FFFF] focus:ring-4 focus:ring-[#00FFFF]/5 outline-none transition-all min-h-[160px] leading-relaxed resize-none font-medium"
+                  className="w-full bg-admin-bg border border-admin-border rounded-[1.5rem] px-6 py-5 text-admin-text text-lg focus:border-cyan focus:ring-4 focus:ring-cyan/5 outline-none transition-all min-h-[160px] leading-relaxed resize-none font-medium"
                   placeholder="Nhập tiêu đề chính hiển thị trên banner..."
                 />
-                <p className="text-[10px] text-[#8A8F98] italic">* Gợi ý: Nên ngắn gọn, súc tích và mang tính biểu tượng.</p>
+                <p className="text-[10px] text-admin-text-muted italic">* Gợi ý: Nên ngắn gọn, súc tích và mang tính biểu tượng.</p>
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-[0.2em] flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#FF0088]" />
+                <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-[0.2em] flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-magenta" />
                   Tiêu đề phụ / Badge (Sub-title)
                 </label>
                 <div className="relative">
@@ -159,10 +159,10 @@ export default function BannerManagement() {
                     type="text"
                     value={settings.subtitle}
                     onChange={(e) => setSettings({ ...settings, subtitle: e.target.value })}
-                    className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl pl-14 pr-6 py-4 text-white focus:border-[#FF0088] focus:ring-4 focus:ring-[#FF0088]/5 outline-none transition-all font-bold tracking-wide"
+                    className="w-full bg-admin-bg border border-admin-border rounded-2xl pl-14 pr-6 py-4 text-admin-text focus:border-magenta focus:ring-4 focus:ring-magenta/5 outline-none transition-all font-bold tracking-wide"
                     placeholder="VD: NEON HERITAGE FESTIVAL"
                   />
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#FF0088]">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-magenta">
                     <Star className="w-5 h-5 fill-current" />
                   </div>
                 </div>
@@ -170,13 +170,13 @@ export default function BannerManagement() {
             </div>
           </motion.div>
 
-          <div className="bg-[#4F1F76]/10 border border-[#4F1F76]/30 rounded-[2rem] p-8 flex items-start gap-6 border-l-4 border-l-[#E6C753]">
-            <div className="p-3 bg-[#E6C753]/10 rounded-2xl shrink-0">
-              <AlertCircle className="w-6 h-6 text-[#E6C753]" />
+          <div className="bg-admin-bg/50 border border-admin-border rounded-[2rem] p-8 flex items-start gap-6 border-l-4 border-l-gold">
+            <div className="p-3 bg-gold/10 rounded-2xl shrink-0">
+              <AlertCircle className="w-6 h-6 text-gold" />
             </div>
             <div className="space-y-2">
-              <p className="text-white font-black uppercase tracking-widest text-sm">Hướng dẫn cấu hình</p>
-              <p className="text-[#8A8F98] text-sm leading-relaxed">
+              <p className="text-admin-text font-black uppercase tracking-widest text-sm">Hướng dẫn cấu hình</p>
+              <p className="text-admin-text-muted text-sm leading-relaxed">
                 Nội dung tiêu đề chính nên được trình bày rõ ràng. Hệ thống tự động tối ưu hiển thị trên cả thiết bị di động và máy tính. Tránh sử dụng quá nhiều ký tự đặc biệt để đảm bảo tính thẩm mỹ của thiết kế Cyberpunk.
               </p>
             </div>
@@ -187,10 +187,10 @@ export default function BannerManagement() {
         <div className="space-y-8">
           <motion.div 
             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
-            className="bg-[#0D0716]/80 border border-[#4F1F76]/30 rounded-[2rem] p-8 shadow-xl relative overflow-hidden"
+            className="bg-admin-panel border border-admin-border rounded-[2rem] p-8 shadow-xl relative overflow-hidden"
           >
-            <div className="flex items-center gap-4 text-[#00FFFF] mb-8">
-              <div className="p-3 bg-[#00FFFF]/10 rounded-2xl border border-[#00FFFF]/20">
+            <div className="flex items-center gap-4 text-cyan mb-8">
+              <div className="p-3 bg-cyan/10 rounded-2xl border border-cyan/20">
                 <Calendar className="w-6 h-6" />
               </div>
               <h3 className="font-display font-bold uppercase tracking-widest text-lg">Thông tin sự kiện</h3>
@@ -198,8 +198,8 @@ export default function BannerManagement() {
 
             <div className="space-y-8">
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-[#00FFFF] uppercase tracking-[0.2em] flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#00FFFF] glow-cyan" />
+                <label className="text-[10px] font-black text-cyan uppercase tracking-[0.2em] flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan glow-cyan" />
                   Thời điểm đếm ngược (Countdown)
                 </label>
                 <div className="relative group">
@@ -207,49 +207,48 @@ export default function BannerManagement() {
                     type="datetime-local"
                     value={settings.eventDate}
                     onChange={(e) => setSettings({ ...settings, eventDate: e.target.value })}
-                    className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl px-6 py-4 text-white focus:border-[#00FFFF] outline-none transition-all font-mono"
-                    style={{ colorScheme: 'dark' }}
+                    className="w-full bg-admin-bg border border-admin-border rounded-2xl px-6 py-4 text-admin-text focus:border-cyan outline-none transition-all font-mono"
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-[0.2em]">Khung giờ diễn ra</label>
+                <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-[0.2em]">Khung giờ diễn ra</label>
                 <div className="relative">
                   <input
                     type="text"
                     value={settings.timeRange}
                     onChange={(e) => setSettings({ ...settings, timeRange: e.target.value })}
-                    className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl pl-14 pr-6 py-4 text-white focus:border-[#00FFFF] outline-none transition-all font-medium"
+                    className="w-full bg-admin-bg border border-admin-border rounded-2xl pl-14 pr-6 py-4 text-admin-text focus:border-cyan outline-none transition-all font-medium"
                     placeholder="VD: 20:00 - 00:30"
                   />
-                  <Clock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A8F98]" />
+                  <Clock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-admin-text-muted" />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-[#8A8F98] uppercase tracking-[0.2em]">Địa điểm tổ chức</label>
+                <label className="text-[10px] font-black text-admin-text-muted uppercase tracking-[0.2em]">Địa điểm tổ chức</label>
                 <div className="relative">
                   <input
                     type="text"
                     value={settings.location}
                     onChange={(e) => setSettings({ ...settings, location: e.target.value })}
-                    className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-2xl pl-14 pr-6 py-4 text-white focus:border-[#00FFFF] outline-none transition-all font-medium"
+                    className="w-full bg-admin-bg border border-admin-border rounded-2xl pl-14 pr-6 py-4 text-admin-text focus:border-cyan outline-none transition-all font-medium"
                     placeholder="VD: Thung Nham, Ninh Bình"
                   />
-                  <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A8F98]" />
+                  <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-admin-text-muted" />
                 </div>
               </div>
             </div>
           </motion.div>
 
           {/* Quick Preview Card */}
-          <div className="bg-gradient-to-br from-[#0D0716] to-[#4F1F76]/20 border border-[#4F1F76]/30 rounded-[2rem] p-8 space-y-4">
-            <h4 className="text-[10px] font-black text-[#8A8F98] uppercase tracking-[0.2em]">Xem trước trạng thái</h4>
-            <div className="p-4 bg-black/40 rounded-2xl border border-white/5 space-y-3">
-              <div className="text-xs text-[#00FFFF] font-bold tracking-widest">{settings.subtitle || 'NO SUBTITLE'}</div>
-              <div className="text-sm font-bold text-white line-clamp-2">{settings.title || 'NO TITLE'}</div>
-              <div className="flex items-center gap-4 text-[10px] text-[#8A8F98]">
+          <div className="bg-admin-panel border border-admin-border rounded-[2rem] p-8 space-y-4">
+            <h4 className="text-[10px] font-black text-admin-text-muted uppercase tracking-[0.2em]">Xem trước trạng thái</h4>
+            <div className="p-4 bg-admin-bg/50 rounded-2xl border border-admin-border space-y-3">
+              <div className="text-xs text-cyan font-bold tracking-widest">{settings.subtitle || 'NO SUBTITLE'}</div>
+              <div className="text-sm font-bold text-admin-text line-clamp-2">{settings.title || 'NO TITLE'}</div>
+              <div className="flex items-center gap-4 text-[10px] text-admin-text-muted">
                 <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {settings.timeRange || '--:--'}</span>
                 <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {settings.location || 'Unknown'}</span>
               </div>
