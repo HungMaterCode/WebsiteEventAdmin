@@ -108,28 +108,28 @@ export default function ArtistManagement() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-display font-black uppercase text-[#FFFFFF]">Dàn Nghệ Sĩ Tham Gia</h2>
-          <p className="text-[#8A8F98] text-sm mt-1">Quản lý danh sách các nghệ sĩ biểu diễn tại sự kiện</p>
+          <h2 className="text-3xl font-display font-black uppercase text-admin-text">Dàn Nghệ Sĩ Tham Gia</h2>
+          <p className="text-admin-text-muted text-sm mt-1">Quản lý danh sách các nghệ sĩ biểu diễn tại sự kiện</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="px-6 py-3 bg-[#FF0088] hover:bg-[#FF0088]/80 text-[#FFFFFF] font-bold rounded-xl flex items-center gap-2 transition-all glow-magenta"
+          className="px-6 py-3 bg-magenta hover:bg-magenta/80 text-white font-bold rounded-xl flex items-center gap-2 transition-all glow-magenta"
         >
           <Plus className="w-5 h-5" /> Thêm Nghệ Sĩ
         </button>
       </div>
 
       {/* Control Bar */}
-      <div className="glass-card rounded-[2rem] bg-[#0D0716]/80 backdrop-blur-md border border-[#4F1F76]/30 overflow-hidden shadow-2xl">
-        <div className="p-6 border-b border-[#4F1F76]/30 bg-[#4F1F76]/5">
+      <div className="glass-card rounded-[2rem] bg-admin-panel border border-admin-border overflow-hidden shadow-2xl">
+        <div className="p-6 border-b border-admin-border bg-admin-bg/50">
           <div className="relative max-w-md w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8A8F98]" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-admin-text-muted" />
             <input 
               type="text" 
               placeholder="Tìm kiếm nghệ sĩ theo tên hoặc thể loại..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" 
+              className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
             />
           </div>
         </div>
@@ -138,12 +138,12 @@ export default function ArtistManagement() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#4F1F76]/10 text-[#8A8F98] text-xs uppercase tracking-wider">
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 w-16 text-center">Thứ tự</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 min-w-[200px]">Nghệ Sĩ</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30">Thể Loại</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-center">Thời Gian</th>
-                <th className="p-4 font-bold border-b border-[#4F1F76]/30 text-right">Thao Tác</th>
+              <tr className="bg-admin-bg/50 text-admin-text-muted text-xs uppercase tracking-wider">
+                <th className="p-4 font-bold border-b border-admin-border w-16 text-center">Thứ tự</th>
+                <th className="p-4 font-bold border-b border-admin-border min-w-[200px]">Nghệ Sĩ</th>
+                <th className="p-4 font-bold border-b border-admin-border">Thể Loại</th>
+                <th className="p-4 font-bold border-b border-admin-border text-center">Thời Gian</th>
+                <th className="p-4 font-bold border-b border-admin-border text-right">Thao Tác</th>
               </tr>
             </thead>
             <tbody>
@@ -153,40 +153,40 @@ export default function ArtistManagement() {
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}
                   className="border-b border-[#4F1F76]/10 hover:bg-[#4F1F76]/5 transition-colors group"
                 >
-                  <td className="p-4 text-center font-mono text-[#E6C753]">{artist.sortOrder}</td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-[#4F1F76]/20 border border-[#4F1F76]/30 flex items-center justify-center shrink-0 overflow-hidden">
-                        {artist.image ? (
-                          <img src={artist.image} alt={artist.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <ImageIcon className="w-5 h-5 text-[#4F1F76]" />
-                        )}
-                      </div>
-                      <div className="font-bold text-[#FFFFFF] text-sm group-hover:text-[#00FFFF] transition-colors">{artist.name}</div>
+                <td className="p-4 text-center font-mono text-gold">{artist.sortOrder}</td>
+                <td className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-admin-bg/50 border border-admin-border flex items-center justify-center shrink-0 overflow-hidden">
+                      {artist.image ? (
+                        <img src={artist.image} alt={artist.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <ImageIcon className="w-5 h-5 text-admin-text-muted" />
+                      )}
                     </div>
-                  </td>
-                  <td className="p-4">
-                    <span className="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border bg-[#FF0088]/10 text-[#FF0088] border-[#FF0088]/30">
-                      {artist.genre}
-                    </span>
-                  </td>
-                  <td className="p-4 text-center">
-                    <div className="flex items-center justify-center gap-2 text-[#8A8F98] text-xs">
-                      <Clock className="w-3 h-3" /> {artist.performanceTime || '--:--'}
-                    </div>
-                  </td>
+                    <div className="font-bold text-admin-text text-sm group-hover:text-cyan transition-colors">{artist.name}</div>
+                  </div>
+                </td>
+                <td className="p-4">
+                  <span className="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold border bg-magenta/10 text-magenta border-magenta/30">
+                    {artist.genre}
+                  </span>
+                </td>
+                <td className="p-4 text-center">
+                  <div className="flex items-center justify-center gap-2 text-admin-text-muted text-xs">
+                    <Clock className="w-3 h-3" /> {artist.performanceTime || '--:--'}
+                  </div>
+                </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button 
                         onClick={() => handleOpenModal(artist)}
-                        className="p-2 rounded-lg bg-[#4F1F76]/20 text-[#8A8F98] hover:text-[#00FFFF] hover:bg-[#00FFFF]/10 transition-all font-display"
+                        className="p-2 rounded-lg bg-admin-bg/50 text-admin-text-muted hover:text-cyan hover:bg-cyan/10 transition-all font-display"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDelete(artist.id)}
-                        className="p-2 rounded-lg bg-[#4F1F76]/20 text-[#8A8F98] hover:text-red-500 hover:bg-red-500/10 transition-all font-display"
+                        className="p-2 rounded-lg bg-admin-bg/50 text-admin-text-muted hover:text-red-500 hover:bg-red-500/10 transition-all font-display"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -208,22 +208,22 @@ export default function ArtistManagement() {
           <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-[#060010]/95 backdrop-blur-md" 
+              onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-admin-bg/95 backdrop-blur-md" 
             />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-2xl bg-[#0D0716] border border-[#4F1F76]/50 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="relative w-full max-w-2xl bg-admin-panel border border-admin-border rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="flex justify-between items-center p-6 border-b border-[#4F1F76]/30 bg-[#4F1F76]/10 shrink-0">
+              <div className="flex justify-between items-center p-6 border-b border-admin-border bg-admin-bg/50 shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-[#00FFFF]/10 border border-[#00FFFF]/30">
-                    <Users className="w-5 h-5 text-[#00FFFF]" />
+                  <div className="p-2 rounded-xl bg-cyan/10 border border-cyan/30">
+                    <Users className="w-5 h-5 text-cyan" />
                   </div>
-                  <h3 className="text-xl font-display font-bold text-[#FFFFFF] uppercase">
+                  <h3 className="text-xl font-display font-bold text-admin-text uppercase">
                     {editArtist ? 'Chỉnh Sửa Nghệ Sĩ' : 'Thêm Nghệ Sĩ Mới'}
                   </h3>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="text-[#8A8F98] hover:text-[#FFFFFF] transition-colors">
+                <button onClick={() => setIsModalOpen(false)} className="text-admin-text-muted hover:text-admin-text transition-colors">
                   <X className="w-6 h-6" />
                 </button>
               </div>
@@ -231,56 +231,56 @@ export default function ArtistManagement() {
               <div className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-2 col-span-2 md:col-span-1">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Tên Nghệ Sĩ *</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Tên Nghệ Sĩ *</label>
                     <input 
                       type="text" 
                       value={form.name} 
                       onChange={e => setForm({ ...form, name: e.target.value })}
                       placeholder="VD: Hồ Ngọc Hà..." 
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" 
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
                     />
                   </div>
                   <div className="space-y-2 col-span-2 md:col-span-1">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Thể Loại *</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Thể Loại *</label>
                     <input 
                       type="text" 
                       value={form.genre} 
                       onChange={e => setForm({ ...form, genre: e.target.value })}
                       placeholder="VD: Pop / Dance..." 
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" 
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Thời Gian Biểu Diễn</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Thời Gian Biểu Diễn</label>
                     <input 
                       type="text" 
                       value={form.performanceTime} 
                       onChange={e => setForm({ ...form, performanceTime: e.target.value })}
                       placeholder="VD: 22:30 - 23:15" 
-                      className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" 
+                      className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Thứ tự (Sort Order)</label>
+                    <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Thứ tự (Sort Order)</label>
                     <div className="relative">
                       <input 
                         type="number" 
                         value={form.sortOrder} 
                         onChange={e => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
                         placeholder="0" 
-                        className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all" 
+                        className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all" 
                       />
-                      <ListOrdered className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8F98]" />
+                      <ListOrdered className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block mb-2">Xem trước hình ảnh</label>
-                  <div className="w-full h-40 rounded-2xl bg-[#060010] border border-[#4F1F76]/50 flex items-center justify-center overflow-hidden group/preview relative">
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block mb-2">Xem trước hình ảnh</label>
+                  <div className="w-full h-40 rounded-2xl bg-admin-bg border border-admin-border flex items-center justify-center overflow-hidden group/preview relative">
                     {form.image ? (
                       <>
                         <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
@@ -300,7 +300,7 @@ export default function ArtistManagement() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">URL Hình Ảnh Nghệ Sĩ</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">URL Hình Ảnh Nghệ Sĩ</label>
                   <div className="flex gap-3">
                     <div className="relative flex-1">
                       <input 
@@ -308,9 +308,9 @@ export default function ArtistManagement() {
                         value={form.image} 
                         onChange={e => setForm({ ...form, image: e.target.value })}
                         placeholder="https://..." 
-                        className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl pl-12 pr-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] transition-all font-medium" 
+                        className="w-full bg-admin-bg border border-admin-border rounded-xl pl-12 pr-4 py-3 text-admin-text focus:outline-none focus:border-cyan transition-all font-medium" 
                       />
-                      <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8F98]" />
+                      <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-admin-text-muted" />
                     </div>
                     
                     <CldUploadWidget 
@@ -337,20 +337,20 @@ export default function ArtistManagement() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8A8F98] uppercase tracking-widest block">Tiểu Sử / Thông Tin Thêm</label>
+                  <label className="text-[10px] font-bold text-admin-text-muted uppercase tracking-widest block">Tiểu Sử / Thông Tin Thêm</label>
                   <textarea 
                     value={form.bio} 
                     onChange={e => setForm({ ...form, bio: e.target.value })}
                     placeholder="Giới thiệu ngắn gọn về nghệ sĩ..." 
-                    className="w-full bg-[#060010] border border-[#4F1F76]/50 rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#00FFFF] min-h-[120px] resize-none transition-all font-medium" 
+                    className="w-full bg-admin-bg border border-admin-border rounded-xl px-4 py-3 text-admin-text focus:outline-none focus:border-cyan min-h-[120px] resize-none transition-all font-medium" 
                   />
                 </div>
               </div>
 
-              <div className="p-6 border-t border-[#4F1F76]/30 flex justify-end gap-4 shrink-0 bg-[#4F1F76]/5">
+              <div className="p-6 border-t border-admin-border flex justify-end gap-4 shrink-0 bg-admin-bg/50">
                 <button 
                   onClick={() => setIsModalOpen(false)} 
-                  className="px-6 py-3 rounded-xl border border-[#4F1F76] text-[#8A8F98] font-bold hover:text-[#FFFFFF] transition-colors"
+                  className="px-6 py-3 rounded-xl border border-admin-border text-admin-text-muted font-bold hover:text-admin-text transition-colors"
                 >
                   Hủy
                 </button>
