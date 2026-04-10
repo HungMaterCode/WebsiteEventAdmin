@@ -7,7 +7,7 @@ import {
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
   CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, ListTodo, 
   Newspaper, Lock, BarChart3, Settings,
-  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu
+  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu, Star
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 

@@ -31,36 +31,35 @@ export async function POST(req: Request) {
 
     const bookingCode = generateBookingCode();
     
-    // Create the booking record
-    const booking = await prisma.booking.create({
-      data: {
-        bookingCode,
-        userId: (session?.user as any)?.id || null,
-        name: body.name,
-        email: body.email || 'ticket-admin@event.com',
-        phone: body.phone || '',
-        ticketType: body.ticketType || 'GA',
-        quantity: parseInt(body.quantity?.toString() || '1'),
-        totalPrice: parseInt(body.totalPrice?.toString() || '0'),
-        ticketStatus: 'CREATED',
-        accessories: body.accessories || [],
-      },
-    });
+    // Create the booking record and transaction in a transaction
+    const booking = await prisma.$transaction(async (tx) => {
+      const b = await tx.booking.create({
+        data: {
+          bookingCode,
+          userId: (session?.user as any)?.id || null,
+          name: body.name,
+          email: body.email || 'ticket-admin@event.com',
+          phone: body.phone || '',
+          ticketType: body.ticketType || 'GA',
+          quantity: parseInt(body.quantity?.toString() || '1'),
+          totalPrice: parseInt(body.totalPrice?.toString() || '0'),
+          ticketStatus: 'CREATED',
+          accessories: body.accessories || [],
+        },
+      });
 
-      // Create a transaction record linked to this booking
       await tx.transaction.create({
         data: {
           method: body.paymentMethod || 'UNKNOWN',
-          amount: booking.totalPrice,
+          amount: b.totalPrice,
           status: 'Thành công',
-          bookingId: booking.id,
+          bookingId: b.id,
         }
       });
 
-      return booking;
+      return b;
     });
 
-    const booking = result;
     console.log('--- BOOKING & TRANSACTION CREATED ---', booking.bookingCode);
 
     // Send confirmation email - AWAIT this to ensure Vercel doesn't kill the process
