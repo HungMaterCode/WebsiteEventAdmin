@@ -5,7 +5,8 @@ import { motion } from 'motion/react';
 import { Calendar, Clock, MapPin, Ticket } from 'lucide-react';
 import CountdownTimer from '@/components/ui/CountdownTimer';
 
-export default function HeroSection({ onOpenBooking }: { onOpenBooking: (type: 'GA' | 'VIP') => void }) {
+export default function HeroSection({ onOpenBooking, settings }: { onOpenBooking: (type: 'GA' | 'VIP' | null) => void, settings?: any }) {
+
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -13,6 +14,20 @@ export default function HeroSection({ onOpenBooking }: { onOpenBooking: (type: '
   }, []);
 
   if (!mounted) return null;
+
+  const displayTitle = settings?.title || (
+    <>
+      <span className="text-gradient block pb-2">Dòng Chảy Di Sản</span>
+      <span className="text-silver text-xl sm:text-2xl md:text-5xl lg:text-6xl block mt-2 tracking-wide">Bế Mạc Festival Ninh Bình</span>
+    </>
+  );
+
+  const displaySubtitle = settings?.subtitle || "Neon Heritage Festival";
+  const displayDate = settings?.eventDate 
+    ? new Date(settings.eventDate).toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }) 
+    : "31 Tháng 12, 2024";
+  const displayTime = settings?.timeRange || "20:00 - 00:30";
+  const displayLocation = settings?.location || "Thung Nham, Ninh Bình";
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-28 md:pt-20 pb-16">
@@ -24,37 +39,37 @@ export default function HeroSection({ onOpenBooking }: { onOpenBooking: (type: '
       <div className="container mx-auto px-6 relative z-10 text-center mt-6 md:mt-10">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mb-6">
           <span className="inline-block py-1.5 px-4 rounded-full border border-cyan/30 bg-cyan/10 text-cyan text-[10px] md:text-sm font-medium tracking-[0.2em] mb-6 uppercase shadow-[0_0_15px_rgba(0,255,255,0.2)]">
-            Neon Heritage Festival
+            {displaySubtitle}
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black uppercase leading-[1.1] mb-6">
-            <span className="text-gradient block pb-2">Dòng Chảy Di Sản</span>
-            <span className="text-silver text-xl sm:text-2xl md:text-5xl lg:text-6xl block mt-2 tracking-wide">Bế Mạc Festival Ninh Bình</span>
+          <h1 className="text-3xl sm:text-4xl md:text-7xl lg:text-8xl font-display font-black uppercase leading-[1.1] mb-6 whitespace-pre-line">
+            {displayTitle}
+
           </h1>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }} className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-8 text-teal text-sm md:text-lg font-medium mb-8">
           <div className="flex items-center gap-2 bg-royal/30 px-4 py-2 rounded-lg border border-royal/50 backdrop-blur-sm w-full md:w-auto justify-center">
             <Calendar className="w-4 h-4 md:w-5 md:h-5 text-cyan" />
-            <span>31 Tháng 12, 2024</span>
+            <span>{displayDate}</span>
           </div>
           <div className="flex items-center gap-2 bg-royal/30 px-4 py-2 rounded-lg border border-royal/50 backdrop-blur-sm w-full md:w-auto justify-center">
             <Clock className="w-4 h-4 md:w-5 md:h-5 text-cyan" />
-            <span>20:00 - 00:30</span>
+            <span>{displayTime}</span>
           </div>
           <div className="flex items-center gap-2 bg-royal/30 px-4 py-2 rounded-lg border border-royal/50 backdrop-blur-sm w-full md:w-auto justify-center">
             <MapPin className="w-4 h-4 md:w-5 md:h-5 text-cyan" />
-            <span>Thung Nham, Ninh Bình</span>
+            <span>{displayLocation}</span>
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }}>
-          <CountdownTimer />
+          <CountdownTimer targetDate={settings?.eventDate} />
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.8 }} className="mt-12">
           <button
             suppressHydrationWarning
-            onClick={() => onOpenBooking('GA')}
+            onClick={() => onOpenBooking(null)}
             className="group relative px-10 py-5 bg-gradient-primary rounded-full font-bold text-xl tracking-wider uppercase overflow-hidden glow-magenta transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(255,0,136,0.8)]"
           >
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>

@@ -5,14 +5,33 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
-  CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, Star, 
+  CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, ListTodo, 
   Newspaper, Lock, BarChart3, Settings,
-  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown
+  ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 
 const MENU_ITEMS = [
   { id: 'dashboard', label: 'Tổng quan Dashboard', icon: <LayoutDashboard />, role: ['ADMIN', 'SALES', 'ANALYST'], path: '/admin' },
+  { 
+    id: 'landing-page', 
+    label: 'LandingPage', 
+    icon: <Megaphone />, 
+    role: ['ADMIN'],
+    children: [
+      { id: 'banner', label: 'Banner', path: '/admin/landing-page/banner' },
+      { id: 'artists', label: 'Nghệ sĩ tham gia', path: '/admin/landing-page/artists' },
+      { id: 'video', label: 'Video', path: '/admin/landing-page/video' },
+      { id: 'art', label: 'Nghệ thuật', path: '/admin/landing-page/art' },
+      { id: 'gallery', label: 'Khoảnh khắc', path: '/admin/landing-page/gallery' },
+      { id: 'timeline', label: 'Lộ trình', path: '/admin/landing-page/timeline' },
+      { id: 'community', label: 'Cộng đồng', path: '/admin/landing-page/community' },
+      { id: 'faqs', label: 'Câu hỏi', path: '/admin/landing-page/faqs' },
+      { id: 'travel', label: 'Di chuyển', path: '/admin/landing-page/travel' },
+      { id: 'location', label: 'Địa điểm', path: '/admin/landing-page/location' },
+    ]
+
+  },
   { id: 'tickets', label: 'Quản lý Vé', icon: <Ticket />, role: ['ADMIN', 'SALES'], path: '/admin/tickets' },
   { id: 'zones', label: 'Quản lý Khu vực', icon: <Map />, role: ['ADMIN'], path: '/admin/zones' },
   { id: 'customers', label: 'Quản lý Khách hàng', icon: <Users />, role: ['ADMIN', 'SALES'], path: '/admin/customers' },
@@ -22,10 +41,24 @@ const MENU_ITEMS = [
   { id: 'checkin', label: 'Hệ thống Check-in', icon: <QrCode />, role: ['ADMIN', 'CHECKIN'], path: '/admin/checkin' },
   { id: 'loto', label: 'Trò chơi (Loto)', icon: <Gamepad2 />, role: ['ADMIN', 'CHECKIN'], path: '/admin/loto' },
   { id: 'marketing', label: 'Marketing & Khuyến mãi', icon: <Megaphone />, role: ['ADMIN'], path: '/admin/marketing' },
-  { id: 'reviews', label: 'Quản lý Đánh giá', icon: <Star />, role: ['ADMIN', 'ANALYST'], path: '/admin/reviews' },
+  { id: 'reviews', label: 'Quản lý Câu hỏi', icon: <ListTodo />, role: ['ADMIN', 'ANALYST'], path: '/admin/reviews' },
   { id: 'news', label: 'Quản lý Tin tức', icon: <Newspaper />, role: ['ADMIN'], path: '/admin/news' },
   { id: 'roles', label: 'Vai trò & Quyền hạn', icon: <Lock />, role: ['ADMIN'], path: '/admin/roles' },
-  { id: 'analytics', label: 'Phân tích & Báo cáo', icon: <BarChart3 />, role: ['ADMIN', 'ANALYST'], path: '/admin/analytics' },
+  { 
+    id: 'analytics', 
+    label: 'Phân tích & Báo cáo', 
+    icon: <BarChart3 />, 
+    role: ['ADMIN', 'ANALYST'], 
+    path: '/admin/analytics',
+    children: [
+      { id: 'analytics-overview', label: 'Tổng quan', path: '/admin/analytics/overview' },
+      { id: 'analytics-tickets', label: 'Vé & Doanh thu', path: '/admin/analytics/tickets-revenue' },
+      { id: 'analytics-checkin', label: 'Báo cáo Check-in', path: '/admin/analytics/checkin-checkout' },
+      { id: 'analytics-customers', label: 'Phân tích Khách hàng', path: '/admin/analytics/customers' },
+      { id: 'analytics-feedback', label: 'Đánh giá', path: '/admin/analytics/feedback' },
+      { id: 'analytics-export', label: 'Xuất Excel', path: '/admin/analytics/export' },
+    ]
+  },
   { id: 'settings', label: 'Cài đặt (Nhật ký)', icon: <Settings />, role: ['ADMIN'], path: '/admin/settings' },
 ];
 
@@ -33,14 +66,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+  const [expandedMenus, setExpandedMenus] = React.useState<string[]>(['landing-page', 'analytics']);
+  const [mounted, setMounted] = React.useState(false);
+
+
+  const toggleMenu = (id: string) => {
+    setExpandedMenus(prev => 
+      prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
+    );
+  };
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+
 
   // Mock roles for now until auth is fully implemented on client side
   const roles = ['ADMIN']; 
   const allowedMenuItems = MENU_ITEMS.filter(m => roles.some(r => m.role.includes(r as any)));
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' });
+    await signOut({ callbackUrl: '/', redirect: true });
   };
 
   if (pathname === '/admin/login') {
@@ -50,12 +99,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-admin-bg text-admin-text font-sans selection:bg-magenta selection:text-admin-text flex overflow-hidden">
       {/* Sidebar Overlay (Mobile) */}
-      <div className={`fixed inset-0 bg-admin-bg/80 backdrop-blur-sm z-40 lg:hidden ${false ? 'block' : 'hidden'}`} onClick={() => {}}></div>
+      <AnimatePresence>
+        {isMobileSidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#060010]/80 backdrop-blur-sm z-40 lg:hidden" 
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar components */}
       <motion.aside 
-        animate={{ width: isSidebarCollapsed ? 80 : 280 }}
-        className="fixed lg:relative z-50 h-screen bg-admin-panel border-r border-admin-border flex flex-col pt-6 shrink-0"
+        initial={false}
+        animate={{ 
+          width: isSidebarCollapsed ? 80 : 280,
+          x: mounted && typeof window !== 'undefined' && window.innerWidth < 1024 
+            ? (isMobileSidebarOpen ? 0 : -280) 
+            : 0
+        }}
+        transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+        className="fixed lg:relative z-50 h-screen bg-[#0D0716] border-r border-[#4F1F76]/30 flex flex-col pt-6 shrink-0"
       >
         <div className="px-6 mb-8 flex items-center justify-between">
           <Link href="/" className={`font-display font-black uppercase tracking-widest ${isSidebarCollapsed ? 'hidden' : 'block'}`}>
@@ -65,29 +131,140 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 overflow-y-auto px-4 space-y-2 pb-6 custom-scrollbar">
-          {allowedMenuItems.map((item) => {
-            const isActive = pathname === item.path || (pathname?.startsWith(item.path) && item.path !== '/admin');
-            return (
-              <Link
-                key={item.id}
-                href={item.path}
-                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-[#00FFFF]/20 to-transparent border-l-4 border-[#00FFFF] text-[#00FFFF]' 
-                    : 'text-admin-text-muted hover:bg-black/5 dark:hover:bg-[#4F1F76]/20 hover:text-admin-text'
-                  }`}
-                title={item.label}
-              >
-                <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-admin-text-muted group-hover:text-[#FF0088]'}`}>
-                  {item.icon}
+          {allowedMenuItems.map((item: any) => {
+            const hasChildren = item.children && item.children.length > 0;
+            const isExpanded = expandedMenus.includes(item.id);
+            const isActive = item.path ? (pathname === item.path || (pathname?.startsWith(item.path) && item.path !== '/admin')) : false;
+
+            if (hasChildren) {
+              return (
+                <div key={item.id} className="flex flex-col gap-1">
+                  <button
+                    onClick={() => toggleMenu(item.id)}
+                    className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group w-full
+                      ${isExpanded ? 'bg-[#4F1F76]/10 text-[#FFFFFF]' : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-[#FFFFFF]'}`}
+                  >
+                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isExpanded ? 'text-[#FF0088]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
+                      {item.icon}
+                    </div>
+                    {!isSidebarCollapsed && (
+                      <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
+                    )}
+                    {!isSidebarCollapsed && (
+                      <ChevronDown className={`ml-auto w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-[#00FFFF]' : 'text-[#8A8F98]'}`} />
+                    )}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {isExpanded && !isSidebarCollapsed && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden flex flex-col gap-1 ml-4 pl-4 border-l border-[#4F1F76]/30"
+                      >
+                        {item.children.map((child: any) => {
+                          const isChildActive = pathname === child.path;
+                          return (
+                            <Link
+                              key={child.id}
+                              href={child.path}
+                              className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all duration-300
+                                ${isChildActive 
+                                  ? 'text-[#00FFFF] font-bold bg-[#00FFFF]/10' 
+                                  : 'text-[#8A8F98] hover:text-[#FFFFFF] hover:bg-[#4F1F76]/20'}`}
+                            >
+                              <div className={`w-1.5 h-1.5 rounded-full ${isChildActive ? 'bg-[#00FFFF] glow-cyan' : 'bg-[#4F1F76]'}`}></div>
+                              {child.label}
+                            </Link>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-                {!isSidebarCollapsed && (
-                  <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
+              );
+            }
+                </div>
+              );
+            }
+
+            return (
+              <div key={item.id} className="space-y-1">
+                {hasChildren ? (
+                  <button
+                    onClick={() => toggleMenu(item.id)}
+                    className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
+                      ${isActive 
+                        ? 'bg-[#4F1F76]/20 text-[#00FFFF]' 
+                        : 'text-[#8A8F98] hover:bg-[#4F1F76]/10 hover:text-[#FFFFFF]'
+                      }`}
+                  >
+                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
+                      {item.icon}
+                    </div>
+                    {!isSidebarCollapsed && (
+                      <>
+                        <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
+                        <ChevronDown className={`ml-auto w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <Link
+                    href={item.path}
+                    onClick={() => {
+                      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                        setIsMobileSidebarOpen(false);
+                      }
+                    }}
+                    className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
+                      ${isActive 
+                        ? 'bg-gradient-to-r from-[#00FFFF]/20 to-transparent border-l-4 border-[#00FFFF] text-[#00FFFF]' 
+                        : 'text-[#8A8F98] hover:bg-[#4F1F76]/20 hover:text-[#FFFFFF]'
+                      }`}
+                    title={item.label}
+                  >
+                    <div className={`shrink-0 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 ${isActive ? 'text-[#00FFFF]' : 'text-[#8A8F98] group-hover:text-[#FF0088]'}`}>
+                      {item.icon}
+                    </div>
+                    {!isSidebarCollapsed && (
+                      <span className="font-semibold text-sm tracking-wide whitespace-nowrap">{item.label}</span>
+                    )}
+                    {isActive && !isSidebarCollapsed && (
+                      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#E6C753] glow-gold shadow-[0_0_10px_#E6C753]"></div>
+                    )}
+                  </Link>
                 )}
-                {isActive && !isSidebarCollapsed && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#E6C753] glow-gold shadow-[0_0_10px_#E6C753]"></div>
+
+                {hasChildren && isExpanded && !isSidebarCollapsed && (
+                  <div className="ml-9 border-l border-[#4F1F76]/30 space-y-1 py-1">
+                    {item.children?.map((child: any) => {
+                      const isChildActive = pathname === child.path;
+                      return (
+                        <Link
+                          key={child.id}
+                          href={child.path}
+                          onClick={() => {
+                            if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                              setIsMobileSidebarOpen(false);
+                            }
+                          }}
+                          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all duration-200
+                            ${isChildActive 
+                              ? 'text-[#00FFFF] font-bold' 
+                              : 'text-[#8A8F98] hover:text-white hover:bg-white/5'
+                            }`}
+                        >
+                          <div className={`w-1.5 h-1.5 rounded-full ${isChildActive ? 'bg-[#00FFFF] glow-cyan' : 'bg-transparent border border-[#8A8F98]'}`} />
+                          {child.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
-              </Link>
+              </div>
             );
           })}
         </nav>
@@ -117,7 +294,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Top Header */}
         <header className="h-20 bg-admin-panel/80 backdrop-blur-md border-b border-admin-border flex items-center justify-between px-6 shrink-0 relative z-30">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl md:text-2xl font-display font-bold uppercase tracking-widest text-admin-text">Quản Trị Hệ Thống</h1>
+            <button 
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-[#8A8F98] hover:text-white transition-all"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl md:text-2xl font-display font-bold uppercase tracking-widest text-[#FFFFFF]">Quản Trị Hệ Thống</h1>
           </div>
 
           <div className="flex items-center gap-6 relative">

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { sendTicketEmail } from '@/lib/email';
+import { auth } from '@/lib/auth';
 
 function generateBookingCode() {
   const prefix = 'NH';
@@ -19,25 +21,88 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
     const body = await req.json();
+    console.log('--- BOOKING REQUEST BODY ---', body);
+    
+    if (!body.email || !body.name) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
     const bookingCode = generateBookingCode();
-    const booking = await prisma.booking.create({
-      data: {
-        bookingCode,
-        name: body.name,
-        email: body.email,
-        phone: body.phone,
-        ticketType: body.ticketType,
-        quantity: body.quantity,
-        totalPrice: body.totalPrice,
-        status: 'PENDING',
-        ticketStatus: 'CREATED',
-        accessories: body.accessories || [],
-      },
+    
+    // Create the booking record and transaction in a single database transaction if possible, 
+    // or just sequentially for simplicity here since we want to capture the payment method.
+    const result = await prisma.$transaction(async (tx) => {
+      const booking = await tx.booking.create({
+        data: {
+          bookingCode,
+          userId: (session?.user as any)?.id || null,
+          name: body.name,
+          email: body.email || 'ticket-admin@event.com',
+          phone: body.phone || '',
+          ticketType: body.ticketType || 'GA',
+          quantity: parseInt(body.quantity?.toString() || '1'),
+          totalPrice: parseInt(body.totalPrice?.toString() || '0'),
+          ticketStatus: 'SUCCESS', // Set to SUCCESS directly for now as per user request (no pending/failure handled yet)
+          accessories: body.accessories || [],
+        },
+      });
+
+      // Create a transaction record linked to this booking
+      await tx.transaction.create({
+        data: {
+          method: body.paymentMethod || 'UNKNOWN',
+          amount: booking.totalPrice,
+          status: 'Thành công',
+          bookingId: booking.id,
+        }
+      });
+
+      return booking;
     });
-    return NextResponse.json(booking, { status: 201 });
-  } catch (error) {
-    console.error('Booking creation failed:', error);
-    return NextResponse.json({ error: 'Failed to create booking' }, { status: 500 });
+
+    const booking = result;
+    console.log('--- BOOKING & TRANSACTION CREATED ---', booking.bookingCode);
+
+    // Send confirmation email - AWAIT this to ensure Vercel doesn't kill the process
+    let emailStatus = { sent: false, error: null as any };
+    try {
+      const emailResult = await sendTicketEmail({
+        bookingCode,
+        name: booking.name,
+        email: booking.email,
+        ticketType: booking.ticketType,
+        quantity: booking.quantity,
+        totalPrice: booking.totalPrice,
+      });
+      
+      if (emailResult.success) {
+        emailStatus.sent = true;
+        console.log('--- EMAIL DISPATCHED SUCCESSFULLY ---');
+      } else {
+        emailStatus.error = emailResult.error;
+        console.error('--- EMAIL DISPATCH RETURNED ERROR ---', emailResult.error);
+      }
+    } catch (err: any) {
+      emailStatus.error = err.message || err;
+      console.error('--- EMAIL DISPATCH EXCEPTION ---', err);
+    }
+
+    return NextResponse.json({
+      ...booking,
+      debug: {
+        emailSent: emailStatus.sent,
+        emailError: emailStatus.error,
+        receivedMethod: body.paymentMethod
+      }
+    }, { status: 201 });
+  } catch (error: any) {
+    console.error('--- BOOKING ERROR ---', error.message || error);
+    // Explicitly return JSON even on severe errors
+    return new Response(JSON.stringify({ error: error.message || 'Failed to create booking' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
