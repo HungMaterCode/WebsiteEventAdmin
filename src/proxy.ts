@@ -11,7 +11,7 @@ async function proxyHandler(req: any) {
   // 1. Bỏ qua ngay lập tức các request nội bộ hoặc API/Static để tránh treo
   const isInternal = req.headers.get('x-middleware-request') === 'true';
   const isApiRoute = pathname.startsWith('/api');
-  const isStaticFile = pathname.includes('.') || pathname.startsWith('/_next');
+  const isStaticFile = pathname.includes('.') || pathname.startsWith('/_next') || pathname.startsWith('/favicon.ico');
   const isMaintenancePage = pathname === '/maintenance';
 
   if (isInternal || isApiRoute || isStaticFile || isMaintenancePage) {
@@ -37,20 +37,25 @@ async function proxyHandler(req: any) {
       );
 
       const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
-
+      
       if (response.ok) {
         const settings = await response.json();
         if (settings?.maintenanceMode) {
           const role = (req.auth?.user as any)?.role;
+          console.log(`[PROXY] Maintenance Mode: ACTIVE. User role: ${role || 'GUEST'}`);
+          
           if (role !== 'ADMIN') {
+            console.log(`[PROXY] Not an Admin. Redirecting to /maintenance...`);
             const url = req.nextUrl.clone();
             url.pathname = '/maintenance';
             return NextResponse.redirect(url);
+          } else {
+            console.log(`[PROXY] User is ADMIN. Bypassing maintenance check.`);
           }
         }
       }
     } catch (error) {
-      console.error('[PROXY] Maintenance check skipped or timed out:', error instanceof Error ? error.message : error);
+      console.error('[PROXY] Maintenance Check Error:', error instanceof Error ? error.message : error);
     }
   }
 

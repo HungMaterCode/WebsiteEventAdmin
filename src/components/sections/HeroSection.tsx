@@ -13,14 +13,31 @@ export default function HeroSection({ onOpenBooking, settings }: { onOpenBooking
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  const displayTitle = React.useMemo(() => {
+    const titleText = settings?.title || "Dòng Chảy Di Sản\nBế Mạc Festival Ninh Bình";
+    const highlight = "Dòng Chảy Di Sản";
+    
+    if (!titleText.toLowerCase().includes(highlight.toLowerCase())) {
+      return <span className="text-gradient">{titleText}</span>;
+    }
 
-  const displayTitle = settings?.title || (
-    <>
-      <span className="text-gradient block pb-2">Dòng Chảy Di Sản</span>
-      <span className="text-silver text-xl sm:text-2xl md:text-5xl lg:text-6xl block mt-2 tracking-wide">Bế Mạc Festival Ninh Bình</span>
-    </>
-  );
+    const regex = new RegExp(`(${highlight})`, 'gi');
+    const parts = titleText.split(regex);
+
+    return parts.map((part: string, i: number) => {
+      if (part.toLowerCase() === highlight.toLowerCase()) {
+        return <span key={i} className="text-gradient block pt-2 pb-2 leading-tight">{part}</span>;
+      }
+      if (!part.trim()) return null;
+      return (
+        <span key={i} className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-7xl block mt-2 tracking-wide font-black">
+          {part.trim()}
+        </span>
+      );
+    });
+  }, [settings?.title]);
+
+  if (!mounted) return null;
 
   const displaySubtitle = settings?.subtitle || "Neon Heritage Festival";
   const displayDate = settings?.eventDate 
