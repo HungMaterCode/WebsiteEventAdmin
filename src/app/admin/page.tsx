@@ -168,7 +168,7 @@ export default function AdminDashboardPage() {
                     itemStyle={{ color: '#00FFFF', fontSize: '12px', fontWeight: 'bold' }}
                     formatter={(value: any) => [`${value}M VNĐ`, 'Doanh thu']}
                   />
-                  <Area type="monotone" dataKey="revenue" stroke="#00FFFF" strokeWidth={5} fillOpacity={1} fill="url(#colorRev)" animationDuration={2000} strokeShadow="0 0 20px rgba(0, 255, 255, 0.5)" />
+                  <Area type="monotone" dataKey="revenue" stroke="#00FFFF" strokeWidth={5} fillOpacity={1} fill="url(#colorRev)" animationDuration={2000} />
                 </AreaChart>
               </ResponsiveContainer>
             )}
@@ -210,7 +210,7 @@ export default function AdminDashboardPage() {
                     dataKey="quantity" 
                     stroke="#FF00FF" 
                     strokeWidth={5} 
-                    dot={{ r: 6, fill: '#FF00FF', strokeWidth: 0, shadowBlur: 10, shadowColor: '#FF00FF' }}
+                    dot={{ r: 6, fill: '#FF00FF', strokeWidth: 0 }}
                     activeDot={{ r: 10, fill: '#FF00FF', stroke: '#fff', strokeWidth: 2 }}
                     animationDuration={2000}
                   />
