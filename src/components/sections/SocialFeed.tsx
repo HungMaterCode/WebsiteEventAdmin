@@ -6,13 +6,7 @@ export default function SocialFeed({ items, settings }: { items?: any[], setting
   const hashtag = settings?.communityHashtag || '#NeonHeritage2024';
   const followers = settings?.communityFollowers || '25K+';
   const mentions = settings?.communityMentions || '150K+';
-  const defaultPosts = [
-    { username: "@minh_anh", content: "Không thể chờ đợi thêm nữa! Ninh Bình sẽ rực rỡ đêm nay! 🔥", timestamp: "2m ago" },
-    { username: "@cyber_heritage", content: "Sân khấu Thung Nham đang dần hoàn thiện, quá đỉnh! 💎", timestamp: "15m ago" },
-    { username: "@music_lover", content: "Line-up năm nay thực sự là một giấc mơ. #NeonHeritage", timestamp: "1h ago" },
-  ];
-
-  const displayPosts = Array.isArray(items) && items.length > 0 ? items : defaultPosts;
+  const displayPosts = Array.isArray(items) ? items : [];
 
   return (
     <section className="py-24 relative bg-midnight border-t border-royal/20" id="community">
@@ -28,14 +22,14 @@ export default function SocialFeed({ items, settings }: { items?: any[], setting
               Hàng ngàn người đang cùng chia sẻ niềm đam mê với hashtag{" "}
               <span className="text-cyan font-bold tracking-tight glow-cyan text-sm sm:text-lg">{hashtag}</span>.
             </p>
-            <div className="flex gap-10 items-center bg-royal/5 p-8 rounded-[2.5rem] border border-royal/10 w-fit backdrop-blur-sm">
+            <div className="flex gap-10 items-center bg-royal/15 p-8 rounded-[2.5rem] border border-royal/30 w-fit backdrop-blur-md shadow-[0_0_30px_rgba(79,31,118,0.2)]">
               <div className="text-center">
-                <div className="text-4xl font-display font-black text-magenta italic tracking-tighter">{followers}</div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold mt-1">Followers</div>
+                <div className="text-4xl font-display font-black text-magenta italic tracking-tighter text-glow-magenta">{followers}</div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold mt-1">Followers</div>
               </div>
-              <div className="w-px h-12 bg-gradient-to-b from-transparent via-royal/30 to-transparent"></div>
+              <div className="w-px h-12 bg-gradient-to-b from-transparent via-royal/50 to-transparent"></div>
               <div className="text-center">
-                <div className="text-4xl font-display font-black text-cyan italic tracking-tighter">{mentions}</div>
+                <div className="text-4xl font-display font-black text-cyan italic tracking-tighter text-glow-cyan">{mentions}</div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold mt-1">Mentions</div>
               </div>
             </div>
@@ -48,7 +42,7 @@ export default function SocialFeed({ items, settings }: { items?: any[], setting
                 whileInView={{ opacity: 1, x: 0 }} 
                 viewport={{ once: true }} 
                 transition={{ duration: 0.6, delay: i * 0.15 }} 
-                className="p-8 rounded-[2rem] bg-royal/10 border border-royal/30 backdrop-blur-md hover:border-cyan/40 hover:bg-royal/20 transition-all group relative overflow-hidden shadow-2xl"
+                className="p-8 rounded-[2rem] bg-royal/20 border border-royal/50 backdrop-blur-md hover:border-cyan/60 hover:bg-royal/30 transition-all group relative overflow-hidden shadow-2xl"
               >
                 <div className="absolute top-0 left-0 w-1 h-full bg-cyan/20 group-hover:bg-cyan transition-colors" />
                 <div className="flex justify-between items-center mb-4">

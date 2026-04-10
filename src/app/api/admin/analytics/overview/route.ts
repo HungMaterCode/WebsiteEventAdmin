@@ -10,22 +10,40 @@ export async function GET(req: Request) {
     
     // 1. Total Revenue (Global)
     const revenueResult = await prisma.booking.aggregate({
+      where: { status: 'SUCCESS' },
       _sum: {
         totalPrice: true,
       },
     });
 
-    // 2. Total Tickets & Participants (Global)
+    // 2. Total Tickets (Global)
     const ticketsResult = await prisma.booking.aggregate({
+      where: { status: 'SUCCESS' },
+      _sum: {
+        quantity: true,
+      },
+    });
+
+    // 2.1 Total Participants (Actually Checked-In)
+    const participantsResult = await prisma.booking.aggregate({
+      where: {
+        status: 'SUCCESS',
+        NOT: {
+          checkInTime: null,
+        },
+      },
       _sum: {
         quantity: true,
       },
     });
 
     // 3. Check-in Rate (Global)
-    const totalBookings = await prisma.booking.count();
+    const totalBookings = await prisma.booking.count({
+      where: { status: 'SUCCESS' }
+    });
     const checkedInBookings = await prisma.booking.count({
       where: {
+        status: 'SUCCESS',
         NOT: {
           checkInTime: null,
         },
@@ -36,9 +54,13 @@ export async function GET(req: Request) {
       ? Math.round((checkedInBookings / totalBookings) * 100) 
       : 0;
 
+    // 3.1 Total Transactions (Global)
+    const totalTransactions = await prisma.transaction.count();
+
     // 4. Ticket Distribution (Global)
     const ticketTypes = await prisma.booking.groupBy({
       by: ['ticketType'],
+      where: { status: 'SUCCESS' },
       _sum: {
         quantity: true,
       },
@@ -50,6 +72,7 @@ export async function GET(req: Request) {
 
     const periodBookings = await prisma.booking.findMany({
       where: {
+        status: 'SUCCESS',
         createdAt: {
           gte: startDate,
         },
@@ -57,6 +80,7 @@ export async function GET(req: Request) {
       select: {
         createdAt: true,
         totalPrice: true,
+        quantity: true,
       },
     });
 
@@ -75,9 +99,14 @@ export async function GET(req: Request) {
         .filter(b => b.createdAt.toDateString() === date.toDateString())
         .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
       
+      const dayQuantity = periodBookings
+        .filter(b => b.createdAt.toDateString() === date.toDateString())
+        .reduce((sum, b) => sum + (b.quantity || 0), 0);
+      
       return { 
         day: dateStr, 
         revenue: dayTotal / 1000000,
+        quantity: dayQuantity,
         fullDate: date.toLocaleDateString('vi-VN')
       };
     });
@@ -85,7 +114,8 @@ export async function GET(req: Request) {
     const result = {
       totalRevenue: revenueResult._sum.totalPrice || 0,
       totalTickets: ticketsResult._sum.quantity || 0,
-      totalParticipants: ticketsResult._sum.quantity || 0,
+      totalParticipants: participantsResult._sum.quantity || 0,
+      totalTransactions: totalTransactions,
       checkInRate: checkInRate,
       ticketDistribution: ticketTypes.map(t => ({
         name: t.ticketType,

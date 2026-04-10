@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LogOut, LayoutDashboard, Ticket, Map, Users, ShoppingBag, 
-  CreditCard, DollarSign, QrCode, Gamepad2, Megaphone, ListTodo, 
+  DollarSign, QrCode, Gamepad2, Megaphone, ListTodo, 
   Newspaper, Lock, BarChart3, Settings, Star,
   ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu, MessageSquare
 } from 'lucide-react';
@@ -36,7 +36,6 @@ const MENU_ITEMS = [
   { id: 'zones', label: 'Quản lý Khu vực', icon: <Map />, role: ['ADMIN'], path: '/admin/zones' },
   { id: 'customers', label: 'Quản lý Khách hàng', icon: <Users />, role: ['ADMIN', 'SALES'], path: '/admin/customers' },
   { id: 'products', label: 'Quản lý Sản phẩm', icon: <ShoppingBag />, role: ['ADMIN', 'SALES'], path: '/admin/products' },
-  { id: 'orders', label: 'Quản lý Đơn hàng', icon: <CreditCard />, role: ['ADMIN', 'SALES'], path: '/admin/orders' },
   { id: 'transactions', label: 'Quản lý Giao dịch', icon: <DollarSign />, role: ['ADMIN', 'SALES'], path: '/admin/transactions' },
   { id: 'checkin', label: 'Hệ thống Check-in', icon: <QrCode />, role: ['ADMIN', 'CHECKIN'], path: '/admin/checkin' },
   { id: 'loto', label: 'Trò chơi (Loto)', icon: <Gamepad2 />, role: ['ADMIN', 'CHECKIN'], path: '/admin/loto' },

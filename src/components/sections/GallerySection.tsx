@@ -6,16 +6,7 @@ export default function GallerySection({ items, settings }: { items?: any[], set
   const galleryTitle = settings?.galleryTitle || "Khoảnh Khắc";
   const gallerySubtitle = settings?.gallerySubtitle || "Di Sản";
 
-  const defaultImages = [
-    { url: "https://picsum.photos/seed/g1/800/600", title: "Ánh Sáng Di Sản" },
-    { url: "https://picsum.photos/seed/g2/800/600", title: "Bùng Nổ Cảm Xúc" },
-    { url: "https://picsum.photos/seed/g3/800/600", title: "Vũ Điệu Neon" },
-    { url: "https://picsum.photos/seed/g4/800/600", title: "Kết Nối Di Sản" },
-    { url: "https://picsum.photos/seed/g5/800/600", title: "Thung Nham Rực Rỡ" },
-    { url: "https://picsum.photos/seed/g6/800/600", title: "Khoảnh Khắc Vàng" },
-  ];
-
-  const displayItems = Array.isArray(items) && items.length > 0 ? items : defaultImages;
+  const displayItems = Array.isArray(items) ? items : [];
 
   return (
     <section className="py-24 relative bg-midnight overflow-hidden">
@@ -28,7 +19,7 @@ export default function GallerySection({ items, settings }: { items?: any[], set
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayItems.slice(0, 6).map((img, i) => (
-            <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="group relative aspect-[4/3] rounded-3xl overflow-hidden border border-royal/30">
+            <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="group relative aspect-[4/3] rounded-3xl overflow-hidden border border-royal/50 shadow-2xl shadow-royal/20">
               <img src={img.url} alt={img.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer" />
               <div className="absolute inset-0 bg-gradient-to-t from-midnight via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-8">
                 <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
