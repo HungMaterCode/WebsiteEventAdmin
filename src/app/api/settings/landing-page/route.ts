@@ -37,8 +37,8 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const { 
-      title, subtitle, eventDate, location, timeRange, 
+    const {
+      title, subtitle, eventDate, location, timeRange,
       videoUrl, videoTitle, videoSubtitle,
       artTitle, artSubtitle, artDescription, artImage, artItems,
       galleryTitle, gallerySubtitle,
@@ -49,11 +49,11 @@ export async function PUT(request: Request) {
 
     const updatedSettings = await prisma.landingPageSettings.upsert({
       where: { id: 1 },
-      update: { 
-        title, 
-        subtitle, 
-        eventDate: eventDate ? new Date(eventDate) : undefined, 
-        location, 
+      update: {
+        title,
+        subtitle,
+        eventDate: eventDate ? new Date(eventDate) : undefined,
+        location,
         timeRange,
         videoUrl,
         videoTitle,
@@ -79,12 +79,12 @@ export async function PUT(request: Request) {
         mapDescription,
         mapGoogleUrl
       },
-      create: { 
-        id: 1, 
-        title, 
-        subtitle, 
-        eventDate: eventDate ? new Date(eventDate) : new Date("2024-12-31T20:00:00Z"), 
-        location, 
+      create: {
+        id: 1,
+        title,
+        subtitle,
+        eventDate: eventDate ? new Date(eventDate) : new Date("2024-12-31T20:00:00Z"),
+        location,
         timeRange,
         videoUrl,
         videoTitle,

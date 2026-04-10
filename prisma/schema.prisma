@@ -96,15 +96,8 @@ model Booking {
   phone           String
   ticketType      String
   quantity        Int
-<<<<<<< HEAD
   totalPrice      Float
-  discountCode    String?
-  discountAmount  Float         @default(0)
   ticketStatus    String        @default("CREATED")
-=======
-  totalPrice      Int
-  ticketStatus    String    @default("CREATED")
->>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
   accessories     Json?
   checkInTime     DateTime?
   checkOutTime    DateTime?
@@ -112,21 +105,16 @@ model Booking {
   surveyCompleted Boolean       @default(false)
   lotoStatus      String?
   lotoPrintTime   DateTime?
-<<<<<<< HEAD
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  discountAmount  Float         @default(0)
+  discountCode    String?
   status          String        @default("PENDING")
   user            User?         @relation(fields: [userId], references: [id])
-=======
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  user            User?     @relation(fields: [userId], references: [id])
->>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
   transactions    Transaction[]
 }
 
 model Campaign {
-<<<<<<< HEAD
   id          String    @id @default(cuid())
   code        String    @unique
   name        String
@@ -142,24 +130,6 @@ model Campaign {
   updatedAt   DateTime  @updatedAt
 }
 
-=======
-  id          String   @id @default(cuid())
-  code        String   @unique
-  name        String
-  description String?
-  type        String   // 'PERCENT' | 'AMOUNT'
-  value       Int
-  used        Int      @default(0)
-  limit       Int      @default(0) // 0 means unlimited
-  status      String   @default("ACTIVE")
-  startDate   DateTime?
-  endDate     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-
->>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
 model Faq {
   id        Int     @id @default(autoincrement())
   question  String
@@ -207,10 +177,10 @@ model Message {
   id        String   @id @default(cuid())
   name      String
   email     String
-  subject   String?
-  message   String?
-  phone     String?
   createdAt DateTime @default(now())
+  phone     String?
+  message   String?
+  subject   String?
 }
 
 model AuditLog {
@@ -239,7 +209,6 @@ model Post {
   updatedAt   DateTime  @updatedAt
 }
 
-<<<<<<< HEAD
 model LandingPageSettings {
   id                 Int      @id @default(1)
   title              String   @default("Dòng Chảy Di Sản Bế Mạc Festival Ninh Bình")
@@ -268,13 +237,13 @@ model LandingPageSettings {
   travelImage        String?  @default("https://picsum.photos/seed/ninhbinh-travel/800/1000")
   travelAdvice       String?  @default("Bạn nên đến Ninh Bình từ sớm để tham quan các danh thắng trước khi hòa mình vào không gian âm nhạc.")
   travelItems        Json?    @default("[{\"bg\": \"bg-cyan/10\", \"desc\": \"Chỉ mất 1.5 - 2 giờ di chuyển từ Hà Nội qua cao tốc Pháp Vân - Cầu Giẽ.\", \"icon\": \"Car\", \"color\": \"text-cyan\", \"title\": \"Đường Bộ\"}, {\"bg\": \"bg-magenta/10\", \"desc\": \"Bay đến sân bay Nội Bài, sau đó sử dụng dịch vụ xe Limousine đưa đón.\", \"icon\": \"Plane\", \"color\": \"text-magenta\", \"title\": \"Đường Hàng Không\"}, {\"bg\": \"bg-gold/10\", \"desc\": \"Hệ thống Resort & Homestay cao cấp tại Thung Nham và khu vực lân cận.\", \"icon\": \"Hotel\", \"color\": \"text-gold\", \"title\": \"Lưu Trú\"}]")
-  travelImage2      String?  @default("https://picsum.photos/seed/ninhbinh-travel/800/1000") // Added if missing from merge
   mapTitle           String?  @default("Địa Điểm Tổ Chức")
   mapSubtitle        String?  @default("Trường Đại học Cần Thơ (CTU)")
   mapAddress         String?  @default("Khu II, đường 3/2, P. Xuân Khánh, Q. Ninh Kiều, TP. Cần Thơ")
   mapDescription     String?  @default("Hội trường lớn / Sân vận động Đại học Cần Thơ - Không gian năng động, hiện đại.")
   mapGoogleUrl       String?  @default("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.841518413207!2d105.76842607573646!3d10.02993307253303!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a0883d033783a5%3A0x62916b5104d49818!2sCan%20Tho%20University!5e0!3m2!1sen!2s!4v1712493000000!5m2!1sen!2s")
   updatedAt          DateTime @updatedAt
+  travelImage2       String?  @default("https://picsum.photos/seed/ninhbinh-travel/800/1000")
 }
 
 model GalleryItem {
@@ -327,8 +296,6 @@ model CommunityPost {
   updatedAt DateTime @updatedAt
 }
 
-=======
->>>>>>> 9049999351c54312af955cf67b0e35271d6f4ad3
 enum Role {
   USER
   ADMIN
