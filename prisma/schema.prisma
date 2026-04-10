@@ -177,9 +177,10 @@ model Message {
   id        String   @id @default(cuid())
   name      String
   email     String
+  subject   String?
+  message   String
+  phone     String?
   createdAt DateTime @default(now())
-  content   String
-  phone     String
 }
 
 model AuditLog {
