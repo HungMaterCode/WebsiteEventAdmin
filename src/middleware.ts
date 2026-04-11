@@ -27,18 +27,22 @@ async function proxyHandler(req: any) {
       const baseUrl = req.nextUrl.origin;
 
       // Sử dụng Promise.race để áp đặt timeout tránh treo khi Dev server đang tải
+      // Tăng timeout lên 3s để giảm tỷ lệ lỗi do cold start
       const fetchPromise = fetch(`${baseUrl}/api/settings/system`, {
-        next: { revalidate: 60 },
-        headers: { 'x-middleware-request': 'true' }
+        cache: 'force-cache', // Thử nghiệm dùng cache của fetch nếu hỗ trợ
+        headers: { 
+          'x-middleware-request': 'true',
+          'Cache-Control': 'max-age=60' // Gợi ý cache 60s
+        }
       });
 
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 2000)
+        setTimeout(() => reject(new Error('Timeout')), 3000)
       );
 
       const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
       
-      if (response.ok) {
+      if (response && response.ok) {
         const settings = await response.json();
         if (settings?.maintenanceMode) {
           const role = (req.auth?.user as any)?.role;
@@ -53,9 +57,12 @@ async function proxyHandler(req: any) {
             console.log(`[PROXY] User is ADMIN. Bypassing maintenance check.`);
           }
         }
+      } else {
+        console.warn(`[PROXY] API settings returned status: ${response?.status || 'unknown'}`);
       }
     } catch (error) {
-      console.error('[PROXY] Maintenance Check Error:', error instanceof Error ? error.message : error);
+      // Nếu lỗi fetch hoặc timeout, mặc định cho qua để không làm gián đoạn người dùng
+      console.error('[PROXY] Maintenance Check Failed (Fallback to ONLINE):', error instanceof Error ? error.message : error);
     }
   }
 

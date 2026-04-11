@@ -2,17 +2,14 @@
 import React from 'react';
 import { Globe, Camera, Tv } from 'lucide-react';
 import Link from 'next/link';
+import { useSystemSettings } from '../providers/SystemSettingsProvider';
 
 export default function Footer() {
   const [mounted, setMounted] = React.useState(false);
-  const [systemSettings, setSystemSettings] = React.useState<any>(null);
+  const { settings: systemSettings } = useSystemSettings();
 
   React.useEffect(() => {
     setMounted(true);
-    fetch('/api/settings/system')
-      .then(res => res.ok ? res.json() : null)
-      .then(data => setSystemSettings(data))
-      .catch(() => {});
   }, []);
 
   if (!mounted) return null;
