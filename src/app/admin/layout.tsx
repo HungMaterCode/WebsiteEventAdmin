@@ -10,6 +10,7 @@ import {
   ChevronLeft, ChevronRight, CheckCircle2, ChevronDown, Menu, MessageSquare
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
+import { useSystemSettings } from '@/components/providers/SystemSettingsProvider';
 
 const MENU_ITEMS = [
   { id: 'dashboard', label: 'Tổng quan Dashboard', icon: <LayoutDashboard />, role: ['ADMIN', 'SALES', 'ANALYST'], path: '/admin' },
@@ -71,6 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [showProfileMenu, setShowProfileMenu] = React.useState(false);
   const [expandedMenus, setExpandedMenus] = React.useState<string[]>(['landing-page', 'analytics']);
   const [mounted, setMounted] = React.useState(false);
+  const { settings: systemSettings } = useSystemSettings();
 
 
   const toggleMenu = (id: string) => {
@@ -100,44 +102,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!mounted || !session?.user || pathname === '/admin/login' || pathname === '/admin/verify-otp') return;
 
     let timeoutId: NodeJS.Timeout;
-    let timeoutMs = 24 * 60 * 60 * 1000; // Default 24h
+    const timeoutStr = systemSettings?.sessionTimeout || '24h';
     
-    const fetchSettingsAndSetupTimer = async () => {
-      try {
-        const resp = await fetch('/api/settings/system');
-        const data = await resp.json();
-        const timeoutStr = data?.sessionTimeout || '24h';
-        
-        let calculatedMs = 24 * 60 * 60 * 1000;
-        const value = parseInt(timeoutStr);
-        if (timeoutStr.endsWith('h')) calculatedMs = value * 60 * 60 * 1000;
-        else if (timeoutStr.endsWith('d')) calculatedMs = value * 24 * 60 * 60 * 1000;
-        else if (timeoutStr.endsWith('m')) calculatedMs = value * 60 * 1000;
-        else if (timeoutStr.endsWith('s')) calculatedMs = value * 1000;
-        
-        timeoutMs = calculatedMs;
-        console.log(`[AUTH] Idle timeout set to: ${timeoutStr} (${timeoutMs}ms)`);
-        
-        // Bắt đầu đếm ngược sau khi đã có cấu hình
-        resetTimer();
-      } catch (err) {
-        console.error('Failed to fetch session timeout:', err);
-        resetTimer(); // Vẫn bắt đầu timer với mặc định nếu lỗi
-      }
+    let timeoutMs = 24 * 60 * 60 * 1000;
+    const value = parseInt(timeoutStr);
+    if (timeoutStr.endsWith('h')) timeoutMs = value * 60 * 60 * 1000;
+    else if (timeoutStr.endsWith('d')) timeoutMs = value * 24 * 60 * 60 * 1000;
+    else if (timeoutStr.endsWith('m')) timeoutMs = value * 60 * 1000;
+    else if (timeoutStr.endsWith('s')) timeoutMs = value * 1000;
+    
+    const handleSignOutLocal = () => {
+      console.log('[AUTH] Session idle timeout reached. Signing out...');
+      handleSignOut();
     };
 
     const resetTimer = () => {
       if (timeoutId) clearTimeout(timeoutId);
-      
-      // Log để debug (có thể xóa sau khi xong)
-      if (timeoutMs < 3600000) { // Chỉ log nếu thời gian chờ ngắn để tránh spam console
-        console.log(`[IDLE TIMER] Resetting idle timer to ${timeoutMs}ms...`);
-      }
-
-      timeoutId = setTimeout(() => {
-        console.log('[AUTH] Session idle timeout reached. Signing out...');
-        handleSignOut();
-      }, timeoutMs);
+      timeoutId = setTimeout(handleSignOutLocal, timeoutMs);
     };
 
     const events = ['mousemove', 'keydown', 'mousedown', 'touchstart', 'scroll'];
@@ -145,14 +126,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     
     events.forEach(event => window.addEventListener(event, handler));
     
-    // Khởi tạo lấy dữ liệu và chạy timer
-    fetchSettingsAndSetupTimer();
+    // Khởi tạo timer
+    resetTimer();
 
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
       events.forEach(event => window.removeEventListener(event, handler));
     };
-  }, [mounted, session, pathname]);
+  }, [mounted, session, pathname, systemSettings]);
 
   if (pathname === '/admin/login' || pathname === '/admin/verify-otp') {
     return <>{children}</>;

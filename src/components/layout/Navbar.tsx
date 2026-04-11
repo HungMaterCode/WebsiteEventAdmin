@@ -5,6 +5,7 @@ import { X, Menu, User, LogOut, ChevronDown, Ticket, ChevronRight, ShieldOff } f
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import GoogleLoginButton from '../auth/GoogleLoginButton';
+import { useSystemSettings } from '../providers/SystemSettingsProvider';
 
 export default function Navbar({ 
   onOpenBooking, 
@@ -26,7 +27,7 @@ export default function Navbar({
   const [isMobileSubMenuOpen, setIsMobileSubMenuOpen] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
-  const [systemSettings, setSystemSettings] = React.useState<any>(null);
+  const { settings: systemSettings } = useSystemSettings();
 
   const isLoginModalOpen = propIsLoginModalOpen ?? internalLoginModalOpen;
   const setIsLoginModalOpen = propSetIsLoginModalOpen ?? setInternalLoginModalOpen;
@@ -37,10 +38,6 @@ export default function Navbar({
 
   React.useEffect(() => {
     setMounted(true);
-    fetch('/api/settings/system')
-      .then(res => res.ok ? res.json() : null)
-      .then(data => setSystemSettings(data))
-      .catch(() => {});
   }, []);
 
   const navLinks = [
