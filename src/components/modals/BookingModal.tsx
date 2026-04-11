@@ -20,6 +20,28 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
   const [isValidating, setIsValidating] = React.useState(false);
   const [appliedDiscount, setAppliedDiscount] = React.useState<{ code: string, type: string, value: number, name: string } | null>(null);
   const [discountError, setDiscountError] = React.useState('');
+  const [confirmedBooking, setConfirmedBooking] = React.useState<{
+    formData: any,
+    total: number,
+    subtotal: number,
+    discountAmount: number,
+    appliedDiscount: any,
+    ticketType: 'GA' | 'VIP'
+  } | null>(null);
+
+  const resetForm = () => {
+    setFormData(prev => ({ ...prev, phone: '', quantity: 1 }));
+    setAppliedDiscount(null);
+    setDiscountCode('');
+    setDiscountError('');
+    setConfirmedBooking(null);
+    setPaymentMethod(null);
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   React.useEffect(() => {
     if (isOpen) {
@@ -55,6 +77,12 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
   
   const total = Math.max(0, subtotal - discountAmount);
 
+  // Display value overrides for Step 3 & 4
+  const displayTotal = confirmedBooking ? confirmedBooking.total : total;
+  const displaySubtotal = confirmedBooking ? confirmedBooking.subtotal : subtotal;
+  const displayDiscountAmount = confirmedBooking ? confirmedBooking.discountAmount : discountAmount;
+  const displayAppliedDiscount = confirmedBooking ? confirmedBooking.appliedDiscount : appliedDiscount;
+
   const handleApplyDiscount = async () => {
     if (!discountCode) return;
     setIsValidating(true);
@@ -81,26 +109,28 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
   };
 
   const handleSubmit = async () => {
-    if (!paymentMethod || !internalSelectedType) return;
+    const dataToSubmit = confirmedBooking || {
+      formData: { ...formData },
+      total,
+      subtotal,
+      discountAmount,
+      appliedDiscount,
+      ticketType: internalSelectedType as 'GA' | 'VIP'
+    };
+    
+    if (!paymentMethod || !dataToSubmit.ticketType) return;
     setIsSubmitting(true);
     try {
-      const requestBody = {
-        ...formData,
-        ticketType: internalSelectedType,
-        totalPrice: total,
-        paymentMethod,
-      };
-      
-      console.log('--- SUBMITTING BOOKING ---', requestBody);
-
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
-          ticketType: internalSelectedType,
-          totalPrice: total,
+          ...dataToSubmit.formData,
+          ticketType: dataToSubmit.ticketType,
+          totalPrice: dataToSubmit.total,
           paymentMethod,
+          discountCode: dataToSubmit.appliedDiscount?.code || null,
+          discountAmount: dataToSubmit.discountAmount || 0,
         }),
       });
 
@@ -127,9 +157,9 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
 
   return (
     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={onClose} className="absolute inset-0 bg-midnight/95 backdrop-blur-2xl" />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={handleClose} className="absolute inset-0 bg-midnight/95 backdrop-blur-2xl" />
       <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} className="relative w-full max-w-xl bg-midnight/90 backdrop-blur-3xl border border-white/10 rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-        <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all z-20"><X className="w-6 h-6" /></button>
+        <button onClick={handleClose} className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white transition-all z-20"><X className="w-6 h-6" /></button>
 
         {/* Step indicator */}
         <div className="flex items-center gap-2 mb-8 px-4">
@@ -204,7 +234,16 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
               </div>
               <div className="relative">
                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500"><Smartphone className="w-4 h-4" /></div>
-                <input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="Số điện thoại" className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 py-4 text-white focus:outline-none focus:border-cyan/50 focus:bg-white/10 transition-all text-sm" required />
+                <input 
+                  value={formData.phone} 
+                  onChange={e => {
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setFormData({...formData, phone: val});
+                  }} 
+                  placeholder="Số điện thoại (10 số)" 
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 py-4 text-white focus:outline-none focus:border-cyan/50 focus:bg-white/10 transition-all text-sm" 
+                  required 
+                />
               </div>
               
               <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
@@ -242,27 +281,40 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
             <div className="pt-4 border-t border-white/10 space-y-2">
               <div className="flex justify-between text-xs text-gray-500 px-2">
                 <span>Tạm tính:</span>
-                <span>{subtotal.toLocaleString()} VNĐ</span>
+                <span>{displaySubtotal.toLocaleString()} VNĐ</span>
               </div>
-              {appliedDiscount && (
+              {displayAppliedDiscount && (
                 <div className="flex justify-between text-xs text-teal px-2 italic font-medium">
                   <span>Giảm giá:</span>
-                  <span>-{discountAmount.toLocaleString()} VNĐ</span>
+                  <span>-{displayDiscountAmount.toLocaleString()} VNĐ</span>
                 </div>
               )}
               <div className="flex justify-between items-center bg-[#00FFFF]/5 p-4 rounded-xl border border-[#00FFFF]/20">
                 <span className="text-sm font-bold text-gray-400">TỔNG THANH TOÁN:</span>
-                <span className="text-xl font-display font-black text-cyan">{total.toLocaleString()} VNĐ</span>
+                <span className="text-xl font-display font-black text-cyan">{displayTotal.toLocaleString()} VNĐ</span>
               </div>
             </div>
             
             <div className="flex gap-4">
               {!selectedType && (
-                <button onClick={() => setStep('select')} className="px-6 py-4 rounded-2xl border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:bg-white/5 transition-all">Quay lại</button>
+                <button onClick={() => { setStep('select'); resetForm(); }} className="px-6 py-4 rounded-2xl border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:bg-white/5 transition-all">Quay lại</button>
               )}
               <button 
-                onClick={() => setStep('payment')} 
-                disabled={!formData.name || !formData.phone} 
+                onClick={() => {
+                  setConfirmedBooking({
+                    formData: { ...formData },
+                    total,
+                    subtotal,
+                    discountAmount,
+                    appliedDiscount,
+                    ticketType: internalSelectedType as 'GA' | 'VIP'
+                  });
+                  setFormData(prev => ({ ...prev, phone: '', quantity: 1 }));
+                  setDiscountCode('');
+                  setAppliedDiscount(null);
+                  setStep('payment');
+                }} 
+                disabled={!formData.name || formData.phone.length !== 10} 
                 className="flex-1 py-4 bg-gradient-to-r from-[#FF0088] to-[#4F1F76] rounded-2xl font-bold uppercase tracking-widest text-white shadow-[0_0_20px_rgba(255,0,136,0.3)] hover:scale-[1.02] transition-all disabled:opacity-50 text-[10px]"
               >
                 Tiếp tục thanh toán
@@ -294,7 +346,20 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
               ))}
             </div>
             <div className="flex gap-4">
-              <button onClick={() => setStep('info')} className="flex-1 py-4 rounded-2xl border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-xs hover:bg-white/5 transition-colors">Quay lại</button>
+              <button 
+                onClick={() => { 
+                  if (confirmedBooking) {
+                    setFormData(confirmedBooking.formData);
+                    setAppliedDiscount(confirmedBooking.appliedDiscount);
+                    setDiscountCode(confirmedBooking.appliedDiscount?.code || '');
+                  }
+                  setStep('info'); 
+                  setConfirmedBooking(null); 
+                }} 
+                className="flex-1 py-4 rounded-2xl border border-white/10 text-gray-400 font-bold uppercase tracking-widest text-xs hover:bg-white/5 transition-colors"
+              >
+                Quay lại
+              </button>
               <button 
                 onClick={handleSubmit} 
                 disabled={isSubmitting || !paymentMethod} 
@@ -340,7 +405,7 @@ export default function BookingModal({ isOpen, onClose, selectedType }: { isOpen
             </div>
 
             <button 
-              onClick={() => { onClose(); setStep('info'); setBookingResult(null); setFormData({name:'',email:'',phone:'',quantity:1,accessories:[]}); setPaymentMethod(null); }} 
+              onClick={() => { resetForm(); setStep('info'); setBookingResult(null); setFormData(prev => ({ ...prev, name: '', email: '' })); onClose(); }} 
               className="w-full py-4 bg-white/5 border border-white/10 hover:bg-white/10 rounded-2xl font-bold uppercase tracking-widest text-silver text-sm transition-all"
             >
               Trở về trang chủ
