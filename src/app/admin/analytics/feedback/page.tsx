@@ -108,9 +108,53 @@ export default function FeedbackAnalyticsPage() {
           
           <div className="flex-1 min-h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+              <RadarChart 
+                cx="50%" 
+                cy="50%" 
+                outerRadius="60%" 
+                data={radarData}
+                margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+              >
                 <PolarGrid stroke="var(--admin-text)" strokeOpacity={0.15} strokeWidth={1} />
-                <PolarAngleAxis dataKey="name" tick={{ fill: 'var(--admin-text)', fontSize: 11, fontWeight: 800 }} />
+                <PolarAngleAxis 
+                  dataKey="name" 
+                  tick={(props) => {
+                    const { x, y, payload, textAnchor, index } = props;
+                    const words = payload.value.split(' ');
+                    const lines = [];
+                    let currentLine = "";
+                    
+                    // Simple word wrap: max 3 words per line OR 12 chars
+                    words.forEach(word => {
+                      if ((currentLine + word).length > 15 && currentLine !== "") {
+                        lines.push(currentLine.trim());
+                        currentLine = word + " ";
+                      } else {
+                        currentLine += word + " ";
+                      }
+                    });
+                    lines.push(currentLine.trim());
+
+                    return (
+                      <g transform={`translate(${x},${y})`}>
+                        {lines.map((line, i) => (
+                          <text
+                            key={i}
+                            x={0}
+                            y={i * 12} // line height
+                            dy={-((lines.length - 1) * 6)} // vertical centering
+                            textAnchor={textAnchor}
+                            fill="var(--admin-text)"
+                            fontSize={10}
+                            fontWeight={800}
+                          >
+                            {line}
+                          </text>
+                        ))}
+                      </g>
+                    );
+                  }}
+                />
                 <PolarRadiusAxis angle={30} domain={[0, 5]} stroke="transparent" tick={false} />
                 <Radar
                    name="Score"
