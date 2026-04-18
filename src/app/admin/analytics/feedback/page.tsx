@@ -118,14 +118,14 @@ export default function FeedbackAnalyticsPage() {
                 <PolarGrid stroke="var(--admin-text)" strokeOpacity={0.15} strokeWidth={1} />
                 <PolarAngleAxis 
                   dataKey="name" 
-                  tick={(props) => {
-                    const { x, y, payload, textAnchor, index } = props;
-                    const words = payload.value.split(' ');
-                    const lines = [];
+                  tick={(props: any) => {
+                    const { x, y, payload, textAnchor } = props;
+                    const words: string[] = payload.value.split(' ');
+                    const lines: string[] = [];
                     let currentLine = "";
                     
                     // Simple word wrap: max 3 words per line OR 12 chars
-                    words.forEach(word => {
+                    words.forEach((word: string) => {
                       if ((currentLine + word).length > 15 && currentLine !== "") {
                         lines.push(currentLine.trim());
                         currentLine = word + " ";
@@ -137,7 +137,7 @@ export default function FeedbackAnalyticsPage() {
 
                     return (
                       <g transform={`translate(${x},${y})`}>
-                        {lines.map((line, i) => (
+                        {lines.map((line: string, i: number) => (
                           <text
                             key={i}
                             x={0}
