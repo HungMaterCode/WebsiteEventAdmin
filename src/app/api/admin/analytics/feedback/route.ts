@@ -38,7 +38,7 @@ export async function GET() {
       .filter(q => q.type === 'choice' && q.order >= 2 && q.order <= 12)
       .map(q => ({
         id: q.id,
-        name: q.text.replace("Bạn đánh giá ", "").replace(" như thế nào?", "").replace(" ?", "").split("?")[0].trim()
+        name: q.text.trim()
       }));
 
     const radarData = satisfactionCategories.map(cat => {

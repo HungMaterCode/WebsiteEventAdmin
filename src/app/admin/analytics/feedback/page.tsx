@@ -92,7 +92,7 @@ export default function FeedbackAnalyticsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Radar Chart Section */}
-        <div className="lg:col-span-12 xl:col-span-6 glass-card p-10 rounded-[3rem] bg-admin-panel/80 border border-admin-border/5 min-h-[500px] flex flex-col shadow-2xl relative overflow-hidden">
+        <div className="lg:col-span-12 xl:col-span-8 glass-card p-10 rounded-[3rem] bg-admin-panel/80 border border-admin-border/5 min-h-[500px] flex flex-col shadow-2xl relative overflow-hidden">
           {/* Background Grid Accent */}
           <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, var(--admin-text) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
           
@@ -106,14 +106,14 @@ export default function FeedbackAnalyticsPage() {
             </div>
           </div>
           
-          <div className="flex-1 min-h-[400px]">
+          <div className="flex-1 min-h-[600px]">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart 
                 cx="50%" 
                 cy="50%" 
-                outerRadius="60%" 
+                outerRadius="80%" 
                 data={radarData}
-                margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                margin={{ top: 80, right: 80, bottom: 80, left: 80 }}
               >
                 <PolarGrid stroke="var(--admin-text)" strokeOpacity={0.15} strokeWidth={1} />
                 <PolarAngleAxis 
@@ -124,9 +124,10 @@ export default function FeedbackAnalyticsPage() {
                     const lines: string[] = [];
                     let currentLine = "";
                     
-                    // Simple word wrap: max 3 words per line OR 12 chars
+                    // Compact wrap for maximum spacing
+                    const maxChars = 22; 
                     words.forEach((word: string) => {
-                      if ((currentLine + word).length > 15 && currentLine !== "") {
+                      if ((currentLine + word).length > maxChars && currentLine !== "") {
                         lines.push(currentLine.trim());
                         currentLine = word + " ";
                       } else {
@@ -134,6 +135,14 @@ export default function FeedbackAnalyticsPage() {
                       }
                     });
                     lines.push(currentLine.trim());
+ 
+                    const lineHeight = 14;
+                    const totalHeight = lines.length * lineHeight;
+ 
+                    // Dynamic offsets based on vertical position in the larger container
+                    let dyOffset = -(totalHeight / 2) + (lineHeight / 2);
+                    if (y < 150) dyOffset = -45; // Push top labels up significantly
+                    if (y > 450) dyOffset = 50; // Push bottom labels down significantly
 
                     return (
                       <g transform={`translate(${x},${y})`}>
@@ -141,12 +150,17 @@ export default function FeedbackAnalyticsPage() {
                           <text
                             key={i}
                             x={0}
-                            y={i * 12} // line height
-                            dy={-((lines.length - 1) * 6)} // vertical centering
+                            y={i * lineHeight}
+                            dy={dyOffset}
                             textAnchor={textAnchor}
                             fill="var(--admin-text)"
-                            fontSize={10}
+                            fontSize={11}
                             fontWeight={800}
+                            className="transition-all duration-300"
+                            style={{ 
+                               textShadow: '0 0 15px rgba(var(--admin-text-rgb), 0.2)',
+                               letterSpacing: '0.01em'
+                            }}
                           >
                             {line}
                           </text>
@@ -186,7 +200,7 @@ export default function FeedbackAnalyticsPage() {
         </div>
 
         {/* Latest Detailed Feedback */}
-        <div className="lg:col-span-12 xl:col-span-6 glass-card rounded-[3rem] bg-admin-panel/80 border border-admin-border/5 overflow-hidden shadow-2xl flex flex-col">
+        <div className="lg:col-span-12 xl:col-span-4 glass-card rounded-[3rem] bg-admin-panel/80 border border-admin-border/5 overflow-hidden shadow-2xl flex flex-col">
           <div className="p-10 border-b border-admin-border/5 flex items-center justify-between bg-admin-bg/5">
             <h3 className="text-sm font-black uppercase tracking-[0.3em] text-admin-text flex items-center gap-4">
               <Quote className="w-8 h-8 text-magenta" />
