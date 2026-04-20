@@ -29,8 +29,13 @@ export default function ContactManagement({ initialMessages }: { initialMessages
   const [sortOrder, setSortOrder] = React.useState('desc');
   const [currentPage, setCurrentPage] = React.useState(1);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
-  const pageSize = 10;
+  const pageSize = 5;
   const router = useRouter();
+
+  // Đồng bộ lại state khi nhận được initialMessages mới từ server
+  React.useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
 
   const filteredMessages = React.useMemo(() => {
     let result = messages.filter(msg => {
@@ -87,9 +92,11 @@ export default function ContactManagement({ initialMessages }: { initialMessages
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    router.refresh();
+    router.refresh(); // Kích hoạt server component render lại
     toast.success('Đã làm mới dữ liệu!');
-    setTimeout(() => setIsRefreshing(false), 800);
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 1000);
   };
 
   const handleExportCSV = () => {
